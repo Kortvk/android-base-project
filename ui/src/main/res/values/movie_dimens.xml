@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="item_layout_list_margin">4dp</dimen>
+    <dimen name="item_layout_height">100dp</dimen>
+    <dimen name="check_box_size">24dp</dimen>
+</resources>

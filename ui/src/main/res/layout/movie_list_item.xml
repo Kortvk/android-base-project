@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:orientation="vertical"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_margin="@dimen/item_layout_list_margin"
+>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/item_layout_list_margin"
+    >
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_layout_height"
+                android:id="@+id/poster_image_view"
+                android:layout_weight="5"
+        />
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_layout_height"
+                android:orientation="vertical"
+                android:layout_weight="2"
+        >
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/movie_title_text_view"
+                    android:text="Название"
+                    android:textColor="@color/colorAccent"
+            />
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/release_date_text_view"
+                    android:text="@string/release"
+            />
+
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/movie_genre_text_view"
+                    android:text="Жанр:"
+            />
+
+            <CheckBox
+                    android:layout_width="@dimen/check_box_size"
+                    android:layout_height="@dimen/check_box_size"
+                    android:id="@+id/looked_check_box"
+
+            />
+            <CheckBox
+                    android:layout_width="@dimen/check_box_size"
+                    android:layout_height="@dimen/check_box_size"
+                    android:id="@+id/in_wish_list"
+
+            />
+
+        </LinearLayout>
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/more_information_button"
+                android:layout_weight="6"
+        />
+    </LinearLayout>
+</FrameLayout>
