@@ -6,21 +6,41 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.QueryMap
-import ru.appkode.base.data.network.duck.GetDuckListResponse
+import ru.appkode.base.entities.core.common.PagedListWrapper
+import ru.appkode.base.entities.core.movie.CastNM
+import ru.appkode.base.entities.core.movie.GenreNM
 import ru.appkode.base.entities.core.movie.KeywordNM
-import ru.appkode.base.entities.core.movie.MovieNM
+import ru.appkode.base.entities.core.movie.MovieBriefNM
+import ru.appkode.base.entities.core.movie.MovieDetailNM
 
 interface MovieAPI {
-  @GET("/{id}")
-  fun getMovieById(@Path("id") id: Int): Observable<MovieNM>
+  @GET("/3/movie/{id}?append_to_response=credits,images")
+  fun getMovieById(@Path("id") id: Int): Single<MovieDetailNM>
 
-  @GET("/movie/popular")
-  fun getPopularMovies(): Observable<List<MovieNM>>
+  @GET("/3/movie/popular")
+  fun getPopularMovies(@Query("page") page: Int)
+    : Single<PagedListWrapper<MovieBriefNM>>
 
-  @GET("/movie/{id}?append_to_response=credits,images")
-  fun getMoviesFiltered(@Path("id") id: Int, @QueryMap options: Map<String, String>): Observable<List<MovieNM>>
+  @GET("/3/discover/movie")
+  fun filterMoviesPaged(@QueryMap options: Map<String, String>,
+                        @Query("page") page: Int)
+    : Single<PagedListWrapper<MovieBriefNM>>
 
-  @GET("/search/keyword")
-  fun searchKeywords(@Query("query") name: String): Observable<List<KeywordNM>>
+  @GET("/3/search/movie")
+  fun searchMoviesPaged(@Query("query") title: String,
+                        @Query("page") page: Int)
+    : Single<PagedListWrapper<MovieBriefNM>>
 
+  @GET("/3/search/keyword")
+  fun searchKeywordsPaged(@Query("query") name: String,
+                          @Query("page") page: Int)
+    : Single<PagedListWrapper<KeywordNM>>
+
+  @GET("/3/search/person")
+  fun searchCastPaged(@Query("query") name: String,
+                      @Query("page") page: Int)
+    : Single<PagedListWrapper<CastNM>>
+
+  @GET("/3/genre/movie/list")
+  fun getGenres(): Single<List<GenreNM>>
 }

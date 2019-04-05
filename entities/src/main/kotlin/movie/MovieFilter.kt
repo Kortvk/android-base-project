@@ -1,10 +1,10 @@
 package ru.appkode.base.entities.core.movie
 
-import android.util.Range
+import java.util.*
 
-data class MovieFilter(val name: String,
-                       val year: Range<Int>,
-                       val rating: Range<Float>,
-                       val cast: List<String>,
-                       val genres: List<String>,
-                       val keywords: List<String>)
+data class MovieFilter(val name: String? = null,
+                       val releaseDate: ClosedRange<Date>? = null,
+                       val rating: ClosedRange<Float>? = null,
+                       val cast: List<String>? = null,
+                       val genres: List<String>? = null,
+                       val keywords: List<String>? = null)

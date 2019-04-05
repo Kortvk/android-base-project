@@ -14,6 +14,7 @@ android {
     // Internal builds are debuggable for example (see buildTypes section below)
     buildConfigField 'boolean', 'DEV', 'Boolean.parseBoolean("false")'
     buildConfigField 'boolean', 'RELEASE', 'Boolean.parseBoolean("false")'
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   // see app/build.gradle for description and other details
   buildTypes {
@@ -37,4 +38,11 @@ dependencies {
   implementation project(":core")
   implementation project(':entities')
   implementation project(':data-source')
+  testImplementation 'junit:junit:4.12'
+  testImplementation 'androidx.test:core:1.1.0'
+  testImplementation 'org.mockito:mockito-core:2.19.0'
+  androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+  androidTestImplementation 'androidx.test:runner:1.1.1'
+  androidTestImplementation 'androidx.test:rules:1.1.1'
+  androidTestImplementation 'androidx.arch.core:core-testing:2.0.0'
 }
