@@ -4,11 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
+import com.bluelinelabs.conductor.RouterTransaction
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.appkode.base.data.storage.DatabaseHelper
-import ru.appkode.base.ui.core.core.util.obtainHorizontalTransaction
-import ru.appkode.base.ui.duck.DuckListController
-import ru.appkode.base.ui.task.list.TaskListController
+import ru.appkode.base.pages.HomeController
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,18 +15,13 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
-    DatabaseHelper.createDatabase(applicationContext)
-    router = Conductor.attachRouter(this, main_container, savedInstanceState)
-    if (!router.hasRootController())
-      router.setRoot(
-        // Just math random. Nothing else.
-        if (Math.random() > 0.5f) DuckListController().obtainHorizontalTransaction()
-        else TaskListController().obtainHorizontalTransaction()
-      )
+    router = Conductor.attachRouter(this, root_container, savedInstanceState)
+    router.setRoot(RouterTransaction.with(HomeController()))
   }
 
   override fun onBackPressed() {
-    if (!router.handleBack())
+    if (!router.handleBack()) {
       super.onBackPressed()
+    }
   }
 }
