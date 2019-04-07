@@ -71,5 +71,5 @@ class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.ViewHolder>() {
   }
 }
 
-private const val EVENT_ID_ITEM_SWITCHED = 0
-private const val EVENT_ID_ITEM_CLICKED = 1
+internal const val EVENT_ID_ITEM_SWITCHED = 0
+internal const val EVENT_ID_ITEM_CLICKED = 1

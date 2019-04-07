@@ -15,35 +15,35 @@ sealed class ScreenAction
 data class UpdateList(val state: LceState<List<DuckUM>>) : ScreenAction()
 
 class DuckListPresenter(
-  schedulers: AppSchedulers,
-  private val duckRepository: DuckRepository
+    schedulers: AppSchedulers,
+    private val duckRepository: DuckRepository
 ) : BasePresenter<View, ViewState, ScreenAction>(schedulers) {
-  override fun createIntents(): List<Observable<out ScreenAction>> {
-    return listOf(
-      intent { duckRepository.ducks() }
-        .doLceAction { UpdateList(it) }
-    )
-  }
-
-  override fun reduceViewState(
-    previousState: ViewState,
-    action: ScreenAction
-  ): Pair<ViewState, Command<Observable<ScreenAction>>?> {
-    return when (action) {
-      is UpdateList -> processUpdateList(previousState, action)
+    override fun createIntents(): List<Observable<out ScreenAction>> {
+        return listOf(
+            intent { duckRepository.ducks() }
+                .doLceAction { UpdateList(it) }
+        )
     }
-  }
 
-  private fun processUpdateList(
-    previousState: ViewState,
-    action: UpdateList
-  ): Pair<ViewState, Command<Observable<ScreenAction>>?> {
-    return previousState.copy(duckState = action.state) to null
-  }
+    override fun reduceViewState(
+        previousState: ViewState,
+        action: ScreenAction
+    ): Pair<ViewState, Command<Observable<ScreenAction>>?> {
+        return when (action) {
+            is UpdateList -> processUpdateList(previousState, action)
+        }
+    }
 
-  override fun createInitialState(): ViewState {
-    return ViewState(
-      duckState = LceState.Loading()
-    )
-  }
+    private fun processUpdateList(
+        previousState: ViewState,
+        action: UpdateList
+    ): Pair<ViewState, Command<Observable<ScreenAction>>?> {
+        return previousState.copy(duckState = action.state) to null
+    }
+
+    override fun createInitialState(): ViewState {
+        return ViewState(
+            duckState = LceState.Loading()
+        )
+    }
 }
