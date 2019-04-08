@@ -1,28 +1,52 @@
 package ru.appkode.base.data.network
 
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
 import com.squareup.moshi.Moshi
 import io.reactivex.schedulers.Schedulers
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level.BODY
+import okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS
 import okhttp3.logging.HttpLoggingInterceptor.Level.NONE
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.appkode.base.data.network.duck.DuckApi
+import ru.appkode.base.data.network.movie.ListWrapperConverterFactory
+import ru.appkode.base.data.network.movie.MovieAPI
 import ru.appkode.ui.core.BuildConfig
 
 object NetworkHelper {
   const val DUCK_API_BASE_URL = "https://duck-appkode.herokuapp.com"
   const val DUCK_API_IMAGE_URL = "$DUCK_API_BASE_URL/static"
 
+
+  const val API_MOVIES = "https://api.themoviedb.org/"
+  const val API_KEY = "1774b3433274ef2d5a7baff526aa7f23"
+
   private val moshi = Moshi.Builder()
     .build()
 
-  private val okHttpClient = OkHttpClient.Builder()
-    .addInterceptor(HttpLoggingInterceptor().setLevel(if (BuildConfig.DEBUG) BODY else NONE))
-    .build()
+  private val okHttpClientKey = OkHttpClient.Builder()
+    .addInterceptor(HttpLoggingInterceptor().setLevel(BODY))
+    .addInterceptor(object : Interceptor {
+      override fun intercept(chain: Interceptor.Chain): Response {
+        val original = chain.request()
+        val url = original.url().newBuilder()
+          .addQueryParameter("api_key", API_KEY)
+          .build()
 
+        return chain.proceed(original.newBuilder().url(url).build())
+      }
+    })
+    .build()
+  private val okHttpClient = OkHttpClient.Builder()
+    .addInterceptor(HttpLoggingInterceptor().setLevel(BODY))
+    .build()
   private val duckApi = Retrofit.Builder()
     .baseUrl(DUCK_API_BASE_URL)
     .client(okHttpClient)
@@ -31,5 +55,19 @@ object NetworkHelper {
     .build()
     .create(DuckApi::class.java)
 
+  private val movieApi = Retrofit.Builder()
+    .baseUrl(API_MOVIES)
+    .client(okHttpClientKey)
+    .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+    .addConverterFactory(ListWrapperConverterFactory())
+    .addConverterFactory(
+      GsonConverterFactory.create(
+        GsonBuilder()
+    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+    .create()))
+    .build()
+    .create(MovieAPI::class.java)
+
   fun getDuckApi(): DuckApi = duckApi
+  fun getMovieApi(): MovieAPI = movieApi
 }

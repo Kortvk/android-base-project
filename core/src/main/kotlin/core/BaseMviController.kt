@@ -29,6 +29,11 @@ abstract class BaseMviController<VS, V : MviView<VS>, P : MviPresenter<V, VS>>
    * construction
    */
   protected val config: Config by lazy(LazyThreadSafetyMode.NONE) { createConfig() }
+
+  /**
+   * Шина UI событий на экране. Сюда отправляются все события нажатий на кнопки, свайпы и тому подобное
+   * для последующей фидьтрации и создания интентов
+   */
   protected val eventsRelay: PublishRelay<Pair<Int, Any>> = PublishRelay.create()
   protected var previousViewState: VS? = null
 
@@ -60,15 +65,30 @@ abstract class BaseMviController<VS, V : MviView<VS>, P : MviPresenter<V, VS>>
     }
   }
 
+  /**
+   * Сохраняем состояние и делегируем его отрисовку наследнику [BaseMviController]'а,
+   * реализующего метод [renderViewState]
+   */
   final override fun render(viewState: VS) {
     renderViewState(viewState)
     previousViewState = viewState
   }
 
+  /**
+   * Проверяем, изменилось ли состояние экрана - если изменилось, то выполняем заданное действие
+   * @param newState новое состояние экрана
+   * @param field какое поле в новом состоянии надо проверить на предмет изменения, например {it.showHint}
+   * @param action какое действие необходимо выполнить, если состояние экрана таки изменилось
+   */
   protected fun fieldChanged(newState: VS, field: (VS) -> Any, action: () -> Unit) {
     if (previousViewState == null) action.invoke()
     else if (field.invoke(previousViewState!!) != field.invoke(newState)) action.invoke()
   }
 
+  /**
+   * Реализует отображение [ViewState], в этом методе напрямую работаем с элементами разметки.
+   * Метод вызывается в методе bindIntents() [BaseMviController]'а через
+   * @param viewState состояние экрана [ViewState], которое будем отрисовывать
+   */
   protected abstract fun renderViewState(viewState: VS)
 }
