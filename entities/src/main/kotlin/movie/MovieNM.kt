@@ -72,3 +72,5 @@ fun MovieBriefNM.toUiModel(genresMapper: List<GenreNM>): MovieBriefUM {
     genres = genreIds.map { id -> genresMapper.find { it.id == id }?.name }
   )
 }
+
+

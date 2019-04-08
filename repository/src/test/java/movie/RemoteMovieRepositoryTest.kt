@@ -6,8 +6,7 @@ import io.reactivex.Single
 import org.junit.Test
 import ru.appkode.base.data.network.NetworkHelper
 import ru.appkode.base.entities.core.movie.MovieFilter
-import ru.appkode.base.repository.RepositoryHelper
-import ru.appkode.base.repository.movie.RemoteMovieRepositoryImpl
+import movie.remote.RemoteMovieRepositoryImpl
 import java.sql.Date
 
 class RemoteMovieRepositoryTest {

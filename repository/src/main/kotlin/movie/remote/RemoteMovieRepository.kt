@@ -1,4 +1,4 @@
-package ru.appkode.base.repository.movie
+package movie.remote
 
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -13,9 +13,9 @@ import ru.appkode.base.entities.core.movie.MovieDetailNM
 interface RemoteMovieRepository {
   fun getMovieById(id: Int): Single<MovieDetailNM>
   fun getGenres(): Single<List<GenreNM>>
-  fun getPopularMoviesPaged(nextPageSignal: Observable<Unit>): Flowable<List<MovieBriefNM>>
-  fun filterMoviesPaged(filter: MovieFilter, nextPageSignal: Observable<Unit>): Flowable<List<MovieBriefNM>>
-  fun searchMoviesPaged(query: String, nextPageSignal: Observable<Unit>): Flowable<List<MovieBriefNM>>
-  fun searchKeywordsPaged(keyword: String, nextPageSignal: Observable<Unit>): Flowable<List<KeywordNM>>
-  fun searchCastPaged(name: String, nextPageSignal: Observable<Unit>): Flowable<List<CastNM>>
+  fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>): Flowable<List<MovieBriefNM>>
+  fun filterMoviesPaged(filter: MovieFilter, nextPageIntent: Observable<Unit>): Flowable<List<MovieBriefNM>>
+  fun searchMoviesPaged(query: String, nextPageIntent: Observable<Unit>): Flowable<List<MovieBriefNM>>
+  fun searchKeywordsPaged(keyword: String, nextPageIntent: Observable<Unit>): Flowable<List<KeywordNM>>
+  fun searchCastPaged(name: String, nextPageIntent: Observable<Unit>): Flowable<List<CastNM>>
 }

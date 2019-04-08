@@ -1,9 +1,13 @@
-package ru.appkode.base.repository.movie
+package movie.local
 
 import io.reactivex.*
-import io.reactivex.disposables.Disposable
+import ru.appkode.base.entities.core.common.PagedListWrapper
 import ru.appkode.base.entities.core.movie.MovieBriefUM
+import ru.appkode.base.repository.util.paginatedFlowable
 
+/**
+ * In-memory мокап локального репозитория с вишлистом и паджинацией
+ */
 object MockLocalMovieRepository : LocalMovieRepository {
 
   private val movies = mutableListOf<MovieBriefUM>()
@@ -25,45 +29,32 @@ object MockLocalMovieRepository : LocalMovieRepository {
     }
   }
 
-  override fun getWishListPaged(nextPageSignal: Observable<Unit>): Flowable<List<MovieBriefUM>> {
-    return getPagedFlowable(nextPageSignal) { getMoviesAtPage(it) }
+  override fun getWishListPaged(nextPageIntent: Observable<Unit>): Flowable<List<MovieBriefUM>> {
+    return paginatedFlowable(nextPageIntent) { page -> getMoviesAtPage(page) }
   }
 
-  private fun getMoviesAtPage(page: Int): Single<List<MovieBriefUM>> =
+  /**
+   * Заменить на реализацию с БД через PagedList. См. util.Pagination, класс PaginatedOnSubscribe
+   * надо будет допилить для работы с PagedList по аналогии с PagedListWrapper
+   */
+  private fun getMoviesAtPage(page: Int): Single<PagedListWrapper<MovieBriefUM>> =
     if (pageSize * page < movies.size) {
       Single.just(
-        movies.subList(pageSize * (page - 1), pageSize).toMutableList()
+        PagedListWrapper(
+          page = page,
+          totalResults = movies.size,
+          totalPages = movies.size / pageSize + 1,
+          results = movies.subList(pageSize * (page - 1), pageSize).toMutableList()
+        )
       )
     } else {
       Single.just(
-        movies.toMutableList()
+        PagedListWrapper(
+          page = 1,
+          totalResults = movies.size,
+          totalPages = 1,
+          results = movies.toMutableList()
+        )
       )
     }
-
-  private fun <T> getPagedFlowable(
-    nextPageSignal: Observable<Unit>,
-    nextPageSupplier: (Int) -> Single<List<T>>
-  ) =
-    Flowable.create<List<T>>(PagedFlowableOnSubscribe(nextPageSignal, nextPageSupplier), BackpressureStrategy.DROP)
-
-  class PagedFlowableOnSubscribe<T, V : List<T>>(
-    private val nextPageSignal: Observable<Unit>,
-    private val nextPageSupplier: (Int) -> Single<V>
-  ) : FlowableOnSubscribe<List<T>> {
-    private var nextPage = 0
-    private var maxPages = 10
-    private lateinit var disposable: Disposable
-    override fun subscribe(emitter: FlowableEmitter<List<T>>) {
-      nextPageSupplier.invoke(1).doOnSuccess { emitter.onNext(it) }.subscribe()
-        disposable = nextPageSignal.subscribe {
-          nextPageSupplier.invoke(++nextPage)
-            .doOnSuccess {
-              maxPages = if (it.size < pageSize) 1 else (it.size / pageSize + 1)
-              if (nextPage + 1 <= maxPages) emitter.onNext(it)
-            }
-            .doOnError { emitter.onError(it) }
-            .subscribe()
-        }
-    }
-  }
 }

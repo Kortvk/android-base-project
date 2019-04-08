@@ -4,6 +4,8 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import movie.local.LocalMovieRepository
+import movie.remote.RemoteMovieRepository
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.entities.core.movie.MovieDetailedUM
 import ru.appkode.base.entities.core.movie.toUiModel
