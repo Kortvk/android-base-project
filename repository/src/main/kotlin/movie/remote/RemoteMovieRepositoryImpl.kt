@@ -1,5 +1,7 @@
 package ru.appkode.base.repository.movie
 
+import com.jakewharton.rxrelay2.BehaviorRelay
+import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.FlowableEmitter
@@ -9,9 +11,39 @@ import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import ru.appkode.base.data.network.movie.MovieAPI
 import ru.appkode.base.entities.core.common.PagedListWrapper
+import ru.appkode.base.entities.core.movie.CastNM
+import ru.appkode.base.entities.core.movie.MovieBriefNM
 import ru.appkode.base.entities.core.movie.MovieFilter
 
 class RemoteMovieRepositoryImpl(private val movieApi: MovieAPI) : RemoteMovieRepository {
+
+  private var currentPage = 1
+  val relay = PublishRelay.create<Int>()
+  fun next() {
+    currentPage += 1
+    relay.accept(currentPage)
+  }
+
+  val list = BehaviorRelay.create<List<MovieBriefNM>>()
+
+  init {
+    @Suppress()
+    Observable
+      .concat(
+        movieApi
+          .getPopularMovies(currentPage)
+          .toObservable(),
+        relay.concatMap {
+          movieApi
+            .getPopularMovies(it)
+            .toObservable()
+        }
+      )
+      .subscribe {
+        list.accept(list.value.orEmpty().plus(it.results))
+      }
+  }
+
 
   override fun getMovieById(id: Int) = movieApi.getMovieById(id)
 
@@ -27,10 +59,11 @@ class RemoteMovieRepositoryImpl(private val movieApi: MovieAPI) : RemoteMovieRep
     getPagedFlowable(nextPageSignal) { movieApi.searchMoviesPaged(query, it) }
 
   override fun searchKeywordsPaged(keyword: String, nextPageSignal: Observable<Unit>) =
-  getPagedFlowable(nextPageSignal) { movieApi.searchKeywordsPaged(keyword, it) }
+    getPagedFlowable(nextPageSignal) { movieApi.searchKeywordsPaged(keyword, it) }
 
-  override fun searchCastPaged(name: String, nextPageSignal: Observable<Unit>) =
-    getPagedFlowable(nextPageSignal) { movieApi.searchCastPaged(name, it) }
+  override fun searchCastPaged(name: String, nextPageSignal: Observable<Unit>): Flowable<List<CastNM>> {
+    return getPagedFlowable(nextPageSignal) { movieApi.searchCastPaged(name, it) }
+  }
 
   private fun buildFilterParameters(filter: MovieFilter): Map<String, String> {
     val queryMap = mutableMapOf<String, String>()
@@ -48,7 +81,10 @@ class RemoteMovieRepositoryImpl(private val movieApi: MovieAPI) : RemoteMovieRep
     return queryMap
   }
 
-  private fun <T> getPagedFlowable(nextPageSignal: Observable<Unit>, nextPageSupplier: (Int) -> Single<PagedListWrapper<T>>) =
+  private fun <T> getPagedFlowable(
+    nextPageSignal: Observable<Unit>,
+    nextPageSupplier: (Int) -> Single<PagedListWrapper<T>>
+  ) =
     Flowable.create<List<T>>(PagedFlowableOnSubscribe(nextPageSignal, nextPageSupplier), BackpressureStrategy.DROP)
 
   inner class PagedFlowableOnSubscribe<T, V : PagedListWrapper<T>>(
@@ -59,6 +95,7 @@ class RemoteMovieRepositoryImpl(private val movieApi: MovieAPI) : RemoteMovieRep
     private var maxPages = 1
     private lateinit var disposable: Disposable
     override fun subscribe(emitter: FlowableEmitter<List<T>>) {
+      nextPageSupplier.invoke(1).doOnSuccess { emitter.onNext(it.results) }.subscribe()
       if (nextPage + 1 <= maxPages) {
         disposable = nextPageSignal.subscribe {
           nextPageSupplier.invoke(++nextPage)
