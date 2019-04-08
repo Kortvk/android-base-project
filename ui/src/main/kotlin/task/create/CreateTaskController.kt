@@ -3,7 +3,7 @@ package ru.appkode.base.ui.task.create
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import com.google.android.material.snackbar.Snackbar
-import com.jakewharton.rxbinding2.view.clicks
+import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.create_task_controller.*
 import ru.appkode.base.repository.RepositoryHelper

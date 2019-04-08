@@ -2,7 +2,7 @@ package ru.appkode.base.ui.task.list
 
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jakewharton.rxbinding2.view.clicks
+import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.task_list_controller.*
 import ru.appkode.base.repository.RepositoryHelper

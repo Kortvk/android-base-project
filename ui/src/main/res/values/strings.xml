@@ -15,5 +15,6 @@
   <string name="create_task_title">@string/title</string>
   <string name="create_task_description">@string/description</string>
   <string name="create_task_create">Создать</string>
+    <string name="err_wishlist_empty">Wishlist is empty</string>
 
 </resources>
