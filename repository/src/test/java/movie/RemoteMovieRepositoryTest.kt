@@ -4,8 +4,10 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.junit.Test
+import ru.appkode.base.data.network.NetworkHelper
 import ru.appkode.base.entities.core.movie.MovieFilter
 import ru.appkode.base.repository.RepositoryHelper
+import ru.appkode.base.repository.movie.RemoteMovieRepositoryImpl
 import java.sql.Date
 
 class RemoteMovieRepositoryTest {
@@ -14,7 +16,7 @@ class RemoteMovieRepositoryTest {
   private val testId = 1891
   private val testTitle = "The Empire Strikes Back"
   private val testKeyword = "action"
-  private val movieRepository = RepositoryHelper.getMovieRepository()
+  private val movieRepository = RemoteMovieRepositoryImpl(NetworkHelper.getMovieApi())
   private val testGenreId = 12
   private val testGenreTitle = "Adventure"
   private val testCastId = 3
@@ -58,8 +60,6 @@ class RemoteMovieRepositoryTest {
         it.find { it.id == testCastId }?.name == testCastName
     }
   }
-
-
 
   @Test
   fun filterMovies() {

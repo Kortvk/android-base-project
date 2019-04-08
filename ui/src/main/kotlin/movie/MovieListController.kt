@@ -2,49 +2,66 @@ package ru.appkode.base.ui.movie
 
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.duck_list_controller.*
-import ru.appkode.base.repository.RepositoryHelper
+import kotlinx.android.synthetic.main.movie_list_controller.*
+import movie.adapter.EVENT_ID_ADD_TO_WISHLIST_CLICKED
+import movie.adapter.MovieAdapter
 import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.BaseMviController
-import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
+import ru.appkode.base.ui.core.core.util.filterEvents
+import android.nfc.tech.MifareUltralight.PAGE_SIZE
+import com.jakewharton.rxbinding3.recyclerview.scrollEvents
 
-class MovieListController : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(),
+abstract class MovieListController : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(),
   MovieScreenView {
 
-  override fun initializeView(rootView: View) {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-  }
-
-  override fun removeFromWishListIntent(): Observable<Int> {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-  }
-
-  override fun loadNextPageIntent(): Observable<Unit> {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-  }
-
-  protected val adapter = MovieListPagedAdapter()
+  private lateinit var adapter: MovieAdapter
 
   override fun createConfig(): BaseMviController.Config {
     return object : BaseMviController.Config {
       override val viewLayoutResource: Int
-        get() = R.layout.duck_list_controller
+        get() = R.layout.movie_list_controller
     }
+  }
+
+  override fun initializeView(rootView: View) {
+    adapter = MovieAdapter()
+    movie_list_recycler.layoutManager = LinearLayoutManager(applicationContext)
+    movie_list_recycler.adapter = adapter
+  }
+
+  /**
+   * Интент, вызывающий onNext() каждый раз, когда пользователь меняет состояние чекбокса "в избранное"
+   * какого-либо элемента списка
+   * @return [Int] - позиция элемента в списке
+   */
+  override fun itemWishListStateChangeIntent(): Observable<Int> {
+    return adapter.eventsRelay.filterEvents(EVENT_ID_ADD_TO_WISHLIST_CLICKED)
+  }
+
+  /**
+   * Интент, вызывающий onNext() каждый раз, когда RecyclerView отобразил последний элемент списка,
+   * загруженного в адаптер
+   */
+  override fun loadNextPageIntent(): Observable<Unit> {
+    return movie_list_recycler.scrollEvents().filter {
+      (movie_list_recycler.layoutManager as LinearLayoutManager).let {
+        (it.childCount + it.findFirstVisibleItemPosition() >= it.itemCount
+            && it.findFirstVisibleItemPosition() >= 0
+            && it.childCount >= PAGE_SIZE)
+      }
+    }.map { Unit }
   }
 
   override fun renderViewState(viewState: MovieScreenViewState) {
-    fieldChanged(viewState, { it.movieListViewState }) {
-      duck_list_loading.isVisible = viewState.movieListViewState.isLoading
-      duck_list_recycler.isVisible = viewState.movieListViewState.isContent
-      duck_list_empty_list.isVisible = (viewState.movieListViewState.isContent &&
-        viewState.movieListViewState.asContent().isEmpty())
-      if (viewState.movieListViewState.isContent) adapter.items.addAll(viewState.movieListViewState.asContent())
+    fieldChanged(viewState, { it.state }) {
+      movie_list_loading.isVisible = viewState.state.isLoading
+      movie_list_recycler.isVisible = viewState.state.isContent
+      movie_list_empty.isVisible = (viewState.state.isContent &&
+          viewState.state.asContent().isEmpty())
+      if (viewState.state.isContent)
+        adapter.items = viewState.state.asContent()
     }
   }
-
-  override fun createPresenter(): MovieListPresenter =
-    MovieListPresenter(
-      DefaultAppSchedulers,
-      RepositoryHelper.getMovieRepository())
 }

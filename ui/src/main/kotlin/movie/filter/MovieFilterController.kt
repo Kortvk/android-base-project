@@ -8,13 +8,13 @@ import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 import ru.appkode.base.ui.movie.MovieListController
 import ru.appkode.base.ui.movie.MovieListPresenter
 
-class WishListController: MovieListController() {
+class MovieFilterController: MovieListController() {
   override fun createPresenter() =
     WishListPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService())
 }
 class WishListPresenter(schedulers: AppSchedulers,
-  private val movieService: MovieService
+                        movieService: MovieService
 ): MovieListPresenter(schedulers, movieService) {
-  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) = movieService.getWishListPaged(nextPageIntent)
+  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) = movieService.getPopularMoviesPaged(nextPageIntent)
 
 }

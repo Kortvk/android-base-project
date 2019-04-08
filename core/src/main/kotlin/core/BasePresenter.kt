@@ -39,15 +39,24 @@ abstract class BasePresenter<V : MviView<VS>, VS, A : Any>(
       .skipFirstIf(skipRenderOfInitialState)
       .observeOn(schedulers.ui)
       .doAfterNext { (_, cmd) ->
-        cmd?.invoke()
-          ?.subscribe(outputActions)
+        cmd?.invoke()?.subscribe(outputActions)
       }
-      .map { (vs, _) -> vs }
+      .map {
+          (vs, _) ->
+        vs
+      }
       .distinctUntilChanged()
 
-    subscribeViewState(stateChanges) { view, viewState -> view.render(viewState) }
+    subscribeViewState(stateChanges) { view, viewState ->
+      view.render(viewState) }
   }
 
+  /**
+   * Метод, возвращющий результат применения заданной команды к текущему состоянию
+   * @param previousState состояние экрана до применения действия
+   * @param action действие
+   * @return Новое состояние и команда для его получения
+   */
   protected abstract fun reduceViewState(previousState: VS, action: A): Pair<VS, Command<Observable<A>>?>
 
   protected abstract fun createIntents(): List<Observable<out A>>

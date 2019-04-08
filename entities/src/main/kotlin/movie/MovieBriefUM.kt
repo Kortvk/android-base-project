@@ -1,31 +1,17 @@
 package ru.appkode.base.entities.core.movie
 
+data class MovieDetailedUM(val id: Int)
+
 data class MovieBriefUM(
-    val adult: Boolean,
-    val backdrop_path: String?,
-//val belongs_to_collection:object?,
-    val budget: Int,
-    val genres: ArrayList<Genre>,
-    val homepage: String?,
-    val id: Int,
-    val imdb_id: String?,
-    val original_language: String,
-    val original_title: String,
-    val overview: String?,
-    val popularity: Float,
-    val poster_path: String?,
-    val production_companies: ArrayList<ProductionCompany>,
-    val production_countries: ArrayList<ProductionCountry>,
-    val release_date: String,
-    val revenue: Int,
-    val runtime: Int?,
-    val spoken_languages: ArrayList<SpokenLanguage>,
-    val status: String,
-    val tagline: String?,
-    val title: String,
-    val video: Boolean,
-    val vote_average: Float,
-    val vote_count: Int
+  val id: Int,
+  var isInWishList: Boolean,
+  val genres: List<String?>,
+  val overview: String,
+  val poster: String?,
+  val backdrop: String?,
+  val releaseDate: String,
+  val title: String,
+  val rating: Float
 ) {
     data class Genre(
         val id: Int,

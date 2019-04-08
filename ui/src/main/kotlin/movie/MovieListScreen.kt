@@ -11,13 +11,12 @@ import ru.appkode.base.ui.core.core.ViewState
  */
 interface MovieScreenView : MviView<MovieScreenViewState> {
   /**
-   *  Интент на удаление элемента из Вишлиста.
-   *  @return [Observable], в котором каждый onNext() - id элемента, который нужно удалить
+   *  Интент на добавление элемента в Вишлист.
+   *  @return [Observable], в котором каждый onNext() - position элемента, который нужно удалить
    */
-  fun removeFromWishListIntent(): Observable<Int>
+  fun itemWishListStateChangeIntent(): Observable<Int>
   /**
-   *  Интента на загрузку следующей страницы Вишлиста.
-   *  Вызывается, когда пользователь долистал до конца текущей страницы
+   *  Интент на загрузку следующей страницы Вишлиста.
    *  @return [Observable], в котором каждый onNext() - интент запроса новой страницы
    */
   fun loadNextPageIntent(): Observable<Unit>
@@ -26,5 +25,5 @@ interface MovieScreenView : MviView<MovieScreenViewState> {
 @ViewState
 data class MovieScreenViewState(
   val isHintVisible: Boolean = true,
-  val movieListViewState: LceState<List<MovieBriefUM>>
+  val state: LceState<List<MovieBriefUM>>
 )

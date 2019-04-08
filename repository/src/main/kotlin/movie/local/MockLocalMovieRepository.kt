@@ -2,13 +2,12 @@ package ru.appkode.base.repository.movie
 
 import io.reactivex.*
 import io.reactivex.disposables.Disposable
-import ru.appkode.base.entities.core.common.PagedListWrapper
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 
-object MockMovieRepository : LocalMovieRepository {
+object MockLocalMovieRepository : LocalMovieRepository {
 
   private val movies = mutableListOf<MovieBriefUM>()
-  private val pageSize = 10
+  private const val pageSize = 10
 
   override fun addToWishList(movie: MovieBriefUM) {
     movies.add(movie)
@@ -33,11 +32,11 @@ object MockMovieRepository : LocalMovieRepository {
   private fun getMoviesAtPage(page: Int): Single<List<MovieBriefUM>> =
     if (pageSize * page < movies.size) {
       Single.just(
-        movies.subList(pageSize * (page - 1), pageSize)
+        movies.subList(pageSize * (page - 1), pageSize).toMutableList()
       )
     } else {
       Single.just(
-        movies
+        movies.toMutableList()
       )
     }
 
