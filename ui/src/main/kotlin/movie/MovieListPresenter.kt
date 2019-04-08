@@ -16,6 +16,9 @@ class ItemWishListStateChanged(val position: Int) : ScreenAction()
 class AddToWishList(val position: Int) : ScreenAction()
 class RemoveFromWishList(val position: Int) : ScreenAction()
 class ModifyMovieList(val mutator: (List<MovieBriefUM>) -> List<MovieBriefUM>) : ScreenAction()
+class AddToHistory(val position: Int): ScreenAction()
+class RemoveFromHistory(val position: Int): ScreenAction()
+class Ignore: ScreenAction()
 
 abstract class MovieListPresenter(
   schedulers: AppSchedulers,
@@ -25,12 +28,16 @@ abstract class MovieListPresenter(
   override fun createIntents(): List<Observable<out ScreenAction>> {
     return listOf<Observable<out ScreenAction>>(
       intent(MovieScreenView::itemWishListStateChangeIntent).map { ItemWishListStateChanged(it) },
+      bindSwipeLeftIntent(), bindSwipeRightIntent(),
       getPagedMovieListSource(intent(MovieScreenView::loadNextPageIntent))
         .map { LoadNextPage(LceState.Content(it)) }.toObservable()
         .onErrorReturn { LoadNextPage(LceState.Error(it.message ?: "Unknown error")) }
     )
   }
 
+  abstract fun bindSwipeLeftIntent(): Observable<out ScreenAction>
+
+  abstract fun bindSwipeRightIntent(): Observable<out ScreenAction>
   /**
    * Источник данных, возвращающий список фильмов с паджинацией
    * @param nextPageIntent - Интент, генерирующий запросы на загрузку страницы из действий пользователя
@@ -48,8 +55,21 @@ abstract class MovieListPresenter(
       is LoadNextPage -> processNextPage(previousState, action)
       is ModifyMovieList -> processModifyMovieList(previousState, action)
       is ItemWishListStateChanged -> processWishListStateChanged(previousState, action)
+      is AddToHistory -> processAddToHistory(previousState, action)
+      is RemoveFromHistory -> processRemoveFromHistory(previousState, action)
+      else -> previousState to null
     }
   }
+
+  abstract fun processAddToHistory(
+    previousState: MovieScreenViewState,
+    action: AddToHistory
+  ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?>
+
+  abstract fun processRemoveFromHistory(
+    previousState: MovieScreenViewState,
+    action: RemoveFromHistory
+  ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?>
 
   private fun processNextPage(
     previousState: MovieScreenViewState,

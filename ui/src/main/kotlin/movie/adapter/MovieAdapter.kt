@@ -55,8 +55,10 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
       disposable = itemView.in_wish_list.clicks().throttleFirst(500, TimeUnit.MILLISECONDS).subscribe {
         eventsRelay.accept(EVENT_ID_ADD_TO_WISHLIST_CLICKED to adapterPosition)
       }
+      //TODO: забиндить свайпы тут
     }
   }
 }
 
 const val EVENT_ID_ADD_TO_WISHLIST_CLICKED = 0
+//TODO: добавить EVENT_ID для свайпов

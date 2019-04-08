@@ -20,6 +20,16 @@ interface MovieScreenView : MviView<MovieScreenViewState> {
    *  @return [Observable], в котором каждый onNext() - интент запроса новой страницы
    */
   fun loadNextPageIntent(): Observable<Unit>
+  /**
+   *  Интент на свайп элемента влево.
+   *  @return [Observable], в котором каждый onNext() - интент свайпа влево
+   */
+  fun elementSwipedLeft(): Observable<Int>
+  /**
+   *  Интент на свайп элемента влево.
+   *  @return [Observable], в котором каждый onNext() - интент свайпа вправо
+   */
+  fun elementSwipedRight(): Observable<Int>
 }
 
 @ViewState

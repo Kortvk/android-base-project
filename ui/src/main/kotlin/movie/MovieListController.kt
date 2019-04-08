@@ -31,6 +31,16 @@ abstract class MovieListController : BaseMviController<MovieScreenViewState, Mov
     movie_list_recycler.adapter = adapter
   }
 
+  override fun elementSwipedLeft(): Observable<Int> {
+    //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
+    return Observable.just(1)
+  }
+
+  override fun elementSwipedRight(): Observable<Int> {
+    //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
+    return Observable.just(1)
+  }
+
   /**
    * Интент, вызывающий onNext() каждый раз, когда пользователь меняет состояние чекбокса "в избранное"
    * какого-либо элемента списка
