@@ -6,13 +6,7 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.appkode.base.pages.HomeController
-import ru.appkode.base.data.storage.DatabaseHelper
-import ru.appkode.base.entities.core.movie.filter.MovieFilterController
-import ru.appkode.base.ui.core.core.util.obtainHorizontalTransaction
-import ru.appkode.base.ui.duck.DuckListController
-import ru.appkode.base.ui.movie.wishlist.MovieWishListController
-import ru.appkode.base.ui.task.list.TaskListController
+import movie.HomeController
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     router = Conductor.attachRouter(this, root_container, savedInstanceState)
-    router.setRoot(RouterTransaction.with(HomeController())
+    router.setRoot(RouterTransaction.with(HomeController()))
   }
 
   override fun onBackPressed() {
