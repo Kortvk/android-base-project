@@ -21,7 +21,7 @@ class WishListPresenter(schedulers: AppSchedulers,
     action: AddToHistory
   ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
     //TODO: здесь написать логику добавления в историю (см. по аналогии с вишлистом в MovieListPresenter)
-    TODO("not implemented")
+    return previousState to null
   }
 
   override fun processRemoveFromHistory(
@@ -29,7 +29,7 @@ class WishListPresenter(schedulers: AppSchedulers,
     action: RemoveFromHistory
   ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
     //TODO: здесь написать логику удаления из истории (см. по аналогии с вишлистом в MovieListPresenter)
-    TODO("not implemented")
+    return previousState to null
   }
 
   override fun bindSwipeLeftIntent(): Observable<out ScreenAction> {

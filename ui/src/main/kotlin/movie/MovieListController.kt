@@ -33,12 +33,12 @@ abstract class MovieListController : BaseMviController<MovieScreenViewState, Mov
 
   override fun elementSwipedLeft(): Observable<Int> {
     //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
-    return Observable.just(1)
+    return Observable.just(999)
   }
 
   override fun elementSwipedRight(): Observable<Int> {
     //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
-    return Observable.just(1)
+    return Observable.just(999)
   }
 
   /**

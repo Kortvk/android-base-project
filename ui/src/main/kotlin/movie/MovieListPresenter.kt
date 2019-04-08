@@ -16,9 +16,9 @@ class ItemWishListStateChanged(val position: Int) : ScreenAction()
 class AddToWishList(val position: Int) : ScreenAction()
 class RemoveFromWishList(val position: Int) : ScreenAction()
 class ModifyMovieList(val mutator: (List<MovieBriefUM>) -> List<MovieBriefUM>) : ScreenAction()
-class AddToHistory(val position: Int): ScreenAction()
-class RemoveFromHistory(val position: Int): ScreenAction()
-class Ignore: ScreenAction()
+class AddToHistory(val position: Int) : ScreenAction()
+class RemoveFromHistory(val position: Int) : ScreenAction()
+class Ignore : ScreenAction()
 
 abstract class MovieListPresenter(
   schedulers: AppSchedulers,
@@ -111,33 +111,42 @@ abstract class MovieListPresenter(
     previousState: MovieScreenViewState,
     action: RemoveFromWishList
   ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
-    return previousState to command(
-      movieService.removeFromWishList(previousState.state.asContent()[action.position])
-        .andThen(
-          Observable.just(ModifyMovieList { list ->
-            list.toMutableList()
-              .also {
-                it.removeAt(action.position)
-              }
-          } as ScreenAction)
-        )
-    )
+    val cmd = if (previousState.state.isContent
+      && action.position < previousState.state.asContent().size
+    ) {
+      command(
+        movieService.removeFromWishList(previousState.state.asContent()[action.position])
+          .andThen(
+            Observable.just(ModifyMovieList { list ->
+              list.toMutableList()
+                .also {
+                  it.removeAt(action.position)
+                }
+            } as ScreenAction)
+          )
+      )
+    } else command(Observable.just(Ignore() as ScreenAction))
+    return previousState to cmd
   }
 
   private fun processAddItem(
     previousState: MovieScreenViewState,
     action: AddToWishList
   ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
-    return previousState.copy() to command(
-      movieService.addToWishList(previousState.state.asContent()[action.position].also { it.isInWishList = true })
-        .andThen(Observable.just(
-          ModifyMovieList { list ->
-            list.also {
-              it[action.position].isInWishList = true
-            }
-          } as ScreenAction)
-        )
-    )
+    val cmd = if (previousState.state.isContent
+      && action.position < previousState.state.asContent().size) {
+      command(
+        movieService.addToWishList(previousState.state.asContent()[action.position].also { it.isInWishList = true })
+          .andThen(Observable.just(
+            ModifyMovieList { list ->
+              list.also {
+                it[action.position].isInWishList = true
+              }
+            } as ScreenAction)
+          )
+      )
+    } else command(Observable.just(Ignore() as ScreenAction))
+    return previousState to cmd
   }
 
   override fun createInitialState(): MovieScreenViewState {

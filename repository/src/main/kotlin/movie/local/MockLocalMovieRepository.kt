@@ -55,16 +55,15 @@ object MockLocalMovieRepository : LocalMovieRepository {
     private lateinit var disposable: Disposable
     override fun subscribe(emitter: FlowableEmitter<List<T>>) {
       nextPageSupplier.invoke(1).doOnSuccess { emitter.onNext(it) }.subscribe()
-      if (nextPage + 1 <= maxPages) {
         disposable = nextPageSignal.subscribe {
           nextPageSupplier.invoke(++nextPage)
             .doOnSuccess {
-              emitter.onNext(it)
+              maxPages = if (it.size < pageSize) 1 else (it.size / pageSize + 1)
+              if (nextPage + 1 <= maxPages) emitter.onNext(it)
             }
             .doOnError { emitter.onError(it) }
             .subscribe()
         }
-      }
     }
   }
 }
