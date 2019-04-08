@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
+import com.bluelinelabs.conductor.RouterTransaction
 import kotlinx.android.synthetic.main.activity_main.*
+import ru.appkode.base.pages.HomeController
 import ru.appkode.base.data.storage.DatabaseHelper
 import ru.appkode.base.entities.core.movie.filter.MovieFilterController
 import ru.appkode.base.ui.core.core.util.obtainHorizontalTransaction
@@ -19,27 +21,13 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
-    DatabaseHelper.createDatabase(applicationContext)
-    router = Conductor.attachRouter(this, main_container, savedInstanceState)
-//
-//      router.setRoot(
-//        // Just math random. Nothing else.
-//        if (Math.random() > 0.5f) DuckListController().obtainHorizontalTransaction()
-//        else TaskListController().obtainHorizontalTransaction()
-//      )
-    if (!router.hasRootController())
-      router.setRoot(MovieWishListController().obtainHorizontalTransaction())
-    bottom_navigation.setOnNavigationItemSelectedListener { item ->
-      when (item.itemId) {
-        R.id.menu_wishlist -> router.replaceTopController(MovieWishListController().obtainHorizontalTransaction())
-        R.id.menu_filter -> router.replaceTopController(MovieFilterController().obtainHorizontalTransaction())
-      }
-      true
-    }
+    router = Conductor.attachRouter(this, root_container, savedInstanceState)
+    router.setRoot(RouterTransaction.with(HomeController())
   }
 
   override fun onBackPressed() {
-    if (!router.handleBack())
+    if (!router.handleBack()) {
       super.onBackPressed()
+    }
   }
 }
