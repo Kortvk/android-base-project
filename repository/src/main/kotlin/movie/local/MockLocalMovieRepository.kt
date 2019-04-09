@@ -38,23 +38,15 @@ object MockLocalMovieRepository : LocalMovieRepository {
    * надо будет допилить для работы с PagedList по аналогии с PagedListWrapper
    */
   private fun getMoviesAtPage(page: Int): Single<PagedListWrapper<MovieBriefUM>> =
-    if (pageSize * page < movies.size) {
       Single.just(
-        PagedListWrapper(
-          page = page,
-          total_results = movies.size,
-          total_pages = movies.size / pageSize + 1,
-          results = movies.subList(pageSize * (page - 1), pageSize).toMutableList()
-        )
+      PagedListWrapper(
+        page = page,
+        total_results = movies.size,
+        total_pages = movies.size / pageSize + 1,
+        results = if (pageSize * page < movies.size) movies.subList(pageSize * (page - 1), pageSize * page).toMutableList()
+        else movies.subList(pageSize * (page - 1), movies.size).toMutableList()
+
       )
-    } else {
-      Single.just(
-        PagedListWrapper(
-          page = 1,
-          total_results = movies.size,
-          total_pages = 1,
-          results = movies.toMutableList()
-        )
-      )
-    }
+    )
+
 }

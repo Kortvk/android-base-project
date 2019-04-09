@@ -2,20 +2,19 @@ package ru.appkode.base.entities.core.movie
 
 import ru.appkode.base.entities.core.util.requireField
 
-
 data class MovieDetailNM(
   val id: Int,
   val title: String,
   val imdb_id: String,
   val genres: List<GenreNM>,
-  val originalTitle: String,
+  val original_title: String,
   val overview: String,
-  val posterPath: String,
-  val productionCompanies: List<ProductionCompanyNM>?,
-  val releaseDate: String,
+  val poster_path: String,
+  val production_companies: List<ProductionCompanyNM>?,
+  val release_date: String,
   val runtime: Int,
   val tagline: String,
-  val voteAverage: Float,
+  val vote_average: Float,
   val credits: CreditsNM?,
   val images: ImagesNM?,
   val keywords: List<KeywordNM>?
@@ -36,7 +35,7 @@ data class GenreNM(val id: Int, val name: String)
 
 data class KeywordNM(val id: Int, val name: String)
 
-data class ImageNM(val filePath: String, val voteAverage: Float)
+data class ImageNM(val file_path: String, val vote_average: Float)
 
 data class ProductionCompanyNM(val id: Int, val name: String)
 
@@ -53,7 +52,7 @@ data class CrewNM(
 data class CastNM(
   val id: Int,
   val name: String,
-  val profilePath: String
+  val profile_path: String
 )
 
 
