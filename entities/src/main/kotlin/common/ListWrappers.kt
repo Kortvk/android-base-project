@@ -6,8 +6,8 @@ interface ListWrapperNM<T> {
 
 data class PagedListWrapper<T>(
   val page: Int,
-  val totalResults: Int,
-  val totalPages: Int,
+  val total_results: Int,
+  val total_pages: Int,
   val results: List<T>
 ) : ListWrapperNM<T> {
   override fun getList() = results

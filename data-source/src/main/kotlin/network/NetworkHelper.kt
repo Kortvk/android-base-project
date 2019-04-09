@@ -1,7 +1,5 @@
 package ru.appkode.base.data.network
 
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.GsonBuilder
 import com.squareup.moshi.Moshi
 import io.reactivex.schedulers.Schedulers
 import okhttp3.Interceptor
@@ -9,16 +7,12 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level.BODY
-import okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS
-import okhttp3.logging.HttpLoggingInterceptor.Level.NONE
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.appkode.base.data.network.duck.DuckApi
 import ru.appkode.base.data.network.movie.ListWrapperConverterFactory
 import ru.appkode.base.data.network.movie.MovieAPI
-import ru.appkode.ui.core.BuildConfig
 
 object NetworkHelper {
   const val DUCK_API_BASE_URL = "https://duck-appkode.herokuapp.com"
@@ -60,11 +54,7 @@ object NetworkHelper {
     .client(okHttpClientKey)
     .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
     .addConverterFactory(ListWrapperConverterFactory())
-    .addConverterFactory(
-      GsonConverterFactory.create(
-        GsonBuilder()
-    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-    .create()))
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
     .build()
     .create(MovieAPI::class.java)
 

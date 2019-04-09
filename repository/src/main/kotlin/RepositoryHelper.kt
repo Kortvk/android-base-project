@@ -22,6 +22,6 @@ object RepositoryHelper {
   }
 
   fun getMovieService(): MovieService {
-    return MovieServiceImpl(MockLocalMovieRepository, RemoteMovieRepositoryImpl(NetworkHelper.getMovieApi()))
+    return MockMovieServiceImpl(MockLocalMovieRepository, RemoteMovieRepositoryImpl(NetworkHelper.getMovieApi()))
   }
 }

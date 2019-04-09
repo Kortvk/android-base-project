@@ -42,8 +42,8 @@ object MockLocalMovieRepository : LocalMovieRepository {
       Single.just(
         PagedListWrapper(
           page = page,
-          totalResults = movies.size,
-          totalPages = movies.size / pageSize + 1,
+          total_results = movies.size,
+          total_pages = movies.size / pageSize + 1,
           results = movies.subList(pageSize * (page - 1), pageSize).toMutableList()
         )
       )
@@ -51,8 +51,8 @@ object MockLocalMovieRepository : LocalMovieRepository {
       Single.just(
         PagedListWrapper(
           page = 1,
-          totalResults = movies.size,
-          totalPages = 1,
+          total_results = movies.size,
+          total_pages = 1,
           results = movies.toMutableList()
         )
       )

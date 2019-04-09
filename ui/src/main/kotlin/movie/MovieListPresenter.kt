@@ -1,6 +1,5 @@
 package ru.appkode.base.ui.movie
 
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.repository.movie.MovieService
@@ -30,7 +29,7 @@ abstract class MovieListPresenter(
       intent(MovieScreenView::itemWishListStateChangeIntent).map { ItemWishListStateChanged(it) },
       bindSwipeLeftIntent(), bindSwipeRightIntent(),
       getPagedMovieListSource(intent(MovieScreenView::loadNextPageIntent))
-        .map { LoadNextPage(LceState.Content(it)) }.toObservable()
+        .map { LoadNextPage(LceState.Content(it)) }
         .onErrorReturn { LoadNextPage(LceState.Error(it.message ?: "Unknown error")) }
     )
   }
@@ -43,7 +42,7 @@ abstract class MovieListPresenter(
    * @param nextPageIntent - Интент, генерирующий запросы на загрузку страницы из действий пользователя
    * @return следующая страница списка фильмов
    */
-  abstract fun getPagedMovieListSource(nextPageIntent: Observable<Unit>): Flowable<List<MovieBriefUM>>
+  abstract fun getPagedMovieListSource(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
 
   override fun reduceViewState(
     previousState: MovieScreenViewState,

@@ -9,13 +9,13 @@ import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.entities.core.movie.MovieDetailedUM
 import ru.appkode.base.entities.core.movie.toUiModel
 
-class MovieServiceImpl(
+class MockMovieServiceImpl(
   private val localRepository: LocalMovieRepository,
   private val remoteMovieRepository: RemoteMovieRepository
 ) : MovieService {
 
   private val genres = remoteMovieRepository.getGenres()
-    .observeOn(Schedulers.io()).blockingGet()
+    .observeOn(Schedulers.io()).blockingGet().let { if (it is Throwable) emptyList() else it }
 
   override fun removeFromWishList(movie: MovieBriefUM): Completable {
     return Completable.fromCallable { localRepository.removeFromWishList(movie) }

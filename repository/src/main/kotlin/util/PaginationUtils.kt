@@ -14,8 +14,8 @@ fun <T> paginatedObservable(intents: Observable<Unit>, supplier: NetworkPageSupp
     return Observable
       .zip(intents.scan(1) { page, _ -> page + 1 }, this,
         PaginationCreator { page, maxPage -> page to maxPage })
-      .filterPagination(CAP_AT_MAXPAGE).flatMapSingle { supplier.invoke(it) }
-      .doOnNext { this.onNext(it.totalPages) }.map { it.results }
+      .filterPagination(CAP_AT_MAXPAGE).flatMapSingle {supplier.invoke(it) }
+      .doOnNext { this.onNext(it.total_pages) }.map { it.results }
   }
 }
 
@@ -25,7 +25,10 @@ private fun Observable<Pair<Int, Int>>.filterPagination(strategy: PaginationStra
  * на выходе отдают новый номер страницы для запроса
  */
 val CAP_AT_MAXPAGE: PaginationStrategy = { pages ->
-  pages.filter { it.first <= it.second }.map { it.first }
+  pages.filter {
+    it.first <= it.second }
+    .map {
+    it.first }
 }
 val START_FROM_FIRST: PaginationStrategy = { pages ->
   pages.map { if (it.first <= it.second) it.first else 1 }
