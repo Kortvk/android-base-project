@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="release">Премьера:</string>
+    <string name="movie_release">Премьера:</string>
+    <string name="movie_title">Название:</string>
+    <string name="movie_genre">Жанр:</string>
+    <string name="movie_producer">Режиссер:</string>
+    <string name="movie_actors">Актеры:</string>
+    <string name="movie_description">Описание:</string>
 </resources>

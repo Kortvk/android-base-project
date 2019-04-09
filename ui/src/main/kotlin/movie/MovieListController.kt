@@ -12,6 +12,7 @@ import ru.appkode.base.ui.core.core.BaseMviController
 import ru.appkode.base.ui.core.core.util.filterEvents
 import android.nfc.tech.MifareUltralight.PAGE_SIZE
 import com.jakewharton.rxbinding3.recyclerview.scrollEvents
+import movie.adapter.EVENT_ID_MORE_INFORMATION_CLICKED
 
 abstract class MovieListController : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(),
   MovieScreenView {
@@ -62,6 +63,9 @@ abstract class MovieListController : BaseMviController<MovieScreenViewState, Mov
             && it.childCount >= PAGE_SIZE)
       }
     }.map { Unit }
+  }
+  override fun showMoreMovieInfo():Observable<Int>{
+    return adapter.eventsRelay.filterEvents(EVENT_ID_MORE_INFORMATION_CLICKED)
   }
 
   override fun renderViewState(viewState: MovieScreenViewState) {

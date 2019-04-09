@@ -30,6 +30,11 @@ interface MovieScreenView : MviView<MovieScreenViewState> {
    *  @return [Observable], в котором каждый onNext() - интент свайпа вправо
    */
   fun elementSwipedRight(): Observable<Int>
+  /**
+    Интент на показ детальной информации о фильме.
+
+   */
+  fun showMoreMovieInfo():Observable<Int>
 }
 
 @ViewState
