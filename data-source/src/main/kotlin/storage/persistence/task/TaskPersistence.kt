@@ -7,6 +7,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import io.reactivex.Observable
+import ru.appkode.base.entities.core.movie.MovieBriefSM
+import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.entities.core.task.TaskSM
 
 @Dao
@@ -26,4 +28,29 @@ interface TaskPersistence {
 
   @Delete
   fun deleteTask(task: TaskSM)
+}
+
+
+
+
+
+
+const val TABLE_MOVIE = "movie"
+@Dao
+interface MoviePersistence {
+
+  @Query("SELECT * FROM $TABLE_MOVIE ORDER BY sort ASC")
+  fun getMovies(): Observable<List<MovieBriefSM>>
+
+  @Query("SELECT * FROM $TABLE_MOVIE WHERE id=:movieId")
+  fun getMovie(movieId: Long): Observable<MovieBriefSM>
+
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  fun addMovie(movie: MovieBriefSM)
+
+  @Update
+  fun updateMovie(movie: MovieBriefSM)
+
+  @Delete
+  fun deleteMovie(movie: MovieBriefSM)
 }
