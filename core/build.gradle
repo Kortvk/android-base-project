@@ -71,7 +71,4 @@ dependencies {
   // Json
   api 'com.squareup.moshi:moshi:1.8.0'
   api 'com.squareup.retrofit2:converter-moshi:2.5.0'
-  /* gson */
-  api 'com.google.code.gson:gson:2.8.5'
-  api 'com.squareup.retrofit2:converter-gson:2.5.0'
 }

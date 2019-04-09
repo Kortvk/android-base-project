@@ -1,13 +1,11 @@
 package movie
 
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.junit.Test
 import ru.appkode.base.data.network.NetworkHelper
 import ru.appkode.base.entities.core.movie.MovieFilter
-import ru.appkode.base.repository.RepositoryHelper
-import ru.appkode.base.repository.movie.RemoteMovieRepositoryImpl
+import movie.remote.RemoteMovieRepositoryImpl
 import java.sql.Date
 
 class RemoteMovieRepositoryTest {
@@ -39,9 +37,9 @@ class RemoteMovieRepositoryTest {
 
   @Test
   fun getGenres() {
-    movieRepository.getGenres().assertResult {
-      it.isNotEmpty() &&
-        it.find { it.id == testGenreId }?.name == testGenreTitle
+    movieRepository.getGenres().assertResult { genres ->
+      genres.isNotEmpty() &&
+        genres.find { it.id == testGenreId }?.name == testGenreTitle
     }
   }
 
@@ -55,17 +53,17 @@ class RemoteMovieRepositoryTest {
 
   @Test
   fun searchCast() {
-    movieRepository.searchCastPaged(testCastName, Observable.just(Unit)).assertResultAtPage(1) {
-      it.isNotEmpty() &&
-        it.find { it.id == testCastId }?.name == testCastName
+    movieRepository.searchCastPaged(testCastName, Observable.just(Unit)).assertResultAtPage(1) { casts ->
+      casts.isNotEmpty() &&
+        casts.find { it.id == testCastId }?.name == testCastName
     }
   }
 
   @Test
   fun filterMovies() {
-    movieRepository.filterMoviesPaged(filter, Observable.just(Unit)).assertResultAtPage(1) {
-      it.isNotEmpty() &&
-        it.find { it.title == testTitle } != null
+    movieRepository.filterMoviesPaged(filter, Observable.just(Unit)).assertResultAtPage(1) { movies ->
+      movies.isNotEmpty() &&
+        movies.find { it.title == testTitle } != null
     }
   }
 
@@ -88,6 +86,6 @@ class RemoteMovieRepositoryTest {
     this.test().awaitDone(testTimeout, java.util.concurrent.TimeUnit.SECONDS)
       .assertComplete().assertValue(assertion)
 
-  private fun <T> Flowable<T>.assertResultAtPage(page: Int, assertion: (T) -> Boolean) =
+  private fun <T> Observable<T>.assertResultAtPage(page: Int, assertion: (T) -> Boolean) =
     this.test().awaitCount(page).assertValueAt(page - 1, assertion)
 }
