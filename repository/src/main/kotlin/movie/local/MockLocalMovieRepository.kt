@@ -3,7 +3,7 @@ package movie.local
 import io.reactivex.*
 import ru.appkode.base.entities.core.common.PagedListWrapper
 import ru.appkode.base.entities.core.movie.MovieBriefUM
-import ru.appkode.base.repository.util.paginatedFlowable
+import ru.appkode.base.repository.util.paginatedObservable
 
 /**
  * In-memory мокап локального репозитория с вишлистом и паджинацией
@@ -21,16 +21,16 @@ object MockLocalMovieRepository : LocalMovieRepository {
     movies.remove(movie)
   }
 
-  override fun getStatusUpdates(moviesToUpdate: List<MovieBriefUM>): Flowable<List<MovieBriefUM>> {
-    return Flowable.fromCallable {
+  override fun getStatusUpdates(moviesToUpdate: List<MovieBriefUM>): Observable<List<MovieBriefUM>> {
+    return Observable.fromCallable {
       moviesToUpdate.apply {
         this.forEach { it.isInWishList = movies.find { m -> m.id == it.id }?.isInWishList ?: false }
       }
     }
   }
 
-  override fun getWishListPaged(nextPageIntent: Observable<Unit>): Flowable<List<MovieBriefUM>> {
-    return paginatedFlowable(nextPageIntent) { page -> getMoviesAtPage(page) }
+  override fun getWishListPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
+    return paginatedObservable(nextPageIntent) { page -> getMoviesAtPage(page) }
   }
 
   /**

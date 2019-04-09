@@ -3,7 +3,7 @@ package movie.remote
 import io.reactivex.Observable
 import ru.appkode.base.data.network.movie.MovieAPI
 import ru.appkode.base.entities.core.movie.MovieFilter
-import ru.appkode.base.repository.util.paginatedFlowable
+import ru.appkode.base.repository.util.paginatedObservable
 
 class RemoteMovieRepositoryImpl(private val movieApi: MovieAPI) : RemoteMovieRepository {
 
@@ -12,19 +12,19 @@ class RemoteMovieRepositoryImpl(private val movieApi: MovieAPI) : RemoteMovieRep
   override fun getGenres() = movieApi.getGenres()
 
   override fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>) =
-    paginatedFlowable(nextPageIntent) { page -> movieApi.getPopularMovies(page) }
+    paginatedObservable(nextPageIntent) { page -> movieApi.getPopularMovies(page) }
 
   override fun filterMoviesPaged(filter: MovieFilter, nextPageIntent: Observable<Unit>) =
-    paginatedFlowable(nextPageIntent) { page -> movieApi.filterMoviesPaged(buildFilterParameters(filter), page) }
+    paginatedObservable(nextPageIntent) { page -> movieApi.filterMoviesPaged(buildFilterParameters(filter), page) }
 
   override fun searchMoviesPaged(query: String, nextPageIntent: Observable<Unit>) =
-    paginatedFlowable(nextPageIntent) { page -> movieApi.searchMoviesPaged(query, page) }
+    paginatedObservable(nextPageIntent) { page -> movieApi.searchMoviesPaged(query, page) }
 
   override fun searchKeywordsPaged(keyword: String, nextPageIntent: Observable<Unit>) =
-    paginatedFlowable(nextPageIntent) { page -> movieApi.searchKeywordsPaged(keyword, page) }
+    paginatedObservable(nextPageIntent) { page -> movieApi.searchKeywordsPaged(keyword, page) }
 
   override fun searchCastPaged(name: String, nextPageIntent: Observable<Unit>) =
-    paginatedFlowable(nextPageIntent) { page -> movieApi.searchCastPaged(name, page) }
+    paginatedObservable(nextPageIntent) { page -> movieApi.searchCastPaged(name, page) }
 
   private fun buildFilterParameters(filter: MovieFilter): Map<String, String> {
     val queryMap = mutableMapOf<String, String>()
