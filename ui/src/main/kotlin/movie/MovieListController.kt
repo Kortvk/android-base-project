@@ -12,6 +12,7 @@ import ru.appkode.base.ui.core.core.BaseMviController
 import ru.appkode.base.ui.core.core.util.filterEvents
 import android.nfc.tech.MifareUltralight.PAGE_SIZE
 import com.jakewharton.rxbinding3.recyclerview.scrollEvents
+import movie.adapter.EVENT_ID_OPEN_DETAILS
 
 abstract class MovieListController : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(),
   MovieScreenView {
@@ -40,7 +41,13 @@ abstract class MovieListController : BaseMviController<MovieScreenViewState, Mov
     //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
     return Observable.just(999)
   }
-
+  /**
+   * Интент, вызывающий onNext() каждый раз, когда пользователь нажимает на элемент списка
+   * @return [Int] - позиция элемента в списке
+   */
+  override fun elementClicked(): Observable<Int> {
+    return adapter.eventsRelay.filterEvents(EVENT_ID_OPEN_DETAILS)
+  }
   /**
    * Интент, вызывающий onNext() каждый раз, когда пользователь меняет состояние чекбокса "в избранное"
    * какого-либо элемента списка

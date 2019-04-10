@@ -1,5 +1,8 @@
 package ru.appkode.base.ui.core.core
 
+import io.reactivex.Observable
+
+
 typealias Command<T> = () -> T?
 
 inline fun <T> command(
@@ -17,6 +20,10 @@ inline fun <T> command(
 
 fun <T> command(action: T): Command<T> {
   return { action }
+}
+
+fun <T> doAction(action: T): Command<Observable<T>> {
+  return { Observable.just(action) }
 }
 
 inline fun <T> commandOn(

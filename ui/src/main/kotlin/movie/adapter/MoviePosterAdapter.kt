@@ -7,8 +7,9 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_movie_posters.view.*
+import ru.appkode.base.entities.core.movie.BASE_IMAGE_URL
 import ru.appkode.base.entities.core.movie.MoviePosterNM
-import ru.appkode.base.entities.core.movie.MovieValues
+import ru.appkode.base.entities.core.movie.RECOMENDED_IMAGE_SIZE
 import ru.appkode.base.ui.R
 
 
@@ -27,7 +28,7 @@ class MoviePosterAdapter: RecyclerView.Adapter<MoviePosterAdapter.MoviePosterHol
 
     override fun onBindViewHolder(holder: MoviePosterHolder, position: Int) {
         with(holder){
-            val url = MovieValues.BASE_IMAGE_URL + MovieValues.RECOMENDED_IMAGE_SIZE +  data[position].file_path
+            val url = BASE_IMAGE_URL + RECOMENDED_IMAGE_SIZE +  data[position].file_path
             Picasso.get().load(url).error(R.drawable.ic_close_black_24dp).into(holder.poster)
         }
     }

@@ -21,6 +21,11 @@ interface MovieScreenView : MviView<MovieScreenViewState> {
    */
   fun loadNextPageIntent(): Observable<Unit>
   /**
+   *  Интент на свайп клик по элементу.
+   *  @return [Observable], в котором каждый onNext() - интент клика по элементу
+   */
+  fun elementClicked(): Observable<Int>
+  /**
    *  Интент на свайп элемента влево.
    *  @return [Observable], в котором каждый onNext() - интент свайпа влево
    */

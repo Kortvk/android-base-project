@@ -1,5 +1,6 @@
-package ru.appkode.base.entities.core.movie.filter
+package movie.filter
 
+import com.bluelinelabs.conductor.Router
 import io.reactivex.Observable
 import ru.appkode.base.repository.RepositoryHelper
 import ru.appkode.base.repository.movie.MovieService
@@ -10,15 +11,14 @@ import ru.appkode.base.ui.movie.*
 
 class MovieFilterController: MovieListController() {
 
-
-
   override fun createPresenter() =
-    WishListPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService())
+    MovieFilterPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService(), router)
 }
 
-class WishListPresenter(schedulers: AppSchedulers,
-                        movieService: MovieService
-): MovieListPresenter(schedulers, movieService) {
+class MovieFilterPresenter(schedulers: AppSchedulers,
+                        movieService: MovieService,
+                           router: Router?
+): MovieListPresenter(schedulers, movieService, router) {
 
   override fun processAddToHistory(
     previousState: MovieScreenViewState,
@@ -38,11 +38,11 @@ class WishListPresenter(schedulers: AppSchedulers,
   }
 
   override fun bindSwipeLeftIntent(): Observable<out ScreenAction> {
-    return intent(MovieScreenView::elementSwipedLeft).map { AddToWishList(it) }
+    return intent(MovieScreenView::elementSwipedLeft).filter { it != 999 }.map { AddToWishList(it) }
   }
 
-  override fun bindSwipeRightIntent(): Observable<out ScreenAction> {
-    return intent(MovieScreenView::elementSwipedLeft).map { Ignore() }
+  override fun bindSwipeRightIntent(): Observable<out ScreenAction?> {
+    return intent(MovieScreenView::elementSwipedLeft).filter { it != 999 }.map { null }
   }
 
   override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) = movieService.getPopularMoviesPaged(nextPageIntent)

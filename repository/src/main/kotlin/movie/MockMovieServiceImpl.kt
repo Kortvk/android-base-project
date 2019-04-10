@@ -20,17 +20,26 @@ class MockMovieServiceImpl(
   override fun removeFromWishList(movie: MovieBriefUM): Completable {
     return Completable.fromCallable { localRepository.removeFromWishList(movie) }
   }
+  override fun removeFromWishList(movie: MovieDetailedUM): Completable {
+    return Completable.fromCallable { localRepository.removeFromWishList(movie) }
+  }
+
 
   override fun addToWishList(movie: MovieBriefUM): Completable {
     return Completable.fromCallable { localRepository.addToWishList(movie) }
   }
+
+  override fun addToWishList(movie: MovieDetailedUM): Completable {
+    return Completable.fromCallable { localRepository.addToWishList(movie) }
+  }
+
 
   override fun getWishListPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
     return localRepository.getWishListPaged(nextPageIntent)
   }
 
   override fun getMovieDetailed(id: Int): Observable<MovieDetailedUM> {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    return remoteMovieRepository.getMovieById(id).toObservable().map { it.toUiModel() }
   }
 
   override fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> =

@@ -7,10 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxrelay2.PublishRelay
 import com.squareup.picasso.Picasso
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.item_movie_list.view.*
+import ru.appkode.base.entities.core.movie.BASE_IMAGE_URL
+import ru.appkode.base.entities.core.movie.IMAGE_SIZE_MEDIUM
 import ru.appkode.base.entities.core.movie.MovieBriefUM
-import ru.appkode.base.entities.core.movie.MovieValues
 import ru.appkode.base.ui.R
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
@@ -37,12 +38,14 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
 
   inner class MovieNMViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    private lateinit var disposable: Disposable
+    private lateinit var movie: MovieBriefUM
+    private lateinit var disposable: CompositeDisposable
 
     fun bind(movie: MovieBriefUM) {
+      this.movie = movie
       itemView.movie_title_text_view.text = movie.title
       itemView.in_wish_list.isChecked = movie.isInWishList
-      val url = MovieValues.BASE_IMAGE_URL + MovieValues.RECOMENDED_IMAGE_SIZE + movie.poster
+      val url = BASE_IMAGE_URL + IMAGE_SIZE_MEDIUM + movie.poster
       Picasso.get().load(url).into(itemView.poster_image_view)
       itemView.release_date_text_view.text = movie.releaseDate
       itemView.movie_genre_text_view.text = movie.genres.joinToString(separator = ", ")
@@ -52,13 +55,20 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
     fun unbind() = disposable.dispose()
 
     private fun bindIntents() {
-      disposable = itemView.in_wish_list.clicks().throttleFirst(500, TimeUnit.MILLISECONDS).subscribe {
-        eventsRelay.accept(EVENT_ID_ADD_TO_WISHLIST_CLICKED to adapterPosition)
-      }
+      disposable = CompositeDisposable()
+      disposable.addAll(
+        itemView.in_wish_list.clicks().throttleFirst(500, TimeUnit.MILLISECONDS).subscribe {
+          eventsRelay.accept(EVENT_ID_ADD_TO_WISHLIST_CLICKED to adapterPosition)
+        },
+        itemView.poster_image_view.clicks().subscribe {
+          eventsRelay.accept(EVENT_ID_OPEN_DETAILS to movie.id)
+        }
+      )
       //TODO: забиндить свайпы тут
     }
   }
 }
 
 const val EVENT_ID_ADD_TO_WISHLIST_CLICKED = 0
+const val EVENT_ID_OPEN_DETAILS = 1
 //TODO: добавить EVENT_ID для свайпов
