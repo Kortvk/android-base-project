@@ -6,19 +6,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.movie_detailed_controller.*
+import kotlinx.android.synthetic.main.controller_movie_detailed.*
 import movie.navigation.DETAIL_SCREEN_ID_KEY
-import movie.navigation.NavigationController
 import ru.appkode.base.entities.core.movie.*
 import ru.appkode.base.repository.RepositoryHelper
 import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.BaseMviController
 import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
+import ru.appkode.base.ui.core.core.util.requireView
 import ru.appkode.base.ui.movie.GENERATED_MARGINS
 
 class MovieDetailedController(args: Bundle) :
@@ -32,7 +30,7 @@ class MovieDetailedController(args: Bundle) :
   override fun createConfig(): Config {
     return object : BaseMviController.Config {
       override val viewLayoutResource: Int
-        get() = R.layout.movie_detailed_controller
+        get() = R.layout.controller_movie_detailed
     }
   }
 
@@ -44,7 +42,8 @@ class MovieDetailedController(args: Bundle) :
 
   override fun initializeView(rootView: View) {
     adapter = CastAdapter()
-    recycler_cast.layoutManager = LinearLayoutManager(applicationContext).apply {this.orientation = LinearLayoutManager.HORIZONTAL}
+    recycler_cast.layoutManager =
+      LinearLayoutManager(applicationContext).apply { this.orientation = LinearLayoutManager.HORIZONTAL }
     recycler_cast.adapter = adapter
   }
 
@@ -59,7 +58,7 @@ class MovieDetailedController(args: Bundle) :
   private fun bindItems(movie: MovieDetailedUM) {
     tv_movie_title.text = movie.title
     tv_movie_year.text = movie.releaseDate.substringBefore("-")
-    tv_movie_runtime.text = view!!.context.getString(R.string.runtime, movie.runtime)
+    tv_movie_runtime.text = requireView.context.getString(R.string.runtime, movie.runtime)
     movie_status.text = movie.status
     tv_movie_rating.text = movie.voteAverage.toString()
     Glide.with(refresher)
@@ -69,9 +68,15 @@ class MovieDetailedController(args: Bundle) :
     tv_movie_tagline.text = movie.tagline
     Glide.with(refresher)
       .load(BASE_IMAGE_URL + IMAGE_BACKDROP_SIZE + movie.backdrop).into(toolbar_image)
-    movie.cast?.let { adapter.items = it}
-    movie.crew?.let { tv_directed_by.text = it.find { it.job == "Director" }?.name}
-    movie.crew?.let { tv_written_by.text = it.find { it.job == "Screenplay" }?.name}
+    movie.cast?.let { adapter.items = it }
+    movie.crew?.let {
+      tv_directed_by.text =
+        requireView.context.getString(R.string.directed, it.find { it.job == "Director" }?.name)
+    }
+    movie.crew?.let {
+      tv_written_by.text =
+        requireView.context.getString(R.string.directed, it.find { it.job == "Screenplay" }?.name)
+    }
   }
 
   private fun renderChipForKeyword(text: String) = Chip(view!!.context).also {
@@ -87,6 +92,6 @@ class MovieDetailedController(args: Bundle) :
 
   override fun createPresenter(): MovieDetailedPresenter =
     MovieDetailedPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService(), args.getInt(DETAIL_SCREEN_ID_KEY))
-
 }
+
 

@@ -4,7 +4,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.movie_list_controller.*
+import kotlinx.android.synthetic.main.controller_movie_list.*
 import movie.adapter.EVENT_ID_ADD_TO_WISHLIST_CLICKED
 import movie.adapter.MovieAdapter
 import ru.appkode.base.ui.R
@@ -25,7 +25,7 @@ abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreen
   override fun createConfig(): BaseMviController.Config {
     return object : BaseMviController.Config {
       override val viewLayoutResource: Int
-        get() = R.layout.movie_list_controller
+        get() = R.layout.controller_movie_list
     }
   }
 

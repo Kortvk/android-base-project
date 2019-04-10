@@ -14,7 +14,7 @@ import com.jakewharton.rxbinding3.material.itemSelections
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.home_controller.view.*
+import kotlinx.android.synthetic.main.controller_navigation.view.*
 import movie.filter.FilterController
 import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.util.requireView
@@ -35,7 +35,7 @@ class NavigationController : Controller() {
   private var currentControllerId: Int = -1
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-    return inflater.inflate(R.layout.home_controller, container, false)
+    return inflater.inflate(R.layout.controller_navigation, container, false)
       .apply { childRouter = getChildRouter(child_container) }
   }
 

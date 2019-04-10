@@ -22,7 +22,7 @@ class MovieDetailedPresenter(
   override fun createIntents(): List<Observable<out ScreenAction>> {
     return listOf<Observable<out ScreenAction>>(
       intent(MovieDetailedView::inWishListStateChangeIntent).map { ItemWishListStateChanged },
-      intent(MovieDetailedView::refreshIntent).map { RefreshMovie }
+      intent(MovieDetailedView::refreshIntent).startWith(Unit).map { RefreshMovie }
     )
   }
 

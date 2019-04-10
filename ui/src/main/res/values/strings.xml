@@ -20,5 +20,7 @@
 
 <!-- Movie details -->
   <string name="runtime">%d min</string>
+  <string name="directed">Directed by %s</string>
+  <string name="screenplay">Screenplay by %s</string>
 
 </resources>
