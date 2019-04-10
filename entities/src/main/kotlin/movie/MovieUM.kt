@@ -20,7 +20,8 @@ data class MovieDetailedUM(
   val backdrop: String,
   val images: List<String>?,
   val keywords: List<String>?,
-  var isInWishList: Boolean
+  var isInWishList: Boolean,
+  val votes: Int
 )
 
 data class MovieBriefUM(
@@ -32,7 +33,9 @@ data class MovieBriefUM(
   val backdrop: String?,
   val releaseDate: String,
   val title: String,
-  val rating: Float
+  val rating: Float,
+  val votes: Int,
+  var isExpanded: Boolean = false
 )
 
 data class CastUM(
@@ -58,6 +61,7 @@ fun MovieDetailedUM.toBrief(): MovieBriefUM {
     poster = posterPath,
     releaseDate = releaseDate,
     rating = voteAverage,
-    genres = genres
+    genres = genres,
+    votes = votes
   )
 }

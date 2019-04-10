@@ -1,4 +1,4 @@
-package ru.appkode.base.ui.movie
+package movie.common
 
 import io.reactivex.Observable
 import ru.appkode.base.entities.core.movie.MovieBriefUM
@@ -37,11 +37,12 @@ interface MovieScreenView : MviView<MovieScreenViewState> {
   /**
     Интент на разворот элемента списка.
    */
-  fun showMoreMovieInfo():Observable<Int>
+  fun showMoreMovieInfoIntent(): Observable<Int>
 }
 
 @ViewState
 data class MovieScreenViewState(
+  val singleStateChange: Pair<Int?, MovieBriefUM?> = null to null,
   val isHintVisible: Boolean = true,
   val state: LceState<List<MovieBriefUM>>
 )

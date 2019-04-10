@@ -10,6 +10,8 @@ import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_movie_detailed.*
+import kotlinx.android.synthetic.main.layout_movie_rating.*
+import movie.adapter.CastAdapter
 import movie.navigation.DETAIL_SCREEN_ID_KEY
 import ru.appkode.base.entities.core.movie.*
 import ru.appkode.base.repository.RepositoryHelper

@@ -19,7 +19,8 @@ data class MovieDetailedNM(
   val vote_average: Float,
   val credits: CreditsNM?,
   val images: ImagesNM?,
-  val keywords: KeywordsNM?
+  val keywords: KeywordsNM?,
+  val vote_count: Int
 )
 
 data class MovieBriefNM(
@@ -30,7 +31,8 @@ data class MovieBriefNM(
   val poster_path: String,
   val backdrop_path: String,
   val release_date: String,
-  val vote_average: Float
+  val vote_average: Float,
+  val vote_count: Int
 )
 
 data class GenreNM(val id: Int, val name: String)
@@ -72,7 +74,8 @@ fun MovieBriefNM.toUiModel(genresMapper: List<GenreNM>): MovieBriefUM {
     poster = poster_path,
     releaseDate = release_date,
     rating = vote_average,
-    genres = genre_ids.map { id -> genresMapper.find { it.id == id }?.name }
+    genres = genre_ids.map { id -> genresMapper.find { it.id == id }?.name },
+    votes = vote_count
   )
 }
 
@@ -97,7 +100,8 @@ fun MovieDetailedNM.toUiModel(): MovieDetailedUM {
   images = images?.posters?.map { it.file_path },
   keywords = keywords?.keywords?.map {
     it.name },
-  isInWishList = false)
+  isInWishList = false,
+    votes = vote_count)
 }
 
 fun CastNM.toUiModel(): CastUM {

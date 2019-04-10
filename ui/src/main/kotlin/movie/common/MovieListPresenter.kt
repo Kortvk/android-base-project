@@ -1,5 +1,4 @@
-package ru.appkode.base.ui.movie
-
+package movie.common
 
 import android.os.Bundle
 import io.reactivex.Observable
@@ -9,14 +8,12 @@ import movie.navigation.navigationEventsRelay
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.repository.movie.MovieService
 import ru.appkode.base.ui.core.core.*
-import ru.appkode.base.entities.core.movie.MovieBriefUM
-import ru.appkode.base.repository.movie.MovieService
 import ru.appkode.base.ui.core.core.BasePresenter
 import ru.appkode.base.ui.core.core.Command
 import ru.appkode.base.ui.core.core.LceState
 import ru.appkode.base.ui.core.core.command
-
 import ru.appkode.base.ui.core.core.util.AppSchedulers
+import java.util.Collections.addAll
 
 sealed class ScreenAction
 class LoadNextPage(val state: LceState<List<MovieBriefUM>>) : ScreenAction()
@@ -28,7 +25,8 @@ class AddToHistory(val position: Int) : ScreenAction()
 class RemoveFromHistory(val position: Int) : ScreenAction()
 class OpenDetails(val id: Int) : ScreenAction()
 class Error(val error: String) : ScreenAction()
-class ShowMoreMovieInfo(val position: Int) :ScreenAction()
+class ExpandCollapseMovieItem(val position: Int) : ScreenAction()
+//class UpdateSingleItem(val mutator: Int) : ScreenAction()
 
 abstract class MovieListPresenter(
   schedulers: AppSchedulers,
@@ -39,12 +37,12 @@ abstract class MovieListPresenter(
     return listOf<Observable<out ScreenAction>>(
       intent(MovieScreenView::itemWishListStateChangeIntent).map { ItemWishListStateChanged(it) },
       intent(MovieScreenView::elementClicked).map { OpenDetails(it) },
+      intent(MovieScreenView::showMoreMovieInfoIntent).map { ExpandCollapseMovieItem(it) },
       bindSwipeLeftIntent(), bindSwipeRightIntent(),
       getPagedMovieListSource(intent(MovieScreenView::loadNextPageIntent))
         .map { LoadNextPage(LceState.Content(it)) }.doOnError { Error(it.message) }
     )
   }
-
   /**
    * Наследники этого презентера (презентеры поиска, вишлиста и истории) реализуют эти методы,
    * чтобы забиндить свайп на нужную команду (придать свайпам влево-вправо разные значения на разных экранах)
@@ -74,7 +72,7 @@ abstract class MovieListPresenter(
       is AddToHistory -> processAddToHistory(previousState, action)
       is RemoveFromHistory -> processRemoveFromHistory(previousState, action)
       is OpenDetails -> processOpenDetails(previousState, action)
-      is ShowMoreMovieInfo -> processShowMoreInfo(previousState, action)
+      is ExpandCollapseMovieItem -> processExpandCollapseItem(previousState, action)
       is Error -> processError(action)
     }
   }
@@ -158,7 +156,14 @@ abstract class MovieListPresenter(
     
   }
   
-  private fun processShowMoreInfo( previousState: MovieScreenViewState, action: ShowMoreMovieInfo){ return previousState to null }
+  private fun processExpandCollapseItem(
+    previousState: MovieScreenViewState,
+    action: ExpandCollapseMovieItem
+  ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?>{
+    val singleItemchanges = action.position to previousState.state.asContent()[action.position].copy()
+    singleItemchanges.second.isExpanded = !singleItemchanges.second.isExpanded
+    return previousState.copy(singleStateChange = singleItemchanges) to null
+  }
 
   override fun createInitialState(): MovieScreenViewState {
     return MovieScreenViewState(

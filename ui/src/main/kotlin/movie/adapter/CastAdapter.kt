@@ -1,4 +1,4 @@
-package ru.appkode.base.ui.movie.details
+package movie.adapter
 
 import android.view.LayoutInflater
 import android.view.View

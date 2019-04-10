@@ -45,7 +45,7 @@ abstract class BasePresenter<V : MviView<VS>, VS, A : Any>(
           (vs, _) ->
         vs
       }
-      .distinctUntilChanged()
+     .distinctUntilChanged()
 
     subscribeViewState(stateChanges) { view, viewState ->
       view.render(viewState) }

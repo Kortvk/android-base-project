@@ -1,4 +1,4 @@
-package ru.appkode.base.ui.movie
+package movie.common
 
 import android.view.View
 import androidx.core.view.isVisible
@@ -60,7 +60,13 @@ abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreen
   override fun itemWishListStateChangeIntent(): Observable<Int> {
     return adapter.eventsRelay.filterEvents(EVENT_ID_ADD_TO_WISHLIST_CLICKED)
   }
-
+  /**
+   * Интент, вызывающий onNext() каждый раз, когда пользователь нажимает на кнопку разворачивания элемента
+   * @return [Int] - позиция элемента в списке
+   */
+  override fun showMoreMovieInfoIntent():Observable<Int>{
+    return adapter.eventsRelay.filterEvents(EVENT_ID_MORE_INFORMATION_CLICKED)
+  }
   /**
    * Интент, вызывающий onNext() каждый раз, когда RecyclerView отобразил последний элемент списка,
    * загруженного в адаптер
@@ -75,10 +81,6 @@ abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreen
     }.map { Unit }
   }
 
-  override fun showMoreMovieInfo():Observable<Int>{
-    return adapter.eventsRelay.filterEvents(EVENT_ID_MORE_INFORMATION_CLICKED)
-  }
-
 
   override fun renderViewState(viewState: MovieScreenViewState) {
     fieldChanged(viewState, { it.state }) {
@@ -86,8 +88,19 @@ abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreen
       movie_list_recycler.isVisible = viewState.state.isContent
       movie_list_empty.isVisible = (viewState.state.isContent &&
           viewState.state.asContent().isEmpty())
-      if (viewState.state.isContent)
-        adapter.items = viewState.state.asContent()
+      if (viewState.state.isContent
+        && viewState.state.asContent() != previousViewState?.state?.content
+      ) {
+        adapter.items = viewState.state.asContent().toMutableList()
+      }
     }
-  }
+    fieldChanged(viewState, { it.singleStateChange }) {
+      if (viewState.singleStateChange.first != null
+        && viewState.singleStateChange.second != null) {
+        adapter.items[viewState.singleStateChange.first!!] = viewState.singleStateChange.second!!
+        adapter.notifyItemChanged(viewState.singleStateChange.first!!)
+        viewState.state.asContent()[viewState.singleStateChange.first!!].apply { isExpanded = !isExpanded }
+      }
+    }
+    }
 }
