@@ -16,7 +16,7 @@ object MockLocalMovieRepository : LocalMovieRepository {
   private const val pageSize = 10
 
   override fun addToWishList(movie: MovieBriefUM) {
-    movies.add(movie)
+    movies.add(movie).also{ movie.isInWishList = true }
   }
 
   override fun removeFromWishList(movie: MovieBriefUM) {

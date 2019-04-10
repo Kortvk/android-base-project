@@ -44,6 +44,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
 
     fun bind(movie: MovieBriefUM) {
       this.movie = movie
+      if (movie.isInWishList) itemView.in_wish_list.isChecked = true
       itemView.movie_title_text_view.text = movie.title
       itemView.in_wish_list.isChecked = movie.isInWishList
       val url = BASE_IMAGE_URL + IMAGE_PROFILE_SIZE + movie.poster

@@ -13,7 +13,6 @@ import ru.appkode.base.ui.core.core.Command
 import ru.appkode.base.ui.core.core.LceState
 import ru.appkode.base.ui.core.core.command
 import ru.appkode.base.ui.core.core.util.AppSchedulers
-import java.util.Collections.addAll
 
 sealed class ScreenAction
 class LoadNextPage(val state: LceState<List<MovieBriefUM>>) : ScreenAction()
@@ -26,7 +25,7 @@ class RemoveFromHistory(val position: Int) : ScreenAction()
 class OpenDetails(val id: Int) : ScreenAction()
 class Error(val error: String) : ScreenAction()
 class ExpandCollapseMovieItem(val position: Int) : ScreenAction()
-//class UpdateSingleItem(val mutator: Int) : ScreenAction()
+class UpdateSingleItem(val position: Int, val mutator: (MovieBriefUM) -> Unit) : ScreenAction()
 
 abstract class MovieListPresenter(
   schedulers: AppSchedulers,
@@ -74,6 +73,7 @@ abstract class MovieListPresenter(
       is OpenDetails -> processOpenDetails(previousState, action)
       is ExpandCollapseMovieItem -> processExpandCollapseItem(previousState, action)
       is Error -> processError(action)
+      is UpdateSingleItem -> processSingleItemUpdate(previousState, action)
     }
   }
 
@@ -90,7 +90,12 @@ abstract class MovieListPresenter(
 
   private fun processOpenDetails(previousState: MovieScreenViewState, action: OpenDetails)
       : Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
-    navigationEventsRelay.accept(EVENT_ID_NAVIGATION_DETAILS to Bundle().apply{ putInt(DETAIL_SCREEN_ID_KEY, action.id) })
+    navigationEventsRelay.accept(EVENT_ID_NAVIGATION_DETAILS to Bundle().apply {
+      putInt(
+        DETAIL_SCREEN_ID_KEY,
+        action.id
+      )
+    })
     return previousState to null
   }
 
@@ -148,21 +153,32 @@ abstract class MovieListPresenter(
   ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {
     require(action.position < previousState.state.asContent().size)
     return previousState to command(
-      movieService
-        .addToWishList(previousState.state.asContent()[action.position]).doAction {
-          UpdateMovieList(previousState.state.asContent().apply { this[action.position].isInWishList = true })
+      movieService.addToWishList(previousState.state.asContent()[action.position]).doAction {
+          UpdateSingleItem(action.position) { movie -> movie.isInWishList = true }
         }
     )
-    
   }
-  
+
   private fun processExpandCollapseItem(
     previousState: MovieScreenViewState,
     action: ExpandCollapseMovieItem
-  ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?>{
-    val singleItemchanges = action.position to previousState.state.asContent()[action.position].copy()
-    singleItemchanges.second.isExpanded = !singleItemchanges.second.isExpanded
-    return previousState.copy(singleStateChange = singleItemchanges) to null
+  ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {
+    return previousState to doAction(
+      UpdateSingleItem(action.position) { movie -> movie.isExpanded = !movie.isExpanded }
+    )
+  }
+  /**
+   * копируем дата  класс, выполняем над ним действия с мутабельными полями и сохраняем в состояние
+   * для передачи в контроллер. Нужно, чтобы не копировать весь лист через .map{},
+   * поскольку в нем может быть Integer.MAX_VALUE записей :)
+   */
+  private fun processSingleItemUpdate(
+    previousState: MovieScreenViewState,
+    action: UpdateSingleItem
+  ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {
+    val singleItemChanges = action.position to previousState.state.asContent()[action.position].copy()
+    action.mutator.invoke(singleItemChanges.second)
+    return previousState.copy(singleStateChange = singleItemChanges) to null
   }
 
   override fun createInitialState(): MovieScreenViewState {

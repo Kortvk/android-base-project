@@ -42,6 +42,7 @@ interface MovieScreenView : MviView<MovieScreenViewState> {
 
 @ViewState
 data class MovieScreenViewState(
+  /** Поле для изменения единственного элемента в листе - пара (Индекс, Измененный объект) */
   val singleStateChange: Pair<Int?, MovieBriefUM?> = null to null,
   val isHintVisible: Boolean = true,
   val state: LceState<List<MovieBriefUM>>
