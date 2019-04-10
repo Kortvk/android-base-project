@@ -18,6 +18,7 @@ class ModifyMovieList(val mutator: (List<MovieBriefUM>) -> List<MovieBriefUM>) :
 class AddToHistory(val position: Int) : ScreenAction()
 class RemoveFromHistory(val position: Int) : ScreenAction()
 class Ignore : ScreenAction()
+class ShowMoreMovieInfo(val position: Int) :ScreenAction()
 
 abstract class MovieListPresenter(
   schedulers: AppSchedulers,
@@ -56,6 +57,7 @@ abstract class MovieListPresenter(
       is ItemWishListStateChanged -> processWishListStateChanged(previousState, action)
       is AddToHistory -> processAddToHistory(previousState, action)
       is RemoveFromHistory -> processRemoveFromHistory(previousState, action)
+     // is ShowMoreMovieInfo -> processShowMoreInfo(previousState, action)
       else -> previousState to null
     }
   }
@@ -146,6 +148,9 @@ abstract class MovieListPresenter(
       )
     } else command(Observable.just(Ignore() as ScreenAction))
     return previousState to cmd
+  }
+
+  private fun processShowMoreInfo( previousState: MovieScreenViewState, action: ShowMoreMovieInfo){
   }
 
   override fun createInitialState(): MovieScreenViewState {

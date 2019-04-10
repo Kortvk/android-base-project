@@ -46,6 +46,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
       Picasso.get().load(url).into(itemView.poster_image_view)
       itemView.release_date_text_view.text = movie.releaseDate
       itemView.movie_genre_text_view.text = movie.genres.joinToString(separator = ", ")
+
       bindIntents()
     }
 
@@ -55,10 +56,15 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
       disposable = itemView.in_wish_list.clicks().throttleFirst(500, TimeUnit.MILLISECONDS).subscribe {
         eventsRelay.accept(EVENT_ID_ADD_TO_WISHLIST_CLICKED to adapterPosition)
       }
+      disposable = itemView.more_information_check_box.clicks().throttleFirst(500,TimeUnit.MICROSECONDS).subscribe{
+        eventsRelay.accept(EVENT_ID_MORE_INFORMATION_CLICKED to adapterPosition)
+
+      }
       //TODO: забиндить свайпы тут
     }
   }
 }
 
 const val EVENT_ID_ADD_TO_WISHLIST_CLICKED = 0
+const val EVENT_ID_MORE_INFORMATION_CLICKED = 1
 //TODO: добавить EVENT_ID для свайпов
