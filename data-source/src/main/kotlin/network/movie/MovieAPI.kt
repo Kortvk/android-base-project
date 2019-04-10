@@ -1,6 +1,5 @@
 package ru.appkode.base.data.network.movie
 
-import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -11,11 +10,11 @@ import ru.appkode.base.entities.core.movie.CastNM
 import ru.appkode.base.entities.core.movie.GenreNM
 import ru.appkode.base.entities.core.movie.KeywordNM
 import ru.appkode.base.entities.core.movie.MovieBriefNM
-import ru.appkode.base.entities.core.movie.MovieDetailNM
+import ru.appkode.base.entities.core.movie.MovieDetailedNM
 
 interface MovieAPI {
-  @GET("/3/movie/{id}?append_to_response=credits,images")
-  fun getMovieById(@Path("id") id: Int): Single<MovieDetailNM>
+  @GET("/3/movie/{id}?append_to_response=keywords,credits,images")
+  fun getMovieById(@Path("id") id: Int): Single<MovieDetailedNM>
 
   @GET("/3/movie/popular")
   fun getPopularMovies(@Query("page") page: Int)

@@ -4,25 +4,29 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.movie_list_controller.*
+import kotlinx.android.synthetic.main.controller_movie_list.*
 import movie.adapter.EVENT_ID_ADD_TO_WISHLIST_CLICKED
 import movie.adapter.MovieAdapter
 import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.BaseMviController
 import ru.appkode.base.ui.core.core.util.filterEvents
 import android.nfc.tech.MifareUltralight.PAGE_SIZE
+import android.os.Bundle
 import com.jakewharton.rxbinding3.recyclerview.scrollEvents
+import movie.adapter.EVENT_ID_OPEN_DETAILS
 import movie.adapter.EVENT_ID_MORE_INFORMATION_CLICKED
 
-abstract class MovieListController : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(),
+abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(args),
   MovieScreenView {
 
+  constructor(id: Int) : this(Bundle().also { it.putInt("id", id) })
+    
   private lateinit var adapter: MovieAdapter
 
   override fun createConfig(): BaseMviController.Config {
     return object : BaseMviController.Config {
       override val viewLayoutResource: Int
-        get() = R.layout.movie_list_controller
+        get() = R.layout.controller_movie_list
     }
   }
 
@@ -41,7 +45,13 @@ abstract class MovieListController : BaseMviController<MovieScreenViewState, Mov
     //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
     return Observable.just(999)
   }
-
+  /**
+   * Интент, вызывающий onNext() каждый раз, когда пользователь нажимает на элемент списка
+   * @return [Int] - позиция элемента в списке
+   */
+  override fun elementClicked(): Observable<Int> {
+    return adapter.eventsRelay.filterEvents(EVENT_ID_OPEN_DETAILS)
+  }
   /**
    * Интент, вызывающий onNext() каждый раз, когда пользователь меняет состояние чекбокса "в избранное"
    * какого-либо элемента списка
@@ -64,9 +74,11 @@ abstract class MovieListController : BaseMviController<MovieScreenViewState, Mov
       }
     }.map { Unit }
   }
+
   override fun showMoreMovieInfo():Observable<Int>{
     return adapter.eventsRelay.filterEvents(EVENT_ID_MORE_INFORMATION_CLICKED)
   }
+
 
   override fun renderViewState(viewState: MovieScreenViewState) {
     fieldChanged(viewState, { it.state }) {

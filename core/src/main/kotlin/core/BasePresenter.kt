@@ -28,7 +28,7 @@ abstract class BasePresenter<V : MviView<VS>, VS, A : Any>(
 
   final override fun bindIntents() {
     val stateChanges = Observable.merge(createIntents().plus(outputActions))
-      .scan(Pair<VS, Command<Observable<A>>?>(createInitialState(), null)) { s, a ->
+      .scan(Pair<VS, Command<Observable<out A>>?>(createInitialState(), null)) { s, a ->
         val (ps, _) = s
         val (ns, cmd) = reduceViewState(ps, a)
 
@@ -57,7 +57,7 @@ abstract class BasePresenter<V : MviView<VS>, VS, A : Any>(
    * @param action действие
    * @return Новое состояние и команда для его получения
    */
-  protected abstract fun reduceViewState(previousState: VS, action: A): Pair<VS, Command<Observable<A>>?>
+  protected abstract fun reduceViewState(previousState: VS, action: A): Pair<VS, Command<Observable<out A>>?>
 
   protected abstract fun createIntents(): List<Observable<out A>>
 
@@ -106,8 +106,9 @@ abstract class BasePresenter<V : MviView<VS>, VS, A : Any>(
 
   protected fun Completable.doAction(
     actionCreator: () -> A
-  ): Completable {
+  ): Observable<out A> {
     return this
+      .andThen(Observable.just(actionCreator()))
       .observeOn(schedulers.ui)
   }
 

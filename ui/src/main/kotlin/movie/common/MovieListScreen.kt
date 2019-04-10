@@ -5,7 +5,6 @@ import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.ui.core.core.LceState
 import ru.appkode.base.ui.core.core.MviView
 import ru.appkode.base.ui.core.core.ViewState
-
 /**
  * Экран отображения фильмов
  */
@@ -21,6 +20,11 @@ interface MovieScreenView : MviView<MovieScreenViewState> {
    */
   fun loadNextPageIntent(): Observable<Unit>
   /**
+   *  Интент на свайп клик по элементу.
+   *  @return [Observable], в котором каждый onNext() - интент клика по элементу
+   */
+  fun elementClicked(): Observable<Int>
+  /**
    *  Интент на свайп элемента влево.
    *  @return [Observable], в котором каждый onNext() - интент свайпа влево
    */
@@ -31,8 +35,7 @@ interface MovieScreenView : MviView<MovieScreenViewState> {
    */
   fun elementSwipedRight(): Observable<Int>
   /**
-    Интент на показ детальной информации о фильме.
-
+    Интент на разворот элемента списка.
    */
   fun showMoreMovieInfo():Observable<Int>
 }

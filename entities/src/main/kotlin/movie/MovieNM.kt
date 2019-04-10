@@ -2,13 +2,15 @@ package ru.appkode.base.entities.core.movie
 
 import ru.appkode.base.entities.core.util.requireField
 
-data class MovieDetailNM(
+data class MovieDetailedNM(
   val id: Int,
   val title: String,
   val imdb_id: String,
   val genres: List<GenreNM>,
   val original_title: String,
   val overview: String,
+  val status: String,
+  val backdrop_path: String,
   val poster_path: String,
   val production_companies: List<ProductionCompanyNM>?,
   val release_date: String,
@@ -17,7 +19,7 @@ data class MovieDetailNM(
   val vote_average: Float,
   val credits: CreditsNM?,
   val images: ImagesNM?,
-  val keywords: List<KeywordNM>?
+  val keywords: KeywordsNM?
 )
 
 data class MovieBriefNM(
@@ -34,6 +36,8 @@ data class MovieBriefNM(
 data class GenreNM(val id: Int, val name: String)
 
 data class KeywordNM(val id: Int, val name: String)
+
+data class KeywordsNM(val keywords: List<KeywordNM>?)
 
 data class ImageNM(val file_path: String, val vote_average: Float)
 
@@ -52,6 +56,8 @@ data class CrewNM(
 data class CastNM(
   val id: Int,
   val name: String,
+  val character: String,
+  val gender: Int,
   val profile_path: String
 )
 
@@ -70,4 +76,42 @@ fun MovieBriefNM.toUiModel(genresMapper: List<GenreNM>): MovieBriefUM {
   )
 }
 
+
+fun MovieDetailedNM.toUiModel(): MovieDetailedUM {
+  return MovieDetailedUM(
+    id = id,
+    title = title,
+    imdbId = imdb_id,
+    genres = genres.map { it.name },
+  status = status,
+  overview = overview,
+  posterPath = poster_path,
+  productionCompanies = production_companies?.map { it.name },
+  releaseDate = release_date,
+  runtime = runtime,
+  tagline = tagline,
+  voteAverage = vote_average,
+  crew = credits?.crew?.map { it.toUiModel() },
+    cast = credits?.cast?.map { it.toUiModel() },
+  backdrop = backdrop_path,
+  images = images?.posters?.map { it.file_path },
+  keywords = keywords?.keywords?.map {
+    it.name },
+  isInWishList = false)
+}
+
+fun CastNM.toUiModel(): CastUM {
+  return CastUM(
+    id = id,
+    name = name,
+    character = character,
+    profilePath = profile_path)
+}
+
+fun CrewNM.toUiModel(): CrewUM {
+  return CrewUM(
+    id = id,
+    job = job,
+    name = name)
+}
 

@@ -16,5 +16,11 @@
   <string name="create_task_description">@string/description</string>
   <string name="create_task_create">Создать</string>
     <string name="err_wishlist_empty">Wishlist is empty</string>
+    <string name="cd_photo">Cast photo</string>
+
+<!-- Movie details -->
+  <string name="runtime">%d min</string>
+  <string name="directed">Directed by %s</string>
+  <string name="screenplay">Screenplay by %s</string>
 
 </resources>
