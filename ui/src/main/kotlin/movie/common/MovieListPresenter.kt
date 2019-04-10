@@ -1,13 +1,14 @@
 package ru.appkode.base.ui.movie
 
-import com.bluelinelabs.conductor.Router
-import com.bluelinelabs.conductor.RouterTransaction
+import android.os.Bundle
 import io.reactivex.Observable
+import movie.navigation.DETAIL_SCREEN_ID_KEY
+import movie.navigation.EVENT_ID_NAVIGATION_DETAILS
+import movie.navigation.navigationEventsRelay
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.repository.movie.MovieService
 import ru.appkode.base.ui.core.core.*
 import ru.appkode.base.ui.core.core.util.AppSchedulers
-import ru.appkode.base.ui.movie.details.MovieDetailedController
 
 sealed class ScreenAction
 class LoadNextPage(val state: LceState<List<MovieBriefUM>>) : ScreenAction()
@@ -22,8 +23,7 @@ class Error(val error: String) : ScreenAction()
 
 abstract class MovieListPresenter(
   schedulers: AppSchedulers,
-  protected val movieService: MovieService,
-  val router: Router?
+  protected val movieService: MovieService
 ) : BasePresenter<MovieScreenView, MovieScreenViewState, ScreenAction>(schedulers) {
 
   override fun createIntents(): List<Observable<out ScreenAction>> {
@@ -80,7 +80,7 @@ abstract class MovieListPresenter(
 
   private fun processOpenDetails(previousState: MovieScreenViewState, action: OpenDetails)
       : Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
-    router?.replaceTopController(RouterTransaction.with(MovieDetailedController(action.id)))
+    navigationEventsRelay.accept(EVENT_ID_NAVIGATION_DETAILS to Bundle().apply{ putInt(DETAIL_SCREEN_ID_KEY, action.id) })
     return previousState to null
   }
 
@@ -103,7 +103,6 @@ abstract class MovieListPresenter(
       false -> MovieScreenViewState(state = LceState.Loading()) to null
     }
   }
-
 
   private fun processUpdateMovieList(action: UpdateMovieList)
       : Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {

@@ -12,6 +12,8 @@ import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.movie_detailed_controller.*
+import movie.navigation.DETAIL_SCREEN_ID_KEY
+import movie.navigation.NavigationController
 import ru.appkode.base.entities.core.movie.*
 import ru.appkode.base.repository.RepositoryHelper
 import ru.appkode.base.ui.R
@@ -54,8 +56,6 @@ class MovieDetailedController(args: Bundle) :
     }
   }
 
-  private fun showSnackbar(message: String) = Snackbar.make(layout_detailed_root, message, LENGTH_LONG).show()
-
   private fun bindItems(movie: MovieDetailedUM) {
     tv_movie_title.text = movie.title
     tv_movie_year.text = movie.releaseDate.substringBefore("-")
@@ -86,7 +86,7 @@ class MovieDetailedController(args: Bundle) :
   }
 
   override fun createPresenter(): MovieDetailedPresenter =
-    MovieDetailedPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService(), args.getInt("id"))
+    MovieDetailedPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService(), args.getInt(DETAIL_SCREEN_ID_KEY))
 
 }
 

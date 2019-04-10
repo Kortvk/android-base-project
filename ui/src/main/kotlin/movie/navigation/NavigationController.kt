@@ -3,97 +3,93 @@ package movie.navigation
 import android.os.Bundle
 import android.util.SparseArray
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.hannesdorfmann.mosby3.MviController
-import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
-import com.hannesdorfmann.mosby3.mvp.MvpView
+import com.google.android.material.snackbar.Snackbar
+import com.jakewharton.rxbinding3.material.itemSelections
+import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxrelay2.PublishRelay
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.home_controller.view.*
-import movie.history.HistoryController
-import movie.filter.MovieFilterController
+import movie.filter.FilterController
 import ru.appkode.base.ui.R
-import ru.appkode.base.ui.core.core.MviView
+import ru.appkode.base.ui.core.core.util.requireView
 import ru.appkode.base.ui.movie.details.MovieDetailedController
-import ru.appkode.base.ui.movie.wishlist.MovieWishListController
+import ru.appkode.base.ui.movie.wishlist.WishListController
 
 private const val ROUTER_STATES_KEY = "router_states"
-private const val SEARCH_CONTROLLER = "search_controller"
 
-class NavigationController : Controller(), BottomNavigationView.OnNavigationItemSelectedListener {
+val navigationEventsRelay: PublishRelay<Pair<Int, Bundle>> = PublishRelay.create()
 
-  val eventsRelay: PublishRelay<Int> = PublishRelay.create()
+class NavigationController : Controller() {
 
   private var routerStates: SparseArray<Bundle>? = SparseArray()
 
   private lateinit var childRouter: Router
 
   @IdRes
-  private var currentSelectedItemId: Int = -1
+  private var currentControllerId: Int = -1
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
     return inflater.inflate(R.layout.home_controller, container, false)
-    .apply {
-      childRouter = getChildRouter(child_container)
-      bottom_navigation.setOnNavigationItemSelectedListener(this@NavigationController)
-      if (routerStates?.size() == 0) {
-        childRouter.setRoot(RouterTransaction.with(MovieWishListController()))
-      } else {
-        childRouter.rebindIfNeeded()
-      }
-      bottom_navigation.selectedItemId = R.id.menu_favorite
-      fab.setOnClickListener {
-        childRouter.pushController(RouterTransaction.with(MovieFilterController()))
-        fab.hide()
-      }
-    }
+      .apply { childRouter = getChildRouter(child_container) }
   }
 
-  override fun handleBack(): Boolean {
-    if (childRouter.getControllerWithTag(SEARCH_CONTROLLER) == null) {
-      view?.fab?.show()
-    }
-    return super.handleBack()
+  override fun onAttach(view: View) {
+    requireView.fab.setOnClickListener {
+      navigationEventsRelay.accept(R.id.fab to Bundle()) }
+    processNavigationIntents()
   }
+  /**
+   * Отправить нажатия кнопок в боттом навигации в глобальные события шины событий навигации
+   * с menu res id в качестве параметра
+   */
+  private fun navigationIntents() = listOf(
+    requireView.bottom_navigation.itemSelections().map { it.itemId to Bundle() },
+    requireView.fab.clicks().map { R.id.fab to Bundle() },
+    navigationEventsRelay
+  )
 
-  override fun onNavigationItemSelected(item: MenuItem): Boolean {
-    saveStateFromCurrentTab(currentSelectedItemId)
-    currentSelectedItemId = item.itemId
-    clearStateFromChildRouter()
-    val bundleState = tryToRestoreStateFromNewTab(currentSelectedItemId)
-    return when (item.itemId) {
-      R.id.menu_favorite -> {
-        childRouter.replaceTopController(RouterTransaction.with(MovieWishListController()))
-        view?.fab?.show()
-        true
+  /**
+   * Обработать события навигации
+   */
+  private fun processNavigationIntents() =
+    Observable.merge(navigationIntents()).subscribe {
+      val controller = when (it.first) {
+        R.id.menu_favorite -> WishListController(it.second)
+        R.id.fab ->
+          FilterController(it.second)
+        R.id.menu_history -> null
+        EVENT_ID_NAVIGATION_DETAILS -> MovieDetailedController(it.second)
+        else -> null
       }
-      R.id.menu_history -> {
-        childRouter.replaceTopController(RouterTransaction.with(HistoryController()))
-        true
-      }
-      else -> false
+      if (controller != null)
+        pushController(controller, it.first)
+      else showSnackbar("Sorry, not yet implemented")
     }
+
+  private fun pushController(controller: Controller, controllerId: Int) {
+    saveCurrentControllerState(currentControllerId)
+    val bundleState = getSavedStateForId(controllerId)
+    currentControllerId = controllerId
+    //childRouter.getControllerWithInstanceId()
+    childRouter.pushController(RouterTransaction.with(controller))
   }
 
   /**
-   * Try to restore the state (which was saved via [saveStateFromCurrentTab]) from the [routerStates].
+   * Try to restore the state (which was saved via [saveCurrentControllerState]) from the [routerStates].
    * @return either a valid [Bundle] state or null if no state is available
    */
-  private fun tryToRestoreStateFromNewTab(itemId: Int): Bundle? {
-    return routerStates?.get(itemId)
-  }
-
+  private fun getSavedStateForId(id: Int): Bundle? = routerStates?.get(id)
   /**
    * This will clear the state (hierarchy/backstack etc.) from the [childRouter] and goes back to root.
    */
   private fun clearStateFromChildRouter() {
-    childRouter.setPopsLastView(true) /* Ensure the last view can be removed while we do this */
+    childRouter.setPopsLastView(true)
     childRouter.popToRoot()
     childRouter.popCurrentController()
     childRouter.setPopsLastView(false)
@@ -103,7 +99,7 @@ class NavigationController : Controller(), BottomNavigationView.OnNavigationItem
    * This will save the current state of the tab (hierarchy/backstack etc.) from the [childRouter] in a [Bundle]
    * and put it into the [routerStates] with the tab id as key
    */
-  private fun saveStateFromCurrentTab(itemId: Int) {
+  private fun saveCurrentControllerState(itemId: Int) {
     val routerBundle = Bundle()
     childRouter.saveInstanceState(routerBundle)
     routerStates?.put(itemId, routerBundle)
@@ -113,11 +109,10 @@ class NavigationController : Controller(), BottomNavigationView.OnNavigationItem
    * Save our [routerStates] into the instanceState so we don't loose them on orientation change
    */
   override fun onSaveInstanceState(outState: Bundle) {
-    saveStateFromCurrentTab(currentSelectedItemId)
+    saveCurrentControllerState(currentControllerId)
     outState.putSparseParcelableArray(ROUTER_STATES_KEY, routerStates)
     super.onSaveInstanceState(outState)
   }
-
   /**
    * Restore our [routerStates]
    */
@@ -126,8 +121,9 @@ class NavigationController : Controller(), BottomNavigationView.OnNavigationItem
     routerStates = savedInstanceState.getSparseParcelableArray(ROUTER_STATES_KEY)
   }
 
-  fun navigateToFilter() {  }
-  fun navigateToWishList() {  }
-  fun navigateToHistory() {  }
-  fun navigateToDetails() {  }
+  fun showSnackbar(message: String) =
+    view?.let { Snackbar.make(it, message, Snackbar.LENGTH_LONG).show() }
 }
+
+const val EVENT_ID_NAVIGATION_DETAILS = 0
+const val DETAIL_SCREEN_ID_KEY = "DETAIL_SCREEN_ID_KEY"

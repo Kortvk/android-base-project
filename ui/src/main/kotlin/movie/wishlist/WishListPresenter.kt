@@ -1,5 +1,6 @@
 package ru.appkode.base.ui.movie.wishlist
 
+import android.os.Bundle
 import com.bluelinelabs.conductor.Router
 import io.reactivex.Observable
 import ru.appkode.base.repository.RepositoryHelper
@@ -9,14 +10,13 @@ import ru.appkode.base.ui.core.core.util.AppSchedulers
 import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 import ru.appkode.base.ui.movie.*
 
-class MovieWishListController: MovieListController() {
+class WishListController(args: Bundle): MovieListController(args) {
   override fun createPresenter() =
-    WishListPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService(), router)
+    WishListPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService())
 }
 class WishListPresenter(schedulers: AppSchedulers,
-                        movieService: MovieService,
-                        router: Router?
-): MovieListPresenter(schedulers, movieService, router) {
+                        movieService: MovieService
+): MovieListPresenter(schedulers, movieService) {
 
   override fun processAddToHistory(
     previousState: MovieScreenViewState,

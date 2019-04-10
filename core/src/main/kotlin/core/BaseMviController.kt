@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.snackbar.Snackbar
 import com.hannesdorfmann.mosby3.MviController
 import com.hannesdorfmann.mosby3.mvi.MviPresenter
 import com.jakewharton.rxrelay2.PublishRelay
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
+import ru.appkode.base.ui.core.core.util.requireView
 
 abstract class BaseMviController<VS, V : MviView<VS>, P : MviPresenter<V, VS>>
   : MviController<V, P>, MviView<VS>,
@@ -91,4 +93,7 @@ abstract class BaseMviController<VS, V : MviView<VS>, P : MviPresenter<V, VS>>
    * @param viewState состояние экрана [ViewState], которое будем отрисовывать
    */
   protected abstract fun renderViewState(viewState: VS)
+
+  protected fun showSnackbar(message: String) =
+    view?.let { Snackbar.make(it, message, Snackbar.LENGTH_LONG).show() }
 }

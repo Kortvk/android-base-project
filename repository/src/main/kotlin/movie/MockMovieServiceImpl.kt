@@ -17,32 +17,32 @@ class MockMovieServiceImpl(
   private val genres by lazy {remoteMovieRepository.getGenres().blockingGet() }
 
   override fun removeFromWishList(movie: MovieBriefUM): Completable {
-    return Completable.fromCallable { localRepository.removeFromWishList(movie) }
+    return Completable.fromCallable { localRepository.removeFromWishList(movie) }.subscribeOn(Schedulers.io())
   }
   override fun removeFromWishList(movie: MovieDetailedUM): Completable {
-    return Completable.fromCallable { localRepository.removeFromWishList(movie) }
+    return Completable.fromCallable { localRepository.removeFromWishList(movie) }.subscribeOn(Schedulers.io())
   }
 
 
   override fun addToWishList(movie: MovieBriefUM): Completable {
-    return Completable.fromCallable { localRepository.addToWishList(movie) }
+    return Completable.fromCallable { localRepository.addToWishList(movie) }.subscribeOn(Schedulers.io())
   }
 
   override fun addToWishList(movie: MovieDetailedUM): Completable {
-    return Completable.fromCallable { localRepository.addToWishList(movie) }
+    return Completable.fromCallable { localRepository.addToWishList(movie) }.subscribeOn(Schedulers.io())
   }
 
 
   override fun getWishListPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
-    return localRepository.getWishListPaged(nextPageIntent)
+    return localRepository.getWishListPaged(nextPageIntent).subscribeOn(Schedulers.io())
   }
 
   override fun getMovieDetailed(id: Int): Observable<MovieDetailedUM> {
-    return remoteMovieRepository.getMovieById(id).toObservable().map { it.toUiModel() }
+    return remoteMovieRepository.getMovieById(id).toObservable().map { it.toUiModel() }.subscribeOn(Schedulers.io())
   }
 
   override fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> =
     remoteMovieRepository.getPopularMoviesPaged(nextPageIntent)
       .map { list -> list.map { it.toUiModel(genres) } }
-      .switchMap { localRepository.getStatusUpdates(it) }
+      .switchMap { localRepository.getStatusUpdates(it) }.subscribeOn(Schedulers.io())
 }

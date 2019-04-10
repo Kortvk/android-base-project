@@ -11,11 +11,14 @@ import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.BaseMviController
 import ru.appkode.base.ui.core.core.util.filterEvents
 import android.nfc.tech.MifareUltralight.PAGE_SIZE
+import android.os.Bundle
 import com.jakewharton.rxbinding3.recyclerview.scrollEvents
 import movie.adapter.EVENT_ID_OPEN_DETAILS
 
-abstract class MovieListController : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(),
+abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(args),
   MovieScreenView {
+
+  constructor(id: Int) : this(Bundle().also { it.putInt("id", id) })
 
   private lateinit var adapter: MovieAdapter
 

@@ -1,6 +1,6 @@
 package movie.filter
 
-import com.bluelinelabs.conductor.Router
+import android.os.Bundle
 import io.reactivex.Observable
 import ru.appkode.base.repository.RepositoryHelper
 import ru.appkode.base.repository.movie.MovieService
@@ -9,16 +9,14 @@ import ru.appkode.base.ui.core.core.util.AppSchedulers
 import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 import ru.appkode.base.ui.movie.*
 
-class MovieFilterController: MovieListController() {
-
+class FilterController(args: Bundle): MovieListController(args) {
   override fun createPresenter() =
-    MovieFilterPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService(), router)
+    FilterPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService())
 }
 
-class MovieFilterPresenter(schedulers: AppSchedulers,
-                        movieService: MovieService,
-                           router: Router?
-): MovieListPresenter(schedulers, movieService, router) {
+class FilterPresenter(schedulers: AppSchedulers,
+                      movieService: MovieService
+): MovieListPresenter(schedulers, movieService) {
 
   override fun processAddToHistory(
     previousState: MovieScreenViewState,
@@ -45,6 +43,7 @@ class MovieFilterPresenter(schedulers: AppSchedulers,
     return intent(MovieScreenView::elementSwipedLeft).filter { it != 999 }.map { null }
   }
 
-  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) = movieService.getPopularMoviesPaged(nextPageIntent)
+  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) =
+    movieService.getPopularMoviesPaged(nextPageIntent)
 
 }
