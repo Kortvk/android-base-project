@@ -14,12 +14,13 @@ import android.nfc.tech.MifareUltralight.PAGE_SIZE
 import android.os.Bundle
 import com.jakewharton.rxbinding3.recyclerview.scrollEvents
 import movie.adapter.EVENT_ID_OPEN_DETAILS
+import movie.adapter.EVENT_ID_MORE_INFORMATION_CLICKED
 
 abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(args),
   MovieScreenView {
 
   constructor(id: Int) : this(Bundle().also { it.putInt("id", id) })
-
+    
   private lateinit var adapter: MovieAdapter
 
   override fun createConfig(): BaseMviController.Config {
@@ -73,6 +74,11 @@ abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreen
       }
     }.map { Unit }
   }
+
+  override fun showMoreMovieInfo():Observable<Int>{
+    return adapter.eventsRelay.filterEvents(EVENT_ID_MORE_INFORMATION_CLICKED)
+  }
+
 
   override fun renderViewState(viewState: MovieScreenViewState) {
     fieldChanged(viewState, { it.state }) {

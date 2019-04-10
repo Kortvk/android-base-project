@@ -1,5 +1,6 @@
 package ru.appkode.base.ui.movie
 
+
 import android.os.Bundle
 import io.reactivex.Observable
 import movie.navigation.DETAIL_SCREEN_ID_KEY
@@ -8,6 +9,13 @@ import movie.navigation.navigationEventsRelay
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.repository.movie.MovieService
 import ru.appkode.base.ui.core.core.*
+import ru.appkode.base.entities.core.movie.MovieBriefUM
+import ru.appkode.base.repository.movie.MovieService
+import ru.appkode.base.ui.core.core.BasePresenter
+import ru.appkode.base.ui.core.core.Command
+import ru.appkode.base.ui.core.core.LceState
+import ru.appkode.base.ui.core.core.command
+
 import ru.appkode.base.ui.core.core.util.AppSchedulers
 
 sealed class ScreenAction
@@ -20,6 +28,7 @@ class AddToHistory(val position: Int) : ScreenAction()
 class RemoveFromHistory(val position: Int) : ScreenAction()
 class OpenDetails(val id: Int) : ScreenAction()
 class Error(val error: String) : ScreenAction()
+class ShowMoreMovieInfo(val position: Int) :ScreenAction()
 
 abstract class MovieListPresenter(
   schedulers: AppSchedulers,
@@ -44,6 +53,7 @@ abstract class MovieListPresenter(
 
   abstract fun bindSwipeRightIntent(): Observable<out ScreenAction>
   /**
+
    * Источник данных, возвращающий список фильмов с паджинацией. На разных экранах это будут
    * различные методы сервиса - например, movieService.getHistoryPaged() на экране с историей
    * @param nextPageIntent - Интент, генерирующий запросы на загрузку страницы из действий пользователя
@@ -64,6 +74,7 @@ abstract class MovieListPresenter(
       is AddToHistory -> processAddToHistory(previousState, action)
       is RemoveFromHistory -> processRemoveFromHistory(previousState, action)
       is OpenDetails -> processOpenDetails(previousState, action)
+      is ShowMoreMovieInfo -> processShowMoreInfo(previousState, action)
       is Error -> processError(action)
     }
   }
@@ -77,6 +88,7 @@ abstract class MovieListPresenter(
     previousState: MovieScreenViewState,
     action: RemoveFromHistory
   ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?>
+
 
   private fun processOpenDetails(previousState: MovieScreenViewState, action: OpenDetails)
       : Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
@@ -143,7 +155,10 @@ abstract class MovieListPresenter(
           UpdateMovieList(previousState.state.asContent().apply { this[action.position].isInWishList = true })
         }
     )
+    
   }
+  
+  private fun processShowMoreInfo( previousState: MovieScreenViewState, action: ShowMoreMovieInfo){ return previousState to null }
 
   override fun createInitialState(): MovieScreenViewState {
     return MovieScreenViewState(
