@@ -14,8 +14,7 @@ class MockMovieServiceImpl(
   private val remoteMovieRepository: RemoteMovieRepository
 ) : MovieService {
 
-  private val genres = remoteMovieRepository.getGenres()
-    .observeOn(Schedulers.io()).blockingGet().let { if (it is Throwable) emptyList() else it }
+  private val genres by lazy {remoteMovieRepository.getGenres().blockingGet() }
 
   override fun removeFromWishList(movie: MovieBriefUM): Completable {
     return Completable.fromCallable { localRepository.removeFromWishList(movie) }

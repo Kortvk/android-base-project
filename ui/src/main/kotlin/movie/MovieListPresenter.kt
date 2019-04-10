@@ -1,10 +1,8 @@
 package ru.appkode.base.ui.movie
 
-import android.os.Bundle
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.reactivex.Observable
-import movie.navigation.NavigationController
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.repository.movie.MovieService
 import ru.appkode.base.ui.core.core.*
@@ -20,6 +18,7 @@ class UpdateMovieList(val list: List<MovieBriefUM>) : ScreenAction()
 class AddToHistory(val position: Int) : ScreenAction()
 class RemoveFromHistory(val position: Int) : ScreenAction()
 class OpenDetails(val id: Int) : ScreenAction()
+class Error(val error: String) : ScreenAction()
 
 abstract class MovieListPresenter(
   schedulers: AppSchedulers,
@@ -33,7 +32,7 @@ abstract class MovieListPresenter(
       intent(MovieScreenView::elementClicked).map { OpenDetails(it) },
       bindSwipeLeftIntent(), bindSwipeRightIntent(),
       getPagedMovieListSource(intent(MovieScreenView::loadNextPageIntent))
-        .map { LoadNextPage(LceState.Content(it)) }
+        .map { LoadNextPage(LceState.Content(it)) }.doOnError { Error(it.message) }
     )
   }
 
@@ -65,6 +64,7 @@ abstract class MovieListPresenter(
       is AddToHistory -> processAddToHistory(previousState, action)
       is RemoveFromHistory -> processRemoveFromHistory(previousState, action)
       is OpenDetails -> processOpenDetails(previousState, action)
+      is Error -> processError(action)
     }
   }
 
@@ -82,6 +82,11 @@ abstract class MovieListPresenter(
       : Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
     router?.replaceTopController(RouterTransaction.with(MovieDetailedController(action.id)))
     return previousState to null
+  }
+
+  private fun processError(action: Error)
+      : Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
+    return MovieScreenViewState(state = LceState.Error(error = action.error)) to null
   }
 
   private fun processNextPage(

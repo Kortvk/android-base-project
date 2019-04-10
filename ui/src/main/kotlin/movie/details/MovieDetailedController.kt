@@ -3,16 +3,15 @@ package ru.appkode.base.ui.movie.details
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.movie_detailed_controller.*
-import kotlinx.android.synthetic.main.movie_list_controller.*
 import ru.appkode.base.entities.core.movie.*
 import ru.appkode.base.repository.RepositoryHelper
 import ru.appkode.base.ui.R
@@ -43,18 +42,19 @@ class MovieDetailedController(args: Bundle) :
 
   override fun initializeView(rootView: View) {
     adapter = CastAdapter()
-    recycler_cast.layoutManager = LinearLayoutManager(applicationContext)
+    recycler_cast.layoutManager = LinearLayoutManager(applicationContext).apply {this.orientation = LinearLayoutManager.HORIZONTAL}
     recycler_cast.adapter = adapter
   }
 
   override fun renderViewState(viewState: MovieDetailedViewState) {
     fieldChanged(viewState, { it.state }) {
-      //movie_list_loading.isVisible = viewState.state.isLoading
-      // movie_list_recycler.isVisible = viewState.state.isContent
-      if (viewState.state.isContent)
-        bindItems(viewState.state.asContent())
+      if (!viewState.state.isLoading) refresher.isRefreshing = false
+      if (viewState.state.isError) showSnackbar(viewState.state.asError())
+      if (viewState.state.isContent) bindItems(viewState.state.asContent())
     }
   }
+
+  private fun showSnackbar(message: String) = Snackbar.make(layout_detailed_root, message, LENGTH_LONG).show()
 
   private fun bindItems(movie: MovieDetailedUM) {
     tv_movie_title.text = movie.title
@@ -63,12 +63,15 @@ class MovieDetailedController(args: Bundle) :
     movie_status.text = movie.status
     tv_movie_rating.text = movie.voteAverage.toString()
     Glide.with(refresher)
-      .load(BASE_IMAGE_URL + IMAGE_SIZE_MEDIUM + movie.posterPath).into(iv_movie_poster)
+      .load(BASE_IMAGE_URL + IMAGE_PROFILE_SIZE + movie.posterPath).into(iv_movie_poster)
     tv_movie_description.text = movie.overview
     movie.keywords?.map { renderChipForKeyword(it) }?.forEach { keywords_group.addView(it) }
     tv_movie_tagline.text = movie.tagline
     Glide.with(refresher)
-      .load(BASE_IMAGE_URL + IMAGE_SIZE_SMALL + movie.backdrop).into(toolbar_image)
+      .load(BASE_IMAGE_URL + IMAGE_BACKDROP_SIZE + movie.backdrop).into(toolbar_image)
+    movie.cast?.let { adapter.items = it}
+    movie.crew?.let { tv_directed_by.text = it.find { it.job == "Director" }?.name}
+    movie.crew?.let { tv_written_by.text = it.find { it.job == "Screenplay" }?.name}
   }
 
   private fun renderChipForKeyword(text: String) = Chip(view!!.context).also {

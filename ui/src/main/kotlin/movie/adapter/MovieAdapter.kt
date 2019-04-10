@@ -10,7 +10,7 @@ import com.squareup.picasso.Picasso
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.item_movie_list.view.*
 import ru.appkode.base.entities.core.movie.BASE_IMAGE_URL
-import ru.appkode.base.entities.core.movie.IMAGE_SIZE_MEDIUM
+import ru.appkode.base.entities.core.movie.IMAGE_PROFILE_SIZE
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.ui.R
 import java.util.concurrent.TimeUnit
@@ -45,7 +45,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
       this.movie = movie
       itemView.movie_title_text_view.text = movie.title
       itemView.in_wish_list.isChecked = movie.isInWishList
-      val url = BASE_IMAGE_URL + IMAGE_SIZE_MEDIUM + movie.poster
+      val url = BASE_IMAGE_URL + IMAGE_PROFILE_SIZE + movie.poster
       Picasso.get().load(url).into(itemView.poster_image_view)
       itemView.release_date_text_view.text = movie.releaseDate
       itemView.movie_genre_text_view.text = movie.genres.joinToString(separator = ", ")

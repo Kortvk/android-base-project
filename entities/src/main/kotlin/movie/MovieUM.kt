@@ -15,7 +15,8 @@ data class MovieDetailedUM(
   val runtime: Int,
   val tagline: String,
   val voteAverage: Float,
-  val credits: CreditsNM?,
+  val cast: List<CastUM>?,
+  val crew: List<CrewUM>?,
   val backdrop: String,
   val images: List<String>?,
   val keywords: List<String>?,
@@ -37,9 +38,15 @@ data class MovieBriefUM(
 data class CastUM(
   val id: Int,
   val name: String,
-  val profilePath: String
+  val character: String,
+  val profilePath: String?
 )
 
+data class CrewUM(
+  val id: String,
+  val job: String,
+  val name: String
+)
 
 fun MovieDetailedUM.toBrief(): MovieBriefUM {
   return MovieBriefUM(

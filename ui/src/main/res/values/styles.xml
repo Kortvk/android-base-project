@@ -1,18 +1,20 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="chipStyle">@style/ChipStyle</item>
     </style>
-    <style name="ChipTextStyle" parent="TextAppearance.MaterialComponents.Chip">
+
+    <style name="ChipTextStyle" parent="@style/TextAppearance.MaterialComponents.Chip">
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="ChipStyle" parent="@style/Widget.MaterialComponents.Chip.Choice">
-
+        <item name="android:textAppearance">@style/ChipTextStyle</item>
         <item name="chipCornerRadius">4dp</item>
         <item name="chipBackgroundColor">@color/colorStar</item>
     </style>

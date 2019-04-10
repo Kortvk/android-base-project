@@ -6,29 +6,27 @@
         android:id="@+id/layout_detailed_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-<FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
-             app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/refresher"
-
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         <!--       MAIN MOVIE INFO CARD        -->
-
+        <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="match_parent"
+                                               app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
-                      app:layout_behavior="@string/appbar_scrolling_view_behavior"
                       android:orientation="vertical">
             <androidx.cardview.widget.CardView android:layout_width="match_parent"
                                                android:layout_height="wrap_content"
-                                               android:layout_margin="8dp"
+                                               android:layout_marginBottom="8dp"
                                                android:elevation="8dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
+                        android:layout_height="wrap_content">
 
                     <TextView
                             android:id="@+id/tv_movie_title"
@@ -90,15 +88,18 @@
                             app:layout_constraintBottom_toTopOf="@id/iv_movie_poster"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:layout_margin="4dp"
-                            android:background="@color/colorBlack"/>
+                            android:layout_margin="8dp"
+                            android:background="@color/colorBackground"/>
 
                     <ImageView
                             android:id="@+id/iv_movie_poster"
-                            app:layout_constraintTop_toTopOf="@id/view_movie_info_divider"
+                            app:layout_constraintTop_toBottomOf="@id/view_movie_info_divider"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toStartOf="@id/tv_movie_description"
-                            android:layout_width="wrap_content"
+                            app:layout_constraintBottom_toTopOf="@id/keywords_group"
+                            android:layout_width="200dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="centerInside"
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
                             android:src="@drawable/no_image"
@@ -114,18 +115,19 @@
                             app:layout_constraintTop_toTopOf="@id/iv_movie_poster"
                             app:layout_constraintStart_toEndOf="@id/iv_movie_poster"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="@id/iv_movie_poster"
                             android:layout_margin="8dp"/>
 
 
                     <com.google.android.flexbox.FlexboxLayout
                             android:id="@+id/keywords_group"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
                             app:flexWrap="wrap"
-                            app:alignItems="flex_start"
-                            app:alignContent="flex_start"
-                            app:justifyContent="center"
+                            app:alignItems="center"
+                            app:alignContent="space_around"
+                            app:justifyContent="space_evenly"
                             android:orientation="horizontal"
                             app:layout_constraintTop_toBottomOf="@id/tv_movie_description"
                             app:layout_constraintStart_toStartOf="parent"
@@ -140,7 +142,7 @@
                             android:weightSum="3"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/iv_movie_poster"
+                            app:layout_constraintTop_toBottomOf="@id/keywords_group"
                             app:layout_constraintBottom_toBottomOf="parent"
                             android:orientation="horizontal">
                         <FrameLayout
@@ -187,7 +189,7 @@
 
             <androidx.cardview.widget.CardView android:layout_width="match_parent"
                                                android:layout_height="wrap_content"
-                                               android:layout_margin="8dp"
+                                               android:layout_marginTop="8dp"
                                                android:elevation="8dp">
                 <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -198,7 +200,8 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="Cast"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+                            android:gravity="center"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -212,8 +215,9 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
                             app:layout_constraintTop_toBottomOf="@id/tv_cast_headline"
-                            app:layout_constraintStart_toEndOf="parent"
-                            app:layout_constraintEnd_toStartOf="parent"
+                            android:orientation="horizontal"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toTopOf="@id/tv_directed_by"
                     />
 
@@ -224,7 +228,7 @@
                             android:layout_height="wrap_content"
                             android:text="Directed by Director"
                             style="@style/TextAppearance.MaterialComponents.Body1"
-                            app:layout_constraintTop_toTopOf="@id/recycler_cast"
+                            app:layout_constraintTop_toBottomOf="@id/recycler_cast"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toTopOf="@id/tv_written_by"
@@ -245,15 +249,16 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</FrameLayout>
 
 
     <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -278,22 +283,15 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/gradient_bg"/>
             <TextView
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
-                    android:layout_gravity="bottom"
+                    style="@style/TextAppearance.MaterialComponents.Headline5"
+                    android:layout_gravity="bottom|center"
                     android:id="@+id/tv_movie_tagline"
                     android:text="The Adventure Continues..."
-                    android:textColor="@color/colorWhite"
-                    android:textAlignment="center"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:layout_margin="16dp"/>
            </FrameLayout>
 
-            <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:popupTheme="@style/ThemeOverlay.MaterialComponents.Dark"
-                    app:layout_collapseMode="pin"/>
+
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
