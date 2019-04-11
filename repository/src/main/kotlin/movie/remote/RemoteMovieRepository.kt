@@ -10,7 +10,7 @@ import ru.appkode.base.entities.core.movie.MovieFilter
 import ru.appkode.base.entities.core.movie.MovieDetailedNM
 
 interface RemoteMovieRepository {
-  fun getMovieById(id: Int): Single<MovieDetailedNM>
+  fun getMovieById(id: Long): Single<MovieDetailedNM>
   fun getGenres(): Single<List<GenreNM>>
   fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefNM>>
   fun filterMoviesPaged(filter: MovieFilter, nextPageIntent: Observable<Unit>): Observable<List<MovieBriefNM>>

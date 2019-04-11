@@ -14,7 +14,7 @@ import ru.appkode.base.entities.core.movie.MovieDetailedNM
 
 interface MovieAPI {
   @GET("/3/movie/{id}?append_to_response=keywords,credits,images")
-  fun getMovieById(@Path("id") id: Int): Single<MovieDetailedNM>
+  fun getMovieById(@Path("id") id: Long): Single<MovieDetailedNM>
 
   @GET("/3/movie/popular")
   fun getPopularMovies(@Query("page") page: Int)

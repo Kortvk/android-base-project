@@ -9,10 +9,6 @@ import ru.appkode.base.ui.core.core.Command
 import ru.appkode.base.ui.core.core.util.AppSchedulers
 import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 
-class FilterController(args: Bundle): MovieListController(args) {
-  override fun createPresenter() =
-    FilterPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService())
-}
 
 class FilterPresenter(schedulers: AppSchedulers,
                       movieService: MovieService
@@ -32,7 +28,6 @@ class FilterPresenter(schedulers: AppSchedulers,
   ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
     //TODO: здесь написать логику удаления из истории (см. по аналогии с вишлистом в MovieListPresenter)
     return previousState to null
-
   }
 
   override fun bindSwipeLeftIntent(): Observable<out ScreenAction> {
@@ -45,5 +40,4 @@ class FilterPresenter(schedulers: AppSchedulers,
 
   override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) =
     movieService.getPopularMoviesPaged(nextPageIntent)
-
 }

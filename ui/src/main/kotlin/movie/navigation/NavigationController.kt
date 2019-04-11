@@ -15,10 +15,10 @@ import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_navigation.view.*
-import movie.filter.FilterController
 import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.util.requireView
 import ru.appkode.base.ui.movie.details.MovieDetailedController
+import ru.appkode.base.ui.movie.filter.FilterController
 import ru.appkode.base.ui.movie.wishlist.WishListController
 
 private const val ROUTER_STATES_KEY = "router_states"
@@ -53,7 +53,6 @@ class NavigationController : Controller() {
     requireView.fab.clicks().map { R.id.fab to Bundle() },
     navigationEventsRelay
   )
-
   /**
    * Обработать события навигации
    */
@@ -61,8 +60,7 @@ class NavigationController : Controller() {
     Observable.merge(navigationIntents()).subscribe {
       val controller = when (it.first) {
         R.id.menu_favorite -> WishListController(it.second)
-        R.id.fab ->
-          FilterController(it.second)
+        R.id.fab -> FilterController(it.second)
         R.id.menu_history -> null
         EVENT_ID_NAVIGATION_DETAILS -> MovieDetailedController(it.second)
         else -> null
@@ -94,7 +92,6 @@ class NavigationController : Controller() {
     childRouter.popCurrentController()
     childRouter.setPopsLastView(false)
   }
-
   /**
    * This will save the current state of the tab (hierarchy/backstack etc.) from the [childRouter] in a [Bundle]
    * and put it into the [routerStates] with the tab id as key
@@ -105,17 +102,13 @@ class NavigationController : Controller() {
     routerStates?.put(itemId, routerBundle)
   }
 
-  /**
-   * Save our [routerStates] into the instanceState so we don't loose them on orientation change
-   */
+  /** Save our [routerStates] into the instanceState so we don't loose them on orientation change */
   override fun onSaveInstanceState(outState: Bundle) {
     saveCurrentControllerState(currentControllerId)
     outState.putSparseParcelableArray(ROUTER_STATES_KEY, routerStates)
     super.onSaveInstanceState(outState)
   }
-  /**
-   * Restore our [routerStates]
-   */
+  /** Restore our [routerStates] */
   override fun onRestoreInstanceState(savedInstanceState: Bundle) {
     super.onRestoreInstanceState(savedInstanceState)
     routerStates = savedInstanceState.getSparseParcelableArray(ROUTER_STATES_KEY)

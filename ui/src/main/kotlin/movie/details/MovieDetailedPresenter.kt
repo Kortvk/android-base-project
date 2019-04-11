@@ -16,7 +16,7 @@ class LoadMovieDetails(val movie: MovieDetailedUM) : ScreenAction()
 class MovieDetailedPresenter(
   schedulers: AppSchedulers,
   private val movieService: MovieService,
-  private var movieId: Int
+  private var movieId: Long
 ) : BasePresenter<MovieDetailedView, MovieDetailedViewState, ScreenAction>(schedulers) {
 
   override fun createIntents(): List<Observable<out ScreenAction>> {

@@ -5,35 +5,61 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_movie_list.*
-import movie.adapter.EVENT_ID_ADD_TO_WISHLIST_CLICKED
-import movie.adapter.MovieAdapter
-import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.BaseMviController
-import ru.appkode.base.ui.core.core.util.filterEvents
 import android.nfc.tech.MifareUltralight.PAGE_SIZE
 import android.os.Bundle
+import com.h6ah4i.android.widget.advrecyclerview.animator.DraggableItemAnimator
 import com.jakewharton.rxbinding3.recyclerview.scrollEvents
-import movie.adapter.EVENT_ID_OPEN_DETAILS
-import movie.adapter.EVENT_ID_MORE_INFORMATION_CLICKED
+import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager
+import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchActionGuardManager
+import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager
+import movie.adapter.BasicMovieAdapter
+import ru.appkode.base.ui.core.core.util.filterEvents
+import ru.appkode.base.ui.movie.adapter.EVENT_ID_ADD_TO_WISHLIST_CLICKED
+import ru.appkode.base.ui.movie.adapter.EVENT_ID_MORE_INFORMATION_CLICKED
+import ru.appkode.base.ui.movie.adapter.EVENT_ID_OPEN_DETAILS
 
-abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(args),
+abstract class MovieListController(args: Bundle) :
+  BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(args),
   MovieScreenView {
 
   constructor(id: Int) : this(Bundle().also { it.putInt("id", id) })
-    
-  private lateinit var adapter: MovieAdapter
+
+  private lateinit var adapter: BasicMovieAdapter
 
   override fun createConfig(): BaseMviController.Config {
     return object : BaseMviController.Config {
       override val viewLayoutResource: Int
-        get() = R.layout.controller_movie_list
+        get() = ru.appkode.base.ui.R.layout.controller_movie_list
     }
   }
 
+  abstract fun getMovieListAdapter(): BasicMovieAdapter
+
   override fun initializeView(rootView: View) {
-    adapter = MovieAdapter()
+    adapter = getMovieListAdapter()
+    adapter.setHasStableIds(true)
+
+    val actionGuardManager = RecyclerViewTouchActionGuardManager()
+    actionGuardManager.setInterceptVerticalScrollingWhileAnimationRunning(true)
+    actionGuardManager.isEnabled = true
+
+    val dragDropManager = RecyclerViewDragDropManager()
+    val swipeManager = RecyclerViewSwipeManager()
+    val dragDropAdapter = dragDropManager.createWrappedAdapter(adapter.asRvAdapter())
+    val swipeDragDropAdapter = swipeManager.createWrappedAdapter(dragDropAdapter)
+
+    //dragnDropManager.setDraggingItemShadowDrawable(requireResources.getDrawable(R.drawable.material_shadow_z3) as NinePatchDrawable)
+    val animator = DraggableItemAnimator()
+    animator.supportsChangeAnimations = false
+
+    movie_list_recycler.adapter = swipeDragDropAdapter
+    movie_list_recycler.itemAnimator = animator
     movie_list_recycler.layoutManager = LinearLayoutManager(applicationContext)
-    movie_list_recycler.adapter = adapter
+
+    actionGuardManager.attachRecyclerView(movie_list_recycler)
+    swipeManager.attachRecyclerView(movie_list_recycler)
+    dragDropManager.attachRecyclerView(movie_list_recycler)
   }
 
   override fun elementSwipedLeft(): Observable<Int> {
@@ -45,13 +71,15 @@ abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreen
     //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
     return Observable.just(999)
   }
+
   /**
    * Интент, вызывающий onNext() каждый раз, когда пользователь нажимает на элемент списка
    * @return [Int] - позиция элемента в списке
    */
-  override fun elementClicked(): Observable<Int> {
+  override fun elementClicked(): Observable<Long> {
     return adapter.eventsRelay.filterEvents(EVENT_ID_OPEN_DETAILS)
   }
+
   /**
    * Интент, вызывающий onNext() каждый раз, когда пользователь меняет состояние чекбокса "в избранное"
    * какого-либо элемента списка
@@ -60,13 +88,15 @@ abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreen
   override fun itemWishListStateChangeIntent(): Observable<Int> {
     return adapter.eventsRelay.filterEvents(EVENT_ID_ADD_TO_WISHLIST_CLICKED)
   }
+
   /**
    * Интент, вызывающий onNext() каждый раз, когда пользователь нажимает на кнопку разворачивания элемента
    * @return [Int] - позиция элемента в списке
    */
-  override fun showMoreMovieInfoIntent():Observable<Int>{
+  override fun showMoreMovieInfoIntent(): Observable<Int> {
     return adapter.eventsRelay.filterEvents(EVENT_ID_MORE_INFORMATION_CLICKED)
   }
+
   /**
    * Интент, вызывающий onNext() каждый раз, когда RecyclerView отобразил последний элемент списка,
    * загруженного в адаптер
@@ -80,7 +110,6 @@ abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreen
       }
     }.map { Unit }
   }
-
 
   override fun renderViewState(viewState: MovieScreenViewState) {
     fieldChanged(viewState, { it.state }) {
@@ -96,11 +125,12 @@ abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreen
     }
     fieldChanged(viewState, { it.singleStateChange }) {
       if (viewState.singleStateChange.first != null
-        && viewState.singleStateChange.second != null) {
+        && viewState.singleStateChange.second != null
+      ) {
         adapter.items[viewState.singleStateChange.first!!] = viewState.singleStateChange.second!!
         adapter.notifyItemChanged(viewState.singleStateChange.first!!)
         viewState.state.asContent()[viewState.singleStateChange.first!!].apply { isExpanded = !isExpanded }
       }
     }
-    }
+  }
 }

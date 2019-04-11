@@ -11,7 +11,7 @@ interface MovieService {
   fun addToWishList(movie: MovieBriefUM): Completable
   fun addToWishList(movie: MovieDetailedUM): Completable
   fun getWishListPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
-  fun getMovieDetailed(id: Int): Observable<MovieDetailedUM>
+  fun getMovieDetailed(id: Long): Observable<MovieDetailedUM>
 
   /*  ТОЛЬКО ДЛЯ ТЕСТОВ */
   fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>>

@@ -6,8 +6,6 @@ import ru.appkode.base.entities.core.movie.MovieDetailedUM
 import ru.appkode.base.ui.core.core.LceState
 import ru.appkode.base.ui.core.core.MviView
 import ru.appkode.base.ui.core.core.ViewState
-
-
 /**
  * Экран отображения фильмов
  */

@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableSwipeableItemViewHolder
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxrelay2.PublishRelay
 import com.squareup.picasso.Picasso
@@ -14,10 +15,13 @@ import ru.appkode.base.entities.core.movie.BASE_IMAGE_URL
 import ru.appkode.base.entities.core.movie.IMAGE_PROFILE_SIZE
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.ui.R
+import ru.appkode.base.ui.movie.adapter.*
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
-class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
+abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieNMViewHolder>() {
+
+  fun asRvAdapter() = this
 
   var items: MutableList<MovieBriefUM> by Delegates.observable(mutableListOf()) { _, _, _ ->
     notifyDataSetChanged()
@@ -31,13 +35,17 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
     )
   }
 
+  override fun getItemId(position: Int): Long = items[position].id
+
   override fun getItemCount(): Int = items.size
 
   override fun onBindViewHolder(holder: MovieNMViewHolder, position: Int) = holder.bind(items[position])
 
   override fun onViewRecycled(holder: MovieNMViewHolder) = holder.unbind()
 
-  inner class MovieNMViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+  inner class MovieNMViewHolder(view: View) : AbstractDraggableSwipeableItemViewHolder(view) {
+
+    override fun getSwipeableContainerView(): View = itemView.layout_item_root
 
     private lateinit var movie: MovieBriefUM
     private lateinit var disposable: CompositeDisposable
@@ -69,9 +77,9 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
         itemView.poster_image_view.clicks().subscribe {
           eventsRelay.accept(EVENT_ID_OPEN_DETAILS to movie.id)
         },
-        itemView.more_information_check_box.clicks().throttleFirst(500,TimeUnit.MICROSECONDS).subscribe{
+        itemView.more_information_check_box.clicks().throttleFirst(500, TimeUnit.MICROSECONDS).subscribe {
           eventsRelay.accept(EVENT_ID_MORE_INFORMATION_CLICKED to adapterPosition)
-      }
+        }
       )
     }
 
@@ -86,7 +94,3 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>() {
   }
 }
 
-const val EVENT_ID_ADD_TO_WISHLIST_CLICKED = 0
-const val EVENT_ID_OPEN_DETAILS = 1
-const val EVENT_ID_MORE_INFORMATION_CLICKED = 2
-//TODO: добавить EVENT_ID для свайпов

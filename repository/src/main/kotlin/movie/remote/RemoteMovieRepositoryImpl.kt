@@ -7,7 +7,7 @@ import ru.appkode.base.repository.util.paginatedObservable
 
 class RemoteMovieRepositoryImpl(private val movieApi: MovieAPI) : RemoteMovieRepository {
 
-  override fun getMovieById(id: Int) = movieApi.getMovieById(id)
+  override fun getMovieById(id: Long) = movieApi.getMovieById(id)
 
   override fun getGenres() = movieApi.getGenres()
 
