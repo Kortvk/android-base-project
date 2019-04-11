@@ -32,7 +32,6 @@ class FilterPresenter(schedulers: AppSchedulers,
   ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
     //TODO: здесь написать логику удаления из истории (см. по аналогии с вишлистом в MovieListPresenter)
     return previousState to null
-
   }
 
   override fun bindSwipeLeftIntent(): Observable<out ScreenAction> {
@@ -45,5 +44,4 @@ class FilterPresenter(schedulers: AppSchedulers,
 
   override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) =
     movieService.getPopularMoviesPaged(nextPageIntent)
-
 }

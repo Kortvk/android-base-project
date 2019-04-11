@@ -37,7 +37,7 @@ class MockMovieServiceImpl(
     return localRepository.getWishListPaged(nextPageIntent).subscribeOn(Schedulers.io())
   }
 
-  override fun getMovieDetailed(id: Int): Observable<MovieDetailedUM> {
+  override fun getMovieDetailed(id: Long): Observable<MovieDetailedUM> {
     return remoteMovieRepository.getMovieById(id).toObservable().map { it.toUiModel() }.subscribeOn(Schedulers.io())
   }
 

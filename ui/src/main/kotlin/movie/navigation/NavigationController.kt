@@ -53,7 +53,6 @@ class NavigationController : Controller() {
     requireView.fab.clicks().map { R.id.fab to Bundle() },
     navigationEventsRelay
   )
-
   /**
    * Обработать события навигации
    */
@@ -94,7 +93,6 @@ class NavigationController : Controller() {
     childRouter.popCurrentController()
     childRouter.setPopsLastView(false)
   }
-
   /**
    * This will save the current state of the tab (hierarchy/backstack etc.) from the [childRouter] in a [Bundle]
    * and put it into the [routerStates] with the tab id as key
@@ -105,17 +103,13 @@ class NavigationController : Controller() {
     routerStates?.put(itemId, routerBundle)
   }
 
-  /**
-   * Save our [routerStates] into the instanceState so we don't loose them on orientation change
-   */
+  /** Save our [routerStates] into the instanceState so we don't loose them on orientation change */
   override fun onSaveInstanceState(outState: Bundle) {
     saveCurrentControllerState(currentControllerId)
     outState.putSparseParcelableArray(ROUTER_STATES_KEY, routerStates)
     super.onSaveInstanceState(outState)
   }
-  /**
-   * Restore our [routerStates]
-   */
+  /** Restore our [routerStates] */
   override fun onRestoreInstanceState(savedInstanceState: Bundle) {
     super.onRestoreInstanceState(savedInstanceState)
     routerStates = savedInstanceState.getSparseParcelableArray(ROUTER_STATES_KEY)

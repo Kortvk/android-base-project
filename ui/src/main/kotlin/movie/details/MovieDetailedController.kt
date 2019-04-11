@@ -93,7 +93,7 @@ class MovieDetailedController(args: Bundle) :
   }
 
   override fun createPresenter(): MovieDetailedPresenter =
-    MovieDetailedPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService(), args.getInt(DETAIL_SCREEN_ID_KEY))
+    MovieDetailedPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService(), args.getLong(DETAIL_SCREEN_ID_KEY))
 }
 
 

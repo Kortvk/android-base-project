@@ -3,7 +3,7 @@ package ru.appkode.base.entities.core.movie
 import ru.appkode.base.entities.core.util.requireField
 
 data class MovieDetailedUM(
-  val id: Int,
+  val id: Long,
   val title: String,
   val imdbId: String,
   val genres: List<String>,
@@ -25,7 +25,7 @@ data class MovieDetailedUM(
 )
 
 data class MovieBriefUM(
-  val id: Int,
+  val id: Long,
   var isInWishList: Boolean,
   val genres: List<String?>,
   val overview: String,
@@ -39,7 +39,7 @@ data class MovieBriefUM(
 )
 
 data class CastUM(
-  val id: Int,
+  val id: Long,
   val name: String,
   val character: String,
   val profilePath: String?

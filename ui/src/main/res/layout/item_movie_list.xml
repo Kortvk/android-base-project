@@ -10,13 +10,8 @@
         android:id="@+id/cardView"
         android:layout_margin="@dimen/item_layout_list_margin">
 
-    <LinearLayout
-                  android:orientation="vertical"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-    >
-
         <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_item_root"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
@@ -32,8 +27,6 @@
                     android:layout_marginEnd="8dp"
                     card_view:layout_constraintEnd_toEndOf="parent"
                     card_view:layout_constraintHorizontal_bias="0.0"/>
-
-
             <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -47,8 +40,6 @@
                     android:layout_marginBottom="8dp"
                     card_view:layout_constraintBottom_toBottomOf="parent"
                     card_view:layout_constraintVertical_bias="0.0"/>
-
-
             <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -103,7 +94,7 @@
                 <CheckBox
                         android:layout_width="@dimen/check_box_size"
                         android:layout_height="@dimen/check_box_size"
-                        android:id="@+id/looked_check_box"
+                        android:id="@+id/check_box_in_history"
                         android:button="@drawable/looked_check_box_custom"
                         android:layout_gravity="center"
                         android:layout_weight="1"
@@ -144,7 +135,11 @@
                     android:orientation="horizontal"
                     android:id="@+id/movie_posters_recycler_view"/>
             !-->
-
+            <ImageView
+                    android:id="@+id/drag_handle"
+                    card_view:layout_constraintBottom_toTopOf="parent"
+                    card_view:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    tools:ignore="ContentDescription"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
 </androidx.cardview.widget.CardView>

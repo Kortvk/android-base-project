@@ -22,7 +22,7 @@ class RemoveFromWishList(val position: Int) : ScreenAction()
 class UpdateMovieList(val list: List<MovieBriefUM>) : ScreenAction()
 class AddToHistory(val position: Int) : ScreenAction()
 class RemoveFromHistory(val position: Int) : ScreenAction()
-class OpenDetails(val id: Int) : ScreenAction()
+class OpenDetails(val id: Long) : ScreenAction()
 class Error(val error: String) : ScreenAction()
 class ExpandCollapseMovieItem(val position: Int) : ScreenAction()
 class UpdateSingleItem(val position: Int, val mutator: (MovieBriefUM) -> Unit) : ScreenAction()
@@ -91,7 +91,7 @@ abstract class MovieListPresenter(
   private fun processOpenDetails(previousState: MovieScreenViewState, action: OpenDetails)
       : Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
     navigationEventsRelay.accept(EVENT_ID_NAVIGATION_DETAILS to Bundle().apply {
-      putInt(
+      putLong(
         DETAIL_SCREEN_ID_KEY,
         action.id
       )

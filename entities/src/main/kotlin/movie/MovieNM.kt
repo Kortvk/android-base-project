@@ -3,7 +3,7 @@ package ru.appkode.base.entities.core.movie
 import ru.appkode.base.entities.core.util.requireField
 
 data class MovieDetailedNM(
-  val id: Int,
+  val id: Long,
   val title: String,
   val imdb_id: String,
   val genres: List<GenreNM>,
@@ -24,7 +24,7 @@ data class MovieDetailedNM(
 )
 
 data class MovieBriefNM(
-  val id: Int,
+  val id: Long,
   val title: String,
   val genre_ids: List<Int>,
   val overview: String,
@@ -56,7 +56,7 @@ data class CrewNM(
 )
 
 data class CastNM(
-  val id: Int,
+  val id: Long,
   val name: String,
   val character: String,
   val gender: Int,
