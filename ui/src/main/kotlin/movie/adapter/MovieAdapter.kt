@@ -12,7 +12,6 @@ import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemConstant
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultAction
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultActionRemoveItem
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableSwipeableItemViewHolder
-import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemViewHolder
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxrelay2.PublishRelay
 import com.squareup.picasso.Picasso
@@ -62,11 +61,11 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>(),
   override fun onMoveItem(fromPosition: Int, toPosition: Int) { /* по дороге ничего не делать */ }
 
   override fun onItemDragFinished(start: Int, end: Int, result: Boolean) =
-    if (result) eventsRelay.accept(EVENT_ITEM_DRAGED_N_DROPPED to (start to end)) else Unit
+    if (result) eventsRelay.accept(EVENT_ITEM_DRAGGED_N_DROPPED to (start to end)) else Unit
 
   override fun onCheckCanStartDrag(holder: MovieNMViewHolder, position: Int, x: Int, y: Int): Boolean {
-    val offsetX = (holder.itemView.left + (holder.itemView.translationX + 0.5f)).toInt()
-    val offsetY = (holder.itemView.top + (holder.itemView.translationY + 0.5f)).toInt()
+    val offsetX = holder.itemView.layout_controls.left + (holder.itemView.layout_controls.translationX + 0.5f).toInt()
+    val offsetY = holder.itemView.layout_controls.top + (holder.itemView.layout_controls.translationY + 0.5f).toInt()
     return UiUtils.hitTest(holder.itemView.check_box_in_history, x - offsetX, y - offsetY)
   }
 
@@ -76,11 +75,9 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieNMViewHolder>(),
   override fun onSwipeItem(holder: MovieNMViewHolder, position: Int, result: Int): SwipeResultAction? =
     when(result) {
       SwipeableItemConstants.RESULT_SWIPED_RIGHT ->
-        SwipeRight {
-          eventsRelay.accept(EVENT_ITEM_SWIPED_RIGHT to position) }
+        SwipeRight { eventsRelay.accept(EVENT_ITEM_SWIPED_RIGHT to position) }
       SwipeableItemConstants.RESULT_SWIPED_LEFT ->
-        SwipeLeft {
-          eventsRelay.accept(EVENT_ITEM_SWIPED_LEFT to position) }
+        SwipeLeft { eventsRelay.accept(EVENT_ITEM_SWIPED_LEFT to position) }
       else -> null
     }
   override fun onGetSwipeReactionType(holder: MovieNMViewHolder, position: Int, x: Int, y: Int): Int =
@@ -161,6 +158,6 @@ private class SwipeLeft(private val action: () -> Unit)
 const val EVENT_ID_ADD_TO_WISHLIST_CLICKED = 0
 const val EVENT_ID_OPEN_DETAILS = 1
 const val EVENT_ID_MORE_INFORMATION_CLICKED = 2
-const val EVENT_ITEM_DRAGED_N_DROPPED = 3
+const val EVENT_ITEM_DRAGGED_N_DROPPED = 3
 const val EVENT_ITEM_SWIPED_RIGHT = 4
 const val EVENT_ITEM_SWIPED_LEFT = 5

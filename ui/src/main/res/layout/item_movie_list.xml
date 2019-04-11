@@ -7,7 +7,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         card_view:cardCornerRadius="@dimen/item_layout_list_margin"
-        android:id="@+id/cardView"
         android:layout_margin="@dimen/item_layout_list_margin">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -64,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     card_view:layout_constraintTop_toTopOf="parent"
-                    card_view:layout_constraintEnd_toStartOf="@id/control_layout"
+                    card_view:layout_constraintEnd_toStartOf="@id/layout_controls"
                     card_view:layout_constraintBottom_toBottomOf="@id/description_text_view"
             />
             <TextView
@@ -80,7 +79,7 @@
             />
 
             <LinearLayout
-                    android:id="@+id/control_layout"
+                    android:id="@+id/layout_controls"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     card_view:layout_constraintHeight_percent="1"

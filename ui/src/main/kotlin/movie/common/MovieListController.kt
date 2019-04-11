@@ -11,12 +11,13 @@ import ru.appkode.base.ui.core.core.BaseMviController
 import ru.appkode.base.ui.core.core.util.filterEvents
 import android.nfc.tech.MifareUltralight.PAGE_SIZE
 import android.os.Bundle
+import com.h6ah4i.android.widget.advrecyclerview.animator.DraggableItemAnimator
 import com.jakewharton.rxbinding3.recyclerview.scrollEvents
 import movie.adapter.EVENT_ID_OPEN_DETAILS
 import movie.adapter.EVENT_ID_MORE_INFORMATION_CLICKED
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager
 import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchActionGuardManager
-import com.h6ah4i.android.widget.advrecyclerview.animator.SwipeDismissItemAnimator
+import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager
 
 abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(args),
   MovieScreenView {
@@ -34,32 +35,30 @@ abstract class MovieListController(args: Bundle) : BaseMviController<MovieScreen
 
   override fun initializeView(rootView: View) {
     adapter = MovieAdapter()
-    movie_list_recycler.layoutManager = LinearLayoutManager(applicationContext)
-    //movie_list_recycler.adapter = adapter
-
     adapter.setHasStableIds(true)
-    // touch guard manager  (this class is required to suppress scrolling while swipe-dismiss animation is running)
+
     val actionGuardManager = RecyclerViewTouchActionGuardManager()
     actionGuardManager.setInterceptVerticalScrollingWhileAnimationRunning(true)
     actionGuardManager.isEnabled = true
 
-    // swipe manager
+    val dragDropManager = RecyclerViewDragDropManager()
     val swipeManager = RecyclerViewSwipeManager()
-    val swipeAdapter = swipeManager.createWrappedAdapter(adapter)      // wrap for swiping
-    val animator = SwipeDismissItemAnimator()
-    // Change animations are enabled by default since support-v7-recyclerview v22.
-    // Disable the change animation in order to make turning back animation of swiped item works properly.
+    val dragDropAdapter = dragDropManager.createWrappedAdapter(adapter)
+    val swipeDragDropAdapter = swipeManager.createWrappedAdapter(dragDropAdapter)      // wrap for swiping
+
+    //dragnDropManager.setDraggingItemShadowDrawable(requireResources.getDrawable(R.drawable.material_shadow_z3) as NinePatchDrawable)
+
+    val animator = DraggableItemAnimator()
     animator.supportsChangeAnimations = false
 
-    movie_list_recycler.adapter = swipeAdapter  // requires *wrapped* adapter
+    movie_list_recycler.adapter = swipeDragDropAdapter
     movie_list_recycler.itemAnimator = animator
+    movie_list_recycler.layoutManager = LinearLayoutManager(applicationContext)
 
-    // NOTE:
-    // The initialization order is very important! This order determines the priority of touch event handling.
-    //
     // priority: TouchActionGuard > Swipe > DragAndDrop
     actionGuardManager.attachRecyclerView(movie_list_recycler)
     swipeManager.attachRecyclerView(movie_list_recycler)
+    dragDropManager.attachRecyclerView(movie_list_recycler)
   }
 
   override fun elementSwipedLeft(): Observable<Int> {
