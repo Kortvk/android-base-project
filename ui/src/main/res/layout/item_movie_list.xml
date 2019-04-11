@@ -11,9 +11,9 @@
         android:layout_margin="@dimen/item_layout_list_margin">
 
     <LinearLayout
-                  android:orientation="vertical"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
     >
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,14 +37,13 @@
             <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    card_view:layout_constraintWidth_percent="0.5"
+                    card_view:layout_constraintWidth_percent="0.45"
                     android:id="@+id/movie_title_text_view"
                     android:textColor="@color/colorAccent"
                     android:layout_marginTop="8dp"
                     card_view:layout_constraintTop_toTopOf="parent"
                     card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="4dp"
                     card_view:layout_constraintBottom_toBottomOf="parent"
                     card_view:layout_constraintVertical_bias="0.0"/>
 
@@ -53,47 +52,51 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/release_date_text_view"
-                    card_view:layout_constraintWidth_percent="0.5"
+                    card_view:layout_constraintWidth_percent="0.4"
                     card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="4dp"
                     android:layout_marginTop="8dp"
                     card_view:layout_constraintTop_toBottomOf="@+id/movie_title_text_view"/>
             <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/movie_genre_text_view"
-                    card_view:layout_constraintWidth_percent="0.5"
+                    card_view:layout_constraintWidth_percent="0.45"
                     android:layout_marginTop="8dp"
                     card_view:layout_constraintTop_toBottomOf="@+id/release_date_text_view"
                     card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginStart="4dp"
+            />
             <include
                     layout="@layout/layout_movie_rating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    card_view:layout_constraintTop_toTopOf="parent"
-                    card_view:layout_constraintEnd_toStartOf="@id/control_layout"
-                    card_view:layout_constraintBottom_toBottomOf="@id/description_text_view"
-            />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    card_view:layout_constraintTop_toBottomOf="@+id/movie_genre_text_view"
+                    card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:id="@+id/include"/>
             <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    card_view:layout_constraintWidth_percent="0.2"
                     android:id="@+id/votes_text_view"
-                    android:visibility="gone"
-                    card_view:layout_constraintTop_toBottomOf="@id/layout_movie_rating"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                    card_view:layout_constraintBottom_toTopOf="@id/description_text_view"
-                    card_view:layout_constraintStart_toStartOf="@id/layout_movie_rating"
-                    card_view:layout_constraintEnd_toEndOf="@id/layout_movie_rating"
-            />
+                    card_view:layout_constraintEnd_toStartOf="@+id/control_layout"
+                    card_view:layout_constraintTop_toBottomOf="@+id/movie_genre_text_view"
+                    card_view:layout_constraintStart_toEndOf="@+id/include"
+                    android:layout_marginStart="8dp"
+                    card_view:layout_constraintHorizontal_bias="0.5"
+                    android:layout_marginBottom="8dp"
+                    card_view:layout_constraintBottom_toBottomOf="@+id/include"
+                    card_view:layout_constraintVertical_bias="0.95"/>
 
             <LinearLayout
                     android:id="@+id/control_layout"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     card_view:layout_constraintHeight_percent="1"
-                    card_view:layout_constraintWidth_percent="0.25"
+                    card_view:layout_constraintWidth_percent="0.15"
                     android:background="@color/colorPrimary"
                     android:orientation="vertical"
                     card_view:layout_constraintEnd_toEndOf="parent"
@@ -128,22 +131,22 @@
             </LinearLayout>
 
             <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    card_view:layout_constraintWidth_percent="0.8"
                     android:id="@+id/description_text_view"
                     card_view:layout_constraintTop_toBottomOf="@id/poster_image_view"
                     card_view:layout_constraintBottom_toBottomOf="parent"
                     card_view:layout_constraintStart_toStartOf="parent"
                     card_view:layout_constraintEnd_toEndOf="parent"
                     android:visibility="visible"
+                    card_view:layout_constraintHorizontal_bias="0.0"
+                    card_view:layout_constraintVertical_bias="0.1"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
             />
-            <!--
-            <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal"
-                    android:id="@+id/movie_posters_recycler_view"/>
-            !-->
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
