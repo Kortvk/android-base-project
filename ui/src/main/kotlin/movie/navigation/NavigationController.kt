@@ -15,10 +15,10 @@ import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_navigation.view.*
-import movie.filter.FilterController
 import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.util.requireView
 import ru.appkode.base.ui.movie.details.MovieDetailedController
+import ru.appkode.base.ui.movie.filter.FilterController
 import ru.appkode.base.ui.movie.wishlist.WishListController
 
 private const val ROUTER_STATES_KEY = "router_states"
@@ -60,8 +60,7 @@ class NavigationController : Controller() {
     Observable.merge(navigationIntents()).subscribe {
       val controller = when (it.first) {
         R.id.menu_favorite -> WishListController(it.second)
-        R.id.fab ->
-          FilterController(it.second)
+        R.id.fab -> FilterController(it.second)
         R.id.menu_history -> null
         EVENT_ID_NAVIGATION_DETAILS -> MovieDetailedController(it.second)
         else -> null

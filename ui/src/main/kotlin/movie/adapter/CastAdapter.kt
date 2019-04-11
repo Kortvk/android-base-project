@@ -12,7 +12,6 @@ import ru.appkode.base.entities.core.movie.IMAGE_PROFILE_SIZE
 import ru.appkode.base.ui.R
 import kotlin.properties.Delegates
 
-
 class CastAdapter : RecyclerView.Adapter<CastAdapter.CastViewHolder>() {
 
   var items: List<CastUM> by Delegates.observable(emptyList()) { _, _, _ ->

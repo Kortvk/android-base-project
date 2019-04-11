@@ -9,10 +9,6 @@ import ru.appkode.base.ui.core.core.Command
 import ru.appkode.base.ui.core.core.util.AppSchedulers
 import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 
-class FilterController(args: Bundle): MovieListController(args) {
-  override fun createPresenter() =
-    FilterPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService())
-}
 
 class FilterPresenter(schedulers: AppSchedulers,
                       movieService: MovieService
