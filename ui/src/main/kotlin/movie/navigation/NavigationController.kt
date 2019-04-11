@@ -14,6 +14,7 @@ import com.jakewharton.rxbinding3.material.itemSelections
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.controller_navigation.view.*
 import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.util.requireView
@@ -26,6 +27,9 @@ private const val ROUTER_STATES_KEY = "router_states"
 val navigationEventsRelay: PublishRelay<Pair<Int, Bundle>> = PublishRelay.create()
 
 class NavigationController : Controller() {
+
+  var disposable = CompositeDisposable()
+    get() = if (field.isDisposed) CompositeDisposable() else field
 
   private var routerStates: SparseArray<Bundle>? = SparseArray()
 
@@ -41,9 +45,13 @@ class NavigationController : Controller() {
 
   override fun onAttach(view: View) {
     requireView.fab.setOnClickListener {
-      navigationEventsRelay.accept(R.id.fab to Bundle()) }
-    processNavigationIntents()
+      navigationEventsRelay.accept(R.id.fab to Bundle())
+    }
+    disposable.add(processNavigationIntents())
   }
+
+  override fun onDetach(view: View) = disposable.dispose()
+
   /**
    * Отправить нажатия кнопок в боттом навигации в глобальные события шины событий навигации
    * с menu res id в качестве параметра
@@ -53,6 +61,7 @@ class NavigationController : Controller() {
     requireView.fab.clicks().map { R.id.fab to Bundle() },
     navigationEventsRelay
   )
+
   /**
    * Обработать события навигации
    */
@@ -75,7 +84,7 @@ class NavigationController : Controller() {
     val bundleState = getSavedStateForId(controllerId)
     currentControllerId = controllerId
     //childRouter.getControllerWithInstanceId()
-    childRouter.pushController(RouterTransaction.with(controller))
+    childRouter.setRoot(RouterTransaction.with(controller))
   }
 
   /**
@@ -83,6 +92,7 @@ class NavigationController : Controller() {
    * @return either a valid [Bundle] state or null if no state is available
    */
   private fun getSavedStateForId(id: Int): Bundle? = routerStates?.get(id)
+
   /**
    * This will clear the state (hierarchy/backstack etc.) from the [childRouter] and goes back to root.
    */
@@ -92,6 +102,7 @@ class NavigationController : Controller() {
     childRouter.popCurrentController()
     childRouter.setPopsLastView(false)
   }
+
   /**
    * This will save the current state of the tab (hierarchy/backstack etc.) from the [childRouter] in a [Bundle]
    * and put it into the [routerStates] with the tab id as key
@@ -108,6 +119,7 @@ class NavigationController : Controller() {
     outState.putSparseParcelableArray(ROUTER_STATES_KEY, routerStates)
     super.onSaveInstanceState(outState)
   }
+
   /** Restore our [routerStates] */
   override fun onRestoreInstanceState(savedInstanceState: Bundle) {
     super.onRestoreInstanceState(savedInstanceState)

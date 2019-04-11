@@ -7,9 +7,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level.BODY
+import okhttp3.logging.HttpLoggingInterceptor.Level.NONE
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
+import ru.appkode.base.data.BuildConfig
 import ru.appkode.base.data.network.movie.ListWrapperConverterFactory
 import ru.appkode.base.data.network.movie.MovieAPI
 
@@ -21,7 +23,7 @@ object NetworkHelper {
   private val moshi = Moshi.Builder().build()
 
   private val okHttpClient = OkHttpClient.Builder()
-    .addInterceptor(HttpLoggingInterceptor().setLevel(BODY))
+    .addInterceptor(HttpLoggingInterceptor().setLevel(if (BuildConfig.DEBUG) BODY else NONE))
     .addInterceptor(object : Interceptor {
       override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()

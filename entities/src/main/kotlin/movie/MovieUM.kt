@@ -65,3 +65,5 @@ fun MovieDetailedUM.toBrief(): MovieBriefUM {
     votes = votes
   )
 }
+
+fun CastUM.getProfilePath() = BASE_IMAGE_URL + IMAGE_PROFILE_SIZE + profilePath

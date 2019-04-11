@@ -15,17 +15,17 @@ import ru.appkode.base.ui.core.core.command
 import ru.appkode.base.ui.core.core.util.AppSchedulers
 
 sealed class ScreenAction
-class LoadNextPage(val state: LceState<List<MovieBriefUM>>) : ScreenAction()
-class ItemWishListStateChanged(val position: Int) : ScreenAction()
-class AddToWishList(val position: Int) : ScreenAction()
-class RemoveFromWishList(val position: Int) : ScreenAction()
-class UpdateMovieList(val list: List<MovieBriefUM>) : ScreenAction()
-class AddToHistory(val position: Int) : ScreenAction()
-class RemoveFromHistory(val position: Int) : ScreenAction()
-class OpenDetails(val id: Long) : ScreenAction()
-class Error(val error: String) : ScreenAction()
-class ExpandCollapseMovieItem(val position: Int) : ScreenAction()
-class UpdateSingleItem(val position: Int, val mutator: (MovieBriefUM) -> Unit) : ScreenAction()
+data class LoadNextPage(val state: LceState<List<MovieBriefUM>>) : ScreenAction()
+data class ItemWishListStateChanged(val position: Int) : ScreenAction()
+data class AddToWishList(val position: Int) : ScreenAction()
+data class RemoveFromWishList(val position: Int) : ScreenAction()
+data class UpdateMovieList(val list: List<MovieBriefUM>) : ScreenAction()
+data class AddToHistory(val position: Int) : ScreenAction()
+data class RemoveFromHistory(val position: Int) : ScreenAction()
+data class OpenDetails(val id: Long) : ScreenAction()
+data class Error(val error: String) : ScreenAction()
+data class ExpandCollapseMovieItem(val position: Int) : ScreenAction()
+data class UpdateSingleItem(val position: Int, val mutator: (MovieBriefUM) -> Unit) : ScreenAction()
 
 abstract class MovieListPresenter(
   schedulers: AppSchedulers,
@@ -42,6 +42,7 @@ abstract class MovieListPresenter(
         .map { LoadNextPage(LceState.Content(it)) }.doOnError { Error(it.message) }
     )
   }
+
   /**
    * Наследники этого презентера (презентеры поиска, вишлиста и истории) реализуют эти методы,
    * чтобы забиндить свайп на нужную команду (придать свайпам влево-вправо разные значения на разных экранах)
@@ -91,10 +92,7 @@ abstract class MovieListPresenter(
   private fun processOpenDetails(previousState: MovieScreenViewState, action: OpenDetails)
       : Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
     navigationEventsRelay.accept(EVENT_ID_NAVIGATION_DETAILS to Bundle().apply {
-      putLong(
-        DETAIL_SCREEN_ID_KEY,
-        action.id
-      )
+      putLong(DETAIL_SCREEN_ID_KEY, action.id)
     })
     return previousState to null
   }
@@ -107,17 +105,13 @@ abstract class MovieListPresenter(
   private fun processNextPage(
     previousState: MovieScreenViewState,
     action: LoadNextPage
-  ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
-    return when (action.state.isContent) {
-      true -> {
+  ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> =
+     if (action.state.isContent) {
         val content = if (previousState.state.isContent) {
           previousState.state.asContent().toMutableList().apply { this.addAll(action.state.asContent()) }
         } else mutableListOf<MovieBriefUM>().apply { this.addAll(action.state.asContent()) }
         MovieScreenViewState(state = LceState.Content(content)) to null
-      }
-      false -> MovieScreenViewState(state = LceState.Loading()) to null
-    }
-  }
+      } else MovieScreenViewState(state = LceState.Loading()) to null
 
   private fun processUpdateMovieList(action: UpdateMovieList)
       : Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {
@@ -154,8 +148,8 @@ abstract class MovieListPresenter(
     require(action.position < previousState.state.asContent().size)
     return previousState to command(
       movieService.addToWishList(previousState.state.asContent()[action.position]).doAction {
-          UpdateSingleItem(action.position) { movie -> movie.isInWishList = true }
-        }
+        UpdateSingleItem(action.position) { movie -> movie.isInWishList = true }
+      }
     )
   }
 
@@ -167,6 +161,7 @@ abstract class MovieListPresenter(
       UpdateSingleItem(action.position) { movie -> movie.isExpanded = !movie.isExpanded }
     )
   }
+
   /**
    * копируем дата  класс, выполняем над ним действия с мутабельными полями и сохраняем в состояние
    * для передачи в контроллер. Нужно, чтобы не копировать весь лист через .map{},

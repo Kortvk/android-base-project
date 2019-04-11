@@ -41,18 +41,18 @@ abstract class BasePresenter<V : MviView<VS>, VS, A : Any>(
       .doAfterNext { (_, cmd) ->
         cmd?.invoke()?.subscribe(outputActions)
       }
-      .map {
-          (vs, _) ->
+      .map { (vs, _) ->
         vs
       }
-     .distinctUntilChanged()
+      .distinctUntilChanged()
 
     subscribeViewState(stateChanges) { view, viewState ->
-      view.render(viewState) }
+      view.render(viewState)
+    }
   }
 
   /**
-   * Метод, возвращющий результат применения заданной команды к текущему состоянию
+   * Метод, возвращающий результат применения заданной команды к текущему состоянию
    * @param previousState состояние экрана до применения действия
    * @param action действие
    * @return Новое состояние и команда для его получения

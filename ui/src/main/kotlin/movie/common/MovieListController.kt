@@ -23,8 +23,6 @@ abstract class MovieListController(args: Bundle) :
   BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(args),
   MovieScreenView {
 
-  constructor(id: Int) : this(Bundle().also { it.putInt("id", id) })
-
   private lateinit var adapter: BasicMovieAdapter
 
   override fun createConfig(): BaseMviController.Config {
@@ -64,12 +62,12 @@ abstract class MovieListController(args: Bundle) :
 
   override fun elementSwipedLeft(): Observable<Int> {
     //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
-    return Observable.just(999)
+    return Observable.empty()
   }
 
   override fun elementSwipedRight(): Observable<Int> {
     //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
-    return Observable.just(999)
+    return Observable.empty()
   }
 
   /**
@@ -103,10 +101,10 @@ abstract class MovieListController(args: Bundle) :
    */
   override fun loadNextPageIntent(): Observable<Unit> {
     return movie_list_recycler.scrollEvents().filter {
-      (movie_list_recycler.layoutManager as LinearLayoutManager).let {
-        (it.childCount + it.findFirstVisibleItemPosition() >= it.itemCount
-            && it.findFirstVisibleItemPosition() >= 0
-            && it.childCount >= PAGE_SIZE)
+      (movie_list_recycler.layoutManager as LinearLayoutManager).let { recycler ->
+        (recycler.childCount + recycler.findFirstVisibleItemPosition() >= recycler.itemCount
+            && recycler.findFirstVisibleItemPosition() >= 0
+            && recycler.childCount >= PAGE_SIZE)
       }
     }.map { Unit }
   }

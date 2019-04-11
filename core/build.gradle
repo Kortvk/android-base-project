@@ -80,4 +80,6 @@ dependencies {
   api 'com.github.bumptech.glide:glide:4.9.0'
   kapt 'com.github.bumptech.glide:compiler:4.9.0'
   api 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:1.0.0'
+
+  api 'androidx.paging:paging-runtime:2.0.0-beta01'
 }

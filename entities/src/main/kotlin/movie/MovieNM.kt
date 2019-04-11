@@ -86,22 +86,24 @@ fun MovieDetailedNM.toUiModel(): MovieDetailedUM {
     title = title,
     imdbId = imdb_id,
     genres = genres.map { it.name },
-  status = status,
-  overview = overview,
-  posterPath = poster_path,
-  productionCompanies = production_companies?.map { it.name },
-  releaseDate = release_date,
-  runtime = runtime,
-  tagline = tagline,
-  voteAverage = vote_average,
-  crew = credits?.crew?.map { it.toUiModel() },
+    status = status,
+    overview = overview,
+    posterPath = poster_path,
+    productionCompanies = production_companies?.map { it.name },
+    releaseDate = release_date,
+    runtime = runtime,
+    tagline = tagline,
+    voteAverage = vote_average,
+    crew = credits?.crew?.map { it.toUiModel() },
     cast = credits?.cast?.map { it.toUiModel() },
-  backdrop = backdrop_path,
-  images = images?.posters?.map { it.file_path },
-  keywords = keywords?.keywords?.map {
-    it.name },
-  isInWishList = false,
-    votes = vote_count)
+    backdrop = backdrop_path,
+    images = images?.posters?.map { it.file_path },
+    keywords = keywords?.keywords?.map {
+      it.name
+    },
+    isInWishList = false,
+    votes = vote_count
+  )
 }
 
 fun CastNM.toUiModel(): CastUM {
@@ -109,13 +111,15 @@ fun CastNM.toUiModel(): CastUM {
     id = id,
     name = name,
     character = character,
-    profilePath = profile_path)
+    profilePath = profile_path
+  )
 }
 
 fun CrewNM.toUiModel(): CrewUM {
   return CrewUM(
     id = id,
     job = job,
-    name = name)
+    name = name
+  )
 }
 

@@ -41,8 +41,6 @@ abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieN
 
   override fun onBindViewHolder(holder: MovieNMViewHolder, position: Int) = holder.bind(items[position])
 
-  override fun onViewRecycled(holder: MovieNMViewHolder) = holder.unbind()
-
   inner class MovieNMViewHolder(view: View) : AbstractDraggableSwipeableItemViewHolder(view) {
 
     override fun getSwipeableContainerView(): View = itemView.layout_item_root
@@ -66,21 +64,16 @@ abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieN
       bindIntents()
     }
 
-    fun unbind() = disposable.dispose()
-
     private fun bindIntents() {
-      disposable = CompositeDisposable()
-      disposable.addAll(
-        itemView.in_wish_list.clicks().throttleFirst(500, TimeUnit.MILLISECONDS).subscribe {
-          eventsRelay.accept(EVENT_ID_ADD_TO_WISHLIST_CLICKED to adapterPosition)
-        },
-        itemView.poster_image_view.clicks().subscribe {
-          eventsRelay.accept(EVENT_ID_OPEN_DETAILS to movie.id)
-        },
-        itemView.more_information_check_box.clicks().throttleFirst(500, TimeUnit.MICROSECONDS).subscribe {
-          eventsRelay.accept(EVENT_ID_MORE_INFORMATION_CLICKED to adapterPosition)
-        }
-      )
+      itemView.in_wish_list.setOnClickListener {
+        eventsRelay.accept(EVENT_ID_ADD_TO_WISHLIST_CLICKED to adapterPosition)
+      }
+      itemView.poster_image_view.setOnClickListener {
+        eventsRelay.accept(EVENT_ID_OPEN_DETAILS to movie.id)
+      }
+      itemView.more_information_check_box.setOnClickListener {
+        eventsRelay.accept(EVENT_ID_MORE_INFORMATION_CLICKED to adapterPosition)
+      }
     }
 
     private fun expandView() = setDetailsVisibililty(View.VISIBLE)

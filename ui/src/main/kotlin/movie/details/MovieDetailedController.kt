@@ -25,8 +25,6 @@ class MovieDetailedController(args: Bundle) :
   BaseMviController<MovieDetailedViewState, MovieDetailedView, MovieDetailedPresenter>(args),
   MovieDetailedView {
 
-  constructor(id: Int) : this(Bundle().also { it.putInt("id", id) })
-
   private lateinit var adapter: CastAdapter
 
   override fun createConfig(): Config {

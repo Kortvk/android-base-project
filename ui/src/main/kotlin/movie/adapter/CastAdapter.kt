@@ -9,6 +9,7 @@ import kotlinx.android.synthetic.main.item_cast.view.*
 import ru.appkode.base.entities.core.movie.BASE_IMAGE_URL
 import ru.appkode.base.entities.core.movie.CastUM
 import ru.appkode.base.entities.core.movie.IMAGE_PROFILE_SIZE
+import ru.appkode.base.entities.core.movie.getProfilePath
 import ru.appkode.base.ui.R
 import kotlin.properties.Delegates
 
@@ -33,7 +34,7 @@ class CastAdapter : RecyclerView.Adapter<CastAdapter.CastViewHolder>() {
     fun bind(cast: CastUM) {
       itemView.tv_cast_name.text = cast.name
       if (cast.profilePath != null) {
-        Glide.with(itemView).load(BASE_IMAGE_URL + IMAGE_PROFILE_SIZE + cast.profilePath)
+        Glide.with(itemView).load(cast.getProfilePath())
         .into(itemView.iv_cast).onLoadFailed(itemView.context.getDrawable(R.drawable.no_photo))
       }
       itemView.tv_cast_role.text = cast.character
