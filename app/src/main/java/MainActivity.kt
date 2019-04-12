@@ -7,7 +7,6 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import kotlinx.android.synthetic.main.activity_main.*
 import movie.HomeController
-import ru.appkode.base.data.storage.DatabaseHelper
 
 class MainActivity : AppCompatActivity() {
 

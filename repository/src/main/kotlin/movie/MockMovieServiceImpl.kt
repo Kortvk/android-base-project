@@ -14,27 +14,35 @@ class MockMovieServiceImpl(
   private val remoteMovieRepository: RemoteMovieRepository
 ) : MovieService {
 
-  private val genres = remoteMovieRepository.getGenres()
-    .observeOn(Schedulers.io()).blockingGet().let { if (it is Throwable) emptyList() else it }
+  private val genres by lazy {remoteMovieRepository.getGenres().blockingGet() }
 
   override fun removeFromWishList(movie: MovieBriefUM): Completable {
-    return Completable.fromCallable { localRepository.removeFromWishList(movie) }
+    return Completable.fromCallable { localRepository.removeFromWishList(movie) }.subscribeOn(Schedulers.io())
   }
+  override fun removeFromWishList(movie: MovieDetailedUM): Completable {
+    return Completable.fromCallable { localRepository.removeFromWishList(movie) }.subscribeOn(Schedulers.io())
+  }
+
 
   override fun addToWishList(movie: MovieBriefUM): Completable {
-    return Completable.fromCallable { localRepository.addToWishList(movie) }
+    return Completable.fromCallable { localRepository.addToWishList(movie) }.subscribeOn(Schedulers.io())
   }
+
+  override fun addToWishList(movie: MovieDetailedUM): Completable {
+    return Completable.fromCallable { localRepository.addToWishList(movie) }.subscribeOn(Schedulers.io())
+  }
+
 
   override fun getWishListPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
-    return localRepository.getWishListPaged(nextPageIntent)
+    return localRepository.getWishListPaged(nextPageIntent).subscribeOn(Schedulers.io())
   }
 
-  override fun getMovieDetailed(id: Int): Observable<MovieDetailedUM> {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+  override fun getMovieDetailed(id: Long): Observable<MovieDetailedUM> {
+    return remoteMovieRepository.getMovieById(id).toObservable().map { it.toUiModel() }.subscribeOn(Schedulers.io())
   }
 
   override fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> =
     remoteMovieRepository.getPopularMoviesPaged(nextPageIntent)
       .map { list -> list.map { it.toUiModel(genres) } }
-      .switchMap { localRepository.getStatusUpdates(it) }
+      .switchMap { localRepository.getStatusUpdates(it) }.subscribeOn(Schedulers.io())
 }

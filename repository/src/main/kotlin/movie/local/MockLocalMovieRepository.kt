@@ -1,13 +1,9 @@
 package movie.local
 
 import io.reactivex.*
-import ru.appkode.base.data.storage.DatabaseHelper
 import ru.appkode.base.entities.core.common.PagedListWrapper
 import ru.appkode.base.entities.core.movie.MovieBriefUM
-import ru.appkode.base.entities.core.movie.toStorageModel
-import ru.appkode.base.entities.core.movie.toUIModel
 import ru.appkode.base.repository.util.paginatedObservable
-import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 
 /**
  * In-memory мокап локального репозитория с вишлистом и паджинацией
@@ -23,6 +19,14 @@ object MockLocalMovieRepository : LocalMovieRepository {
 
   override fun removeFromWishList(movie: MovieBriefUM) {
     movies.remove(movie)
+  }
+
+  override fun addToWishList(movie: MovieDetailedUM) {
+    movies.add(movie.toBrief())
+  }
+
+  override fun removeFromWishList(movie: MovieDetailedUM) {
+    movies.remove(movie.toBrief())
   }
 
   override fun getStatusUpdates(moviesToUpdate: List<MovieBriefUM>): Observable<List<MovieBriefUM>> {
