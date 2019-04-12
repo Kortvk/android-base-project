@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableSwipeableItemViewHolder
-import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxrelay2.PublishRelay
 import com.squareup.picasso.Picasso
 import io.reactivex.disposables.CompositeDisposable
@@ -16,7 +15,6 @@ import ru.appkode.base.entities.core.movie.IMAGE_PROFILE_SIZE
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.ui.R
 import ru.appkode.base.ui.movie.adapter.*
-import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieNMViewHolder>() {
@@ -50,6 +48,7 @@ abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieN
 
     fun bind(movie: MovieBriefUM) {
       this.movie = movie
+      if (movie.isInHistory) itemView.in_history.isChecked = true
       if (movie.isInWishList) itemView.in_wish_list.isChecked = true
       itemView.movie_title_text_view.text = movie.title
       itemView.in_wish_list.isChecked = movie.isInWishList
@@ -68,11 +67,14 @@ abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieN
       itemView.in_wish_list.setOnClickListener {
         eventsRelay.accept(EVENT_ID_ADD_TO_WISHLIST_CLICKED to adapterPosition)
       }
-      itemView.poster_image_view.setOnClickListener {
+      itemView.layout_item_root.setOnClickListener {
         eventsRelay.accept(EVENT_ID_OPEN_DETAILS to movie.id)
       }
       itemView.more_information_check_box.setOnClickListener {
         eventsRelay.accept(EVENT_ID_MORE_INFORMATION_CLICKED to adapterPosition)
+      }
+      itemView.in_history.setOnClickListener {
+        eventsRelay.accept(EVENT_ID_ADD_TO_HISTORY_CLICKED to adapterPosition)
       }
     }
 

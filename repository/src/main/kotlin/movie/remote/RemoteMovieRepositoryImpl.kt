@@ -12,20 +12,27 @@ class RemoteMovieRepositoryImpl(private val movieApi: MovieAPI) : RemoteMovieRep
 
   override fun getGenres() = movieApi.getGenres()
 
-  override fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>) =
-    paginatedObservable(nextPageIntent) { page -> movieApi.getPopularMovies(page) }
+  override fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>) =
+    paginatedObservable(nextPageIntent, reloadIntent) { page -> movieApi.getPopularMovies(page) }
 
-  override fun filterMoviesPaged(filter: MovieFilter, nextPageIntent: Observable<Unit>) =
-    paginatedObservable(nextPageIntent) { page -> movieApi.filterMoviesPaged(filter.buildFilterParameters(), page) }
+  override fun filterMoviesPaged(
+    filter: MovieFilter,
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ) =
+    paginatedObservable(
+      nextPageIntent,
+      reloadIntent
+    ) { page -> movieApi.filterMoviesPaged(filter.buildFilterParameters(), page) }
 
-  override fun searchMoviesPaged(query: String, nextPageIntent: Observable<Unit>) =
-    paginatedObservable(nextPageIntent) { page -> movieApi.searchMoviesPaged(query, page) }
+  override fun searchMoviesPaged(query: String, nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>) =
+    paginatedObservable(nextPageIntent, reloadIntent) { page -> movieApi.searchMoviesPaged(query, page) }
 
-  override fun searchKeywordsPaged(keyword: String, nextPageIntent: Observable<Unit>) =
-    paginatedObservable(nextPageIntent) { page -> movieApi.searchKeywordsPaged(keyword, page) }
+  override fun searchKeywordsPaged(keyword: String, nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>) =
+    paginatedObservable(nextPageIntent, reloadIntent) { page -> movieApi.searchKeywordsPaged(keyword, page) }
 
-  override fun searchCastPaged(name: String, nextPageIntent: Observable<Unit>) =
-    paginatedObservable(nextPageIntent) { page -> movieApi.searchCastPaged(name, page) }
+  override fun searchCastPaged(name: String, nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>) =
+    paginatedObservable(nextPageIntent, reloadIntent) { page -> movieApi.searchCastPaged(name, page) }
 
 
 }

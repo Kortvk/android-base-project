@@ -1,155 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:card_view="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_margin="@dimen/item_layout_list_margin"
+  android:orientation="vertical"
+  card_view:cardCornerRadius="@dimen/item_layout_list_margin">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/layout_item_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+      android:id="@+id/poster_image_view"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      card_view:layout_constraintBottom_toBottomOf="parent"
+      card_view:layout_constraintEnd_toEndOf="parent"
+      card_view:layout_constraintHorizontal_bias="0.0"
+      card_view:layout_constraintStart_toStartOf="parent"
+      card_view:layout_constraintTop_toTopOf="parent"
+      card_view:layout_constraintVertical_bias="0.0"
+      tools:ignore="ContentDescription" />
+
+    <TextView
+      android:id="@+id/movie_title_text_view"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="4dp"
+      android:layout_marginTop="8dp"
+      android:textColor="@color/colorAccent"
+      card_view:layout_constraintBottom_toBottomOf="parent"
+      card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
+      card_view:layout_constraintTop_toTopOf="parent"
+      card_view:layout_constraintVertical_bias="0.0"
+      card_view:layout_constraintWidth_percent="0.45" />
+
+    <TextView
+      android:id="@+id/release_date_text_view"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="4dp"
+      android:layout_marginTop="8dp"
+      card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
+      card_view:layout_constraintTop_toBottomOf="@+id/movie_title_text_view"
+      card_view:layout_constraintWidth_percent="0.4" />
+
+    <TextView
+      android:id="@+id/movie_genre_text_view"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="4dp"
+      android:layout_marginTop="8dp"
+      card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
+      card_view:layout_constraintTop_toBottomOf="@+id/release_date_text_view"
+      card_view:layout_constraintWidth_percent="0.45" />
+
+    <include
+      android:id="@+id/include"
+      layout="@layout/layout_movie_rating"
+      android:layout_width="60dp"
+      android:layout_height="60dp"
+      android:layout_marginStart="4dp"
+      android:layout_marginTop="4dp"
+      card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
+      card_view:layout_constraintTop_toBottomOf="@+id/movie_genre_text_view" />
+
+    <TextView
+      android:id="@+id/votes_text_view"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="8dp"
+      android:layout_marginStart="8dp"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+      android:visibility="gone"
+      card_view:layout_constraintBottom_toBottomOf="@+id/include"
+      card_view:layout_constraintEnd_toStartOf="@+id/layout_controls"
+      card_view:layout_constraintHorizontal_bias="0.5"
+      card_view:layout_constraintStart_toEndOf="@+id/include"
+      card_view:layout_constraintTop_toBottomOf="@+id/movie_genre_text_view"
+      card_view:layout_constraintVertical_bias="0.95"
+      card_view:layout_constraintWidth_percent="0.2" />
+
+    <LinearLayout
+      android:id="@+id/layout_controls"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:background="@color/colorPrimary"
+      android:orientation="vertical"
+      card_view:layout_constraintBottom_toBottomOf="parent"
+      card_view:layout_constraintEnd_toEndOf="parent"
+      card_view:layout_constraintHeight_percent="1"
+      card_view:layout_constraintTop_toTopOf="parent"
+      card_view:layout_constraintWidth_percent="0.15"
+      tools:layout_height="0dp">
+
+      <ImageView
+        android:id="@+id/drag_handle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="@dimen/item_layout_list_margin"
-        android:layout_margin="@dimen/item_layout_list_margin">
+        android:src="@drawable/ic_drag_handle"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        tools:ignore="ContentDescription" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_item_root"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+      <CheckBox
+        android:id="@+id/in_history"
+        android:layout_width="@dimen/check_box_size"
+        android:layout_height="@dimen/check_box_size"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:button="@drawable/looked_check_box_custom" />
 
-        >
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/poster_image_view"
-                    card_view:layout_constraintTop_toTopOf="parent"
-                    card_view:layout_constraintStart_toStartOf="parent"
-                    card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintVertical_bias="0.0"
-                    android:layout_marginEnd="8dp"
-                    card_view:layout_constraintEnd_toEndOf="parent"
-                    card_view:layout_constraintHorizontal_bias="0.0"/>
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    card_view:layout_constraintWidth_percent="0.45"
-                    android:id="@+id/movie_title_text_view"
-                    android:textColor="@color/colorAccent"
-                    android:layout_marginTop="8dp"
-                    card_view:layout_constraintTop_toTopOf="parent"
-                    card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
-                    android:layout_marginStart="4dp"
-                    card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintVertical_bias="0.0"/>
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/release_date_text_view"
-                    card_view:layout_constraintWidth_percent="0.4"
-                    card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="8dp"
-                    card_view:layout_constraintTop_toBottomOf="@+id/movie_title_text_view"/>
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/movie_genre_text_view"
-                    card_view:layout_constraintWidth_percent="0.45"
-                    android:layout_marginTop="8dp"
-                    card_view:layout_constraintTop_toBottomOf="@+id/release_date_text_view"
-                    card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
-                    android:layout_marginStart="4dp"
-            />
-            <include
-                    layout="@layout/layout_movie_rating"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    card_view:layout_constraintTop_toBottomOf="@+id/movie_genre_text_view"
-                    card_view:layout_constraintStart_toEndOf="@+id/poster_image_view"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="4dp"
-                    android:id="@+id/include"/>
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    card_view:layout_constraintWidth_percent="0.2"
-                    android:id="@+id/votes_text_view"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                    card_view:layout_constraintEnd_toStartOf="@+id/control_layout"
-                    card_view:layout_constraintTop_toBottomOf="@+id/movie_genre_text_view"
-                    card_view:layout_constraintStart_toEndOf="@+id/include"
-                    android:layout_marginStart="8dp"
-                    card_view:layout_constraintHorizontal_bias="0.5"
-                    android:layout_marginBottom="8dp"
-                    card_view:layout_constraintBottom_toBottomOf="@+id/include"
-                    card_view:layout_constraintVertical_bias="0.95"/>
+      <CheckBox
+        android:id="@+id/in_wish_list"
+        android:layout_width="@dimen/check_box_size"
+        android:layout_height="@dimen/check_box_size"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:button="@drawable/in_wish_list_custom" />
 
-            <LinearLayout
-                    android:id="@+id/layout_controls"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    card_view:layout_constraintHeight_percent="1"
-                    card_view:layout_constraintWidth_percent="0.15"
-                    android:background="@color/colorPrimary"
-                    android:orientation="vertical"
-                    card_view:layout_constraintEnd_toEndOf="parent"
-                    card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintTop_toTopOf="parent" tools:layout_height="0dp">
+      <CheckBox
+        android:id="@+id/more_information_check_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:button="@drawable/more_information_check_box_custom" />
+    </LinearLayout>
 
-                <CheckBox
-                        android:layout_width="@dimen/check_box_size"
-                        android:layout_height="@dimen/check_box_size"
-                        android:id="@+id/check_box_in_history"
-                        android:button="@drawable/looked_check_box_custom"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                />
+    <TextView
+      android:id="@+id/description_text_view"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="8dp"
+      android:visibility="gone"
+      card_view:layout_constraintBottom_toBottomOf="parent"
+      card_view:layout_constraintEnd_toEndOf="parent"
+      card_view:layout_constraintHorizontal_bias="0.0"
+      card_view:layout_constraintStart_toStartOf="parent"
+      card_view:layout_constraintTop_toBottomOf="@id/poster_image_view"
+      card_view:layout_constraintVertical_bias="0.1"
+      card_view:layout_constraintWidth_percent="0.8" />
 
-                <CheckBox
-                        android:layout_width="@dimen/check_box_size"
-                        android:layout_height="@dimen/check_box_size"
-                        android:id="@+id/in_wish_list"
-                        android:button="@drawable/in_wish_list_custom"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                />
-                <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/more_information_check_box"
-                        android:layout_gravity="center"
-                        android:button="@drawable/more_information_check_box_custom"
-                        android:layout_weight="1"
-                />
-            </LinearLayout>
+    <!--
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:id="@+id/movie_posters_recycler_view"/>
+    !-->
 
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    card_view:layout_constraintWidth_percent="0.8"
-                    android:id="@+id/description_text_view"
-                    card_view:layout_constraintTop_toBottomOf="@id/poster_image_view"
-                    card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintStart_toStartOf="parent"
-                    card_view:layout_constraintEnd_toEndOf="parent"
-                    android:visibility="visible"
-                    card_view:layout_constraintHorizontal_bias="0.0"
-                    card_view:layout_constraintVertical_bias="0.1"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="8dp"
-            />
 
-            <!--
-            <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal"
-                    android:id="@+id/movie_posters_recycler_view"/>
-            !-->
-            <ImageView
-                    android:id="@+id/drag_handle"
-                    card_view:layout_constraintBottom_toTopOf="parent"
-                    card_view:layout_constraintStart_toStartOf="parent"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    tools:ignore="ContentDescription"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

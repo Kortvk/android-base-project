@@ -37,7 +37,6 @@ abstract class BasePresenter<V : MviView<VS>, VS, A : Any>(
         Pair(ns, cmd)
       }
       .skipFirstIf(skipRenderOfInitialState)
-      .observeOn(schedulers.ui)
       .doAfterNext { (_, cmd) ->
         cmd?.invoke()?.subscribe(outputActions)
       }
@@ -45,6 +44,7 @@ abstract class BasePresenter<V : MviView<VS>, VS, A : Any>(
         vs
       }
       .distinctUntilChanged()
+      .observeOn(schedulers.ui)
 
     subscribeViewState(stateChanges) { view, viewState ->
       view.render(viewState)
