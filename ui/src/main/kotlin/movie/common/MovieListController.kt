@@ -15,9 +15,13 @@ import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchAct
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager
 import movie.adapter.BasicMovieAdapter
 import ru.appkode.base.ui.core.core.util.filterEvents
+import ru.appkode.base.ui.movie.adapter.EVENT_ID_ADD_TO_HISTORY_CLICKED
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_ADD_TO_WISHLIST_CLICKED
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_MORE_INFORMATION_CLICKED
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_OPEN_DETAILS
+import ru.appkode.base.ui.movie.adapter.EVENT_ITEM_SWIPED_LEFT
+import ru.appkode.base.ui.movie.adapter.EVENT_ITEM_SWIPED_RIGHT
+import java.util.concurrent.TimeUnit
 
 abstract class MovieListController(args: Bundle) :
   BaseMviController<MovieScreenViewState, MovieScreenView, MovieListPresenter>(args),
@@ -61,50 +65,38 @@ abstract class MovieListController(args: Bundle) :
   }
 
   override fun elementSwipedLeft(): Observable<Int> {
-    //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
-    return Observable.empty()
+    return adapter.eventsRelay.filterEvents(EVENT_ITEM_SWIPED_LEFT)
   }
 
   override fun elementSwipedRight(): Observable<Int> {
-    //TODO: Здесь должна быть логика преобразующая свайп в Observable по аналогии с кликами и прокруткой
-    return Observable.empty()
+    return adapter.eventsRelay.filterEvents(EVENT_ITEM_SWIPED_RIGHT)
   }
 
-  /**
-   * Интент, вызывающий onNext() каждый раз, когда пользователь нажимает на элемент списка
-   * @return [Int] - позиция элемента в списке
-   */
   override fun elementClicked(): Observable<Long> {
-    return adapter.eventsRelay.filterEvents(EVENT_ID_OPEN_DETAILS)
+    return adapter.eventsRelay.filterEvents<Long>(EVENT_ID_OPEN_DETAILS)
+      .throttleFirst(500, TimeUnit.MILLISECONDS)
   }
 
-  /**
-   * Интент, вызывающий onNext() каждый раз, когда пользователь меняет состояние чекбокса "в избранное"
-   * какого-либо элемента списка
-   * @return [Int] - позиция элемента в списке
-   */
+  override fun itemHistoryStateChangeIntent(): Observable<Int> {
+    return adapter.eventsRelay.filterEvents<Int>(EVENT_ID_ADD_TO_HISTORY_CLICKED)
+      .throttleFirst(500, TimeUnit.MILLISECONDS)
+  }
+
   override fun itemWishListStateChangeIntent(): Observable<Int> {
-    return adapter.eventsRelay.filterEvents(EVENT_ID_ADD_TO_WISHLIST_CLICKED)
+    return adapter.eventsRelay.filterEvents<Int>(EVENT_ID_ADD_TO_WISHLIST_CLICKED)
+      .throttleFirst(500, TimeUnit.MILLISECONDS)
   }
 
-  /**
-   * Интент, вызывающий onNext() каждый раз, когда пользователь нажимает на кнопку разворачивания элемента
-   * @return [Int] - позиция элемента в списке
-   */
   override fun showMoreMovieInfoIntent(): Observable<Int> {
     return adapter.eventsRelay.filterEvents(EVENT_ID_MORE_INFORMATION_CLICKED)
   }
 
-  /**
-   * Интент, вызывающий onNext() каждый раз, когда RecyclerView отобразил последний элемент списка,
-   * загруженного в адаптер
-   */
   override fun loadNextPageIntent(): Observable<Unit> {
     return movie_list_recycler.scrollEvents().filter {
       (movie_list_recycler.layoutManager as LinearLayoutManager).let { recycler ->
         (recycler.childCount + recycler.findFirstVisibleItemPosition() >= recycler.itemCount
-            && recycler.findFirstVisibleItemPosition() >= 0
-            && recycler.childCount >= PAGE_SIZE)
+          && recycler.findFirstVisibleItemPosition() >= 0
+          && recycler.childCount >= PAGE_SIZE)
       }
     }.map { Unit }
   }
@@ -114,7 +106,7 @@ abstract class MovieListController(args: Bundle) :
       movie_list_loading.isVisible = viewState.state.isLoading
       movie_list_recycler.isVisible = viewState.state.isContent
       movie_list_empty.isVisible = (viewState.state.isContent &&
-          viewState.state.asContent().isEmpty())
+        viewState.state.asContent().isEmpty())
       if (viewState.state.isContent
         && viewState.state.asContent() != previousViewState?.state?.content
       ) {
@@ -122,12 +114,14 @@ abstract class MovieListController(args: Bundle) :
       }
     }
     fieldChanged(viewState, { it.singleStateChange }) {
-      if (viewState.singleStateChange.first != null
-        && viewState.singleStateChange.second != null
-      ) {
-        adapter.items[viewState.singleStateChange.first!!] = viewState.singleStateChange.second!!
-        adapter.notifyItemChanged(viewState.singleStateChange.first!!)
-        viewState.state.asContent()[viewState.singleStateChange.first!!].apply { isExpanded = !isExpanded }
+      viewState.singleStateChange.first?.let { position ->
+        if (viewState.singleStateChange.second != null) {
+          adapter.items[position] = viewState.singleStateChange.second!!
+          adapter.notifyItemChanged(position)
+        } else {
+          adapter.items.removeAt(position)
+          adapter.notifyDataSetChanged()
+        }
       }
     }
   }

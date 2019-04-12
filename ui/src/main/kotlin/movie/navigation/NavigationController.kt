@@ -20,6 +20,7 @@ import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.util.requireView
 import ru.appkode.base.ui.movie.details.MovieDetailedController
 import ru.appkode.base.ui.movie.filter.FilterController
+import ru.appkode.base.ui.movie.history.HistoryController
 import ru.appkode.base.ui.movie.wishlist.WishListController
 
 private const val ROUTER_STATES_KEY = "router_states"
@@ -70,13 +71,13 @@ class NavigationController : Controller() {
       val controller = when (it.first) {
         R.id.menu_favorite -> WishListController(it.second)
         R.id.fab -> FilterController(it.second)
-        R.id.menu_history -> null
+        R.id.menu_history -> HistoryController(it.second)
         EVENT_ID_NAVIGATION_DETAILS -> MovieDetailedController(it.second)
         else -> null
       }
       if (controller != null)
         pushController(controller, it.first)
-      else showSnackbar("Sorry, not yet implemented")
+      else showSnackbar("Not implemented")
     }
 
   private fun pushController(controller: Controller, controllerId: Int) {

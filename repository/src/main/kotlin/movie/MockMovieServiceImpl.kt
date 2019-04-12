@@ -16,13 +16,28 @@ class MockMovieServiceImpl(
 
   private val genres by lazy {remoteMovieRepository.getGenres().blockingGet() }
 
+  override fun removeFromHistory(movie: MovieBriefUM): Completable {
+    return Completable.fromCallable { localRepository.removeFromHistory(movie) }.subscribeOn(Schedulers.io())
+  }
+
+  override fun removeFromHistory(movie: MovieDetailedUM): Completable {
+    return Completable.fromCallable { localRepository.removeFromHistory(movie) }.subscribeOn(Schedulers.io())
+  }
+
+  override fun addToHistory(movie: MovieBriefUM): Completable {
+    return Completable.fromCallable { localRepository.addToHistory(movie) }.subscribeOn(Schedulers.io())
+  }
+
+  override fun addToHistory(movie: MovieDetailedUM): Completable {
+    return Completable.fromCallable { localRepository.addToHistory(movie) }.subscribeOn(Schedulers.io())
+  }
+
   override fun removeFromWishList(movie: MovieBriefUM): Completable {
     return Completable.fromCallable { localRepository.removeFromWishList(movie) }.subscribeOn(Schedulers.io())
   }
   override fun removeFromWishList(movie: MovieDetailedUM): Completable {
     return Completable.fromCallable { localRepository.removeFromWishList(movie) }.subscribeOn(Schedulers.io())
   }
-
 
   override fun addToWishList(movie: MovieBriefUM): Completable {
     return Completable.fromCallable { localRepository.addToWishList(movie) }.subscribeOn(Schedulers.io())
@@ -32,9 +47,12 @@ class MockMovieServiceImpl(
     return Completable.fromCallable { localRepository.addToWishList(movie) }.subscribeOn(Schedulers.io())
   }
 
-
   override fun getWishListPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
     return localRepository.getWishListPaged(nextPageIntent).subscribeOn(Schedulers.io())
+  }
+
+  override fun getHistoryPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
+    return localRepository.getHistoryPaged(nextPageIntent).subscribeOn(Schedulers.io())
   }
 
   override fun getMovieDetailed(id: Long): Observable<MovieDetailedUM> {

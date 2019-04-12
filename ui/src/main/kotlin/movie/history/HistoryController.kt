@@ -1,4 +1,4 @@
-package ru.appkode.base.ui.movie.wishlist
+package ru.appkode.base.ui.movie.history
 
 import android.os.Bundle
 import movie.adapter.BasicMovieAdapter
@@ -7,15 +7,16 @@ import ru.appkode.base.repository.RepositoryHelper
 import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 import ru.appkode.base.ui.movie.adapter.DragAndDropControls
 import ru.appkode.base.ui.movie.adapter.SwipeControls
+import movie.history.HistoryPresenter
 
-class WishListController(args: Bundle) : MovieListController(args) {
+class HistoryController(args: Bundle) : MovieListController(args) {
 
-  override fun getMovieListAdapter() = WishListMovieAdapter()
+  override fun getMovieListAdapter() = HistoryAdapter()
 
-  override fun createPresenter() = WishListPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService())
+  override fun createPresenter() = HistoryPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService())
 
 }
 
-class WishListMovieAdapter : BasicMovieAdapter(), SwipeControls, DragAndDropControls {
+class HistoryAdapter : BasicMovieAdapter(), SwipeControls, DragAndDropControls {
   override fun delegateControlsAdapter(): BasicMovieAdapter = this
 }
