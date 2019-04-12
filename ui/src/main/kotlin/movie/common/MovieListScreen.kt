@@ -11,6 +11,11 @@ import ru.appkode.base.ui.core.core.ViewState
  */
 interface MovieScreenView : MviView<MovieScreenViewState> {
   /**
+   *  Интент на обновление списка.
+   *  @return [Observable], в котором каждый onNext() - интент на swipRefresh
+   */
+  fun refreshIntent(): Observable<Unit>
+  /**
    *  Интент на добавление элемента в Вишлист.
    *  @return [Observable], в котором каждый onNext() - position элемента, который нужно удалить
    */

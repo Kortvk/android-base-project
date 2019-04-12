@@ -10,6 +10,8 @@ import ru.appkode.base.ui.movie.adapter.SwipeControls
 
 class WishListController(args: Bundle) : MovieListController(args) {
 
+  override val emptyListMessage = "Wishlist is empty"
+
   override fun getMovieListAdapter() = WishListMovieAdapter()
 
   override fun createPresenter() = WishListPresenter(DefaultAppSchedulers, RepositoryHelper.getMovieService())

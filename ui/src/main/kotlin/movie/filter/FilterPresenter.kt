@@ -33,6 +33,6 @@ class FilterPresenter(
     return intent(MovieScreenView::elementSwipedRight).map { AddToWishList(it) }
   }
 
-  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) =
-    movieService.getPopularMoviesPaged(nextPageIntent)
+  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>) =
+    movieService.getPopularMoviesPaged(nextPageIntent, reloadIntent)
 }

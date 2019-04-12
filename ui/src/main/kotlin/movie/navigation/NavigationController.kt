@@ -86,6 +86,7 @@ class NavigationController : Controller() {
     currentControllerId = controllerId
     //childRouter.getControllerWithInstanceId()
     childRouter.setRoot(RouterTransaction.with(controller))
+    requireView.bottom_navigation.selectedItemId = -1
   }
 
   /**

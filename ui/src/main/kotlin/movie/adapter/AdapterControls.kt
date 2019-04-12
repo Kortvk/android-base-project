@@ -69,13 +69,13 @@ interface SwipeControls : SwipeableItemAdapter<BasicMovieAdapter.MovieNMViewHold
 
   @SuppressLint("SwitchIntDef") //TODO: поменять ресурсы ресурсы (или решить ,что менять не надо)
   override fun onSetSwipeBackground(holder: BasicMovieAdapter.MovieNMViewHolder, position: Int, type: Int) {
-//    val resId = when (type) {
-//      SwipeableItemConstants.DRAWABLE_SWIPE_NEUTRAL_BACKGROUND -> R.drawable.gradient_bg
-//      SwipeableItemConstants.DRAWABLE_SWIPE_LEFT_BACKGROUND -> R.drawable.gradient_bg
-//      SwipeableItemConstants.DRAWABLE_SWIPE_RIGHT_BACKGROUND -> R.drawable.gradient_bg
-//      else -> R.drawable.gradient_bg
-//    }
-//    holder.itemView.setBackgroundResource(resId)
+    val resId = when (type) {
+      SwipeableItemConstants.DRAWABLE_SWIPE_NEUTRAL_BACKGROUND -> R.drawable.item_swiped_bg
+      SwipeableItemConstants.DRAWABLE_SWIPE_LEFT_BACKGROUND -> R.drawable.item_swiped_bg
+      SwipeableItemConstants.DRAWABLE_SWIPE_RIGHT_BACKGROUND -> R.drawable.gradient_bg
+      else -> R.drawable.item_swiped_bg
+    }
+    holder.itemView.setBackgroundResource(resId)
   }
 }
 

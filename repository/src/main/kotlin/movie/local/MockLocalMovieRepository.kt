@@ -66,12 +66,12 @@ object MockLocalMovieRepository : LocalMovieRepository {
     }
   }
 
-  override fun getWishListPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
-    return paginatedObservable(nextPageIntent) { page -> getMoviesAtPage(page, getWishList()) }
+  override fun getWishListPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
+    return paginatedObservable(nextPageIntent, reloadIntent) { page -> getMoviesAtPage(page, getWishList()) }
   }
 
-  override fun getHistoryPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
-    return paginatedObservable(nextPageIntent) { page -> getMoviesAtPage(page, getHistory()) }
+  override fun getHistoryPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
+    return paginatedObservable(nextPageIntent, reloadIntent) { page -> getMoviesAtPage(page, getHistory()) }
   }
 
   /**

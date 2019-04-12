@@ -13,7 +13,7 @@ interface LocalMovieRepository {
   fun addToHistory(movie: MovieDetailedUM)
   fun removeFromHistory(movie: MovieBriefUM)
   fun removeFromHistory(movie: MovieDetailedUM)
-  fun getWishListPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
-  fun getHistoryPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
+  fun getWishListPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
+  fun getHistoryPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
   fun getStatusUpdates(moviesToUpdate: List<MovieBriefUM>): Observable<List<MovieBriefUM>>
 }

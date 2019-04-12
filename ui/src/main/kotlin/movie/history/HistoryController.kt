@@ -8,8 +8,11 @@ import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 import ru.appkode.base.ui.movie.adapter.DragAndDropControls
 import ru.appkode.base.ui.movie.adapter.SwipeControls
 import movie.history.HistoryPresenter
+import ru.appkode.base.ui.core.core.BaseMviController
 
 class HistoryController(args: Bundle) : MovieListController(args) {
+
+  override val emptyListMessage = "History is empty"
 
   override fun getMovieListAdapter() = HistoryAdapter()
 

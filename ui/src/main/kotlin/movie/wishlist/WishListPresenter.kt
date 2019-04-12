@@ -39,12 +39,14 @@ class WishListPresenter(
   }
 
   override fun bindSwipeLeftIntent(): Observable<out ScreenAction> {
-    return intent(MovieScreenView::elementSwipedLeft).filter { it != 999 }.map { AddToHistory(it) }
+    return intent(MovieScreenView::elementSwipedLeft)
+      .concatMap { Observable.just(AddToHistory(it), RemoveFromWishList(it)) }
   }
 
   override fun bindSwipeRightIntent(): Observable<out ScreenAction> {
-    return intent(MovieScreenView::elementSwipedRight).filter { it != 999 }.map { RemoveFromWishList(it) }
+    return intent(MovieScreenView::elementSwipedRight).map { RemoveFromWishList(it) }
   }
 
-  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) = movieService.getWishListPaged(nextPageIntent)
+  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>) =
+    movieService.getWishListPaged(nextPageIntent, reloadIntent)
 }

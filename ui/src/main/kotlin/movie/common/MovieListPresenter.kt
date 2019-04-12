@@ -24,7 +24,6 @@ data class UpdateMovieList(val list: List<MovieBriefUM>) : ScreenAction()
 data class AddToHistory(val position: Int) : ScreenAction()
 data class RemoveFromHistory(val position: Int) : ScreenAction()
 data class OpenDetails(val id: Long) : ScreenAction()
-data class Error(val error: String) : ScreenAction()
 data class ExpandCollapseMovieItem(val position: Int) : ScreenAction()
 data class UpdateSingleItem(val position: Int, val mutator: (MovieBriefUM) -> MovieBriefUM?) : ScreenAction()
 
@@ -47,8 +46,11 @@ abstract class MovieListPresenter(
       intent(MovieScreenView::elementClicked).map { OpenDetails(it) },
       intent(MovieScreenView::showMoreMovieInfoIntent).map { ExpandCollapseMovieItem(it) },
       bindSwipeLeftIntent(), bindSwipeRightIntent(),
-      getPagedMovieListSource(intent(MovieScreenView::loadNextPageIntent))
-        .map { LoadNextPage(LceState.Content(it)) }.doOnError { Error(it.message) }
+      getPagedMovieListSource(intent(MovieScreenView::loadNextPageIntent), intent(MovieScreenView::refreshIntent))
+        .doLceAction  { LoadNextPage(it) }
+        .onErrorReturn {
+          LoadNextPage(LceState.Error(it.message ?: "unknown error"))
+        }
     )
   }
 
@@ -58,7 +60,10 @@ abstract class MovieListPresenter(
    * @param nextPageIntent - Интент, генерирующий запросы на загрузку страницы из действий пользователя
    * @return следующая страница списка фильмов
    */
-  abstract fun getPagedMovieListSource(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
+  abstract fun getPagedMovieListSource(
+    nextPageIntent: Observable<Unit>,
+    refreshIntent: Observable<Unit>
+  ): Observable<List<MovieBriefUM>>
 
   abstract fun bindSwipeLeftIntent(): Observable<out ScreenAction>
 
@@ -88,7 +93,6 @@ abstract class MovieListPresenter(
       is RemoveFromHistory -> processRemoveFromHistory(previousState, action)
       is OpenDetails -> processOpenDetails(previousState, action)
       is ExpandCollapseMovieItem -> processExpandCollapseItem(previousState, action)
-      is Error -> processError(action)
       is UpdateSingleItem -> processSingleItemUpdate(previousState, action)
       is ItemHistoryStateChanged -> processItemHistoryStateChanged(previousState, action)
     }
@@ -126,11 +130,6 @@ abstract class MovieListPresenter(
     return previousState to null
   }
 
-  private fun processError(action: Error)
-    : Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
-    return MovieScreenViewState(state = LceState.Error(error = action.error)) to null
-  }
-
   private fun processNextPage(
     previousState: MovieScreenViewState,
     action: LoadNextPage
@@ -140,7 +139,7 @@ abstract class MovieListPresenter(
         previousState.state.asContent().toMutableList().apply { this.addAll(action.state.asContent()) }
       } else mutableListOf<MovieBriefUM>().apply { this.addAll(action.state.asContent()) }
       MovieScreenViewState(state = LceState.Content(content)) to null
-    } else MovieScreenViewState(state = LceState.Loading()) to null
+    } else MovieScreenViewState(state = action.state) to null
 
   private fun processUpdateMovieList(action: UpdateMovieList)
     : Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {

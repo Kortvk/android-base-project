@@ -1,6 +1,7 @@
 package movie.history
 
 import io.reactivex.Observable
+import io.reactivex.ObservableSource
 import movie.common.AddToWishList
 import movie.common.MovieListPresenter
 import movie.common.MovieScreenView
@@ -49,8 +50,10 @@ class HistoryPresenter(
   }
 
   override fun bindSwipeRightIntent(): Observable<out ScreenAction> {
-    return intent(MovieScreenView::elementSwipedRight).map { AddToWishList(it) }
+    return intent(MovieScreenView::elementSwipedRight)
+      .concatMap { Observable.just(AddToWishList(it), RemoveFromHistory(it)) }
   }
 
-  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) = movieService.getHistoryPaged(nextPageIntent)
+  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>) =
+    movieService.getHistoryPaged(nextPageIntent, reloadIntent)
 }

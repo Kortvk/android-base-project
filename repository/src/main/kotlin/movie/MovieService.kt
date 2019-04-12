@@ -14,10 +14,10 @@ interface MovieService {
   fun addToWishList(movie: MovieDetailedUM): Completable
   fun addToHistory(movie: MovieBriefUM): Completable
   fun addToHistory(movie: MovieDetailedUM): Completable
-  fun getWishListPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
-  fun getHistoryPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
+  fun getWishListPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
+  fun getHistoryPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
   fun getMovieDetailed(id: Long): Observable<MovieDetailedUM>
 
   /**  ТОЛЬКО ДЛЯ ТЕСТОВ */
-  fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
+  fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
 }
