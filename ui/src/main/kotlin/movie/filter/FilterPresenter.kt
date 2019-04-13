@@ -3,6 +3,7 @@ package movie.filter
 import android.os.Bundle
 import io.reactivex.Observable
 import movie.common.*
+import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.repository.RepositoryHelper
 import ru.appkode.base.repository.movie.MovieService
 import ru.appkode.base.ui.core.core.Command
@@ -40,4 +41,6 @@ class FilterPresenter(schedulers: AppSchedulers,
 
   override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) =
     movieService.getPopularMoviesPaged(nextPageIntent)
+
+
 }

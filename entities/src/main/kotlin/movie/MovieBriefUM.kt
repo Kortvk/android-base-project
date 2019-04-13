@@ -1,9 +1,10 @@
 package ru.appkode.base.entities.core.movie
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
-data class MovieDetailedUM(val id: Int)
 
 @Entity(tableName = "movie")
 class MovieBriefSM(
@@ -16,11 +17,12 @@ class MovieBriefSM(
   val title: String,
   val rating: Float,
   val sort: Int? = 1000
+
 )
 
 fun MovieBriefSM.toUIModel(): MovieBriefUM {
   return MovieBriefUM(
-    id,
+    id.toLong(),
     isInWishList,
     listOf(""),
     overview,
@@ -28,13 +30,14 @@ fun MovieBriefSM.toUIModel(): MovieBriefUM {
     backdrop,
     releaseDate,
     title,
-    rating
+    rating,
+    0
   )
 }
 
 fun MovieBriefUM.toStorageModel(): MovieBriefSM {
   return MovieBriefSM(
-    id,
+    id.toInt(),
     isInWishList,
     overview,
     poster,
@@ -46,39 +49,3 @@ fun MovieBriefUM.toStorageModel(): MovieBriefSM {
 }
 
 
-
-
-
-data class MovieBriefUM(
-  val id: Int,
-  var isInWishList: Boolean,
-  val genres: List<String?>,
-  val overview: String,
-  val poster: String?,
-  val backdrop: String?,
-  val releaseDate: String,
-  val title: String,
-  val rating: Float
-) {
-    data class Genre(
-        val id: Int,
-        val name: String
-    )
-
-    data class ProductionCompany(
-        val name: String,
-        val id: Int,
-        val logo_path: String?,
-        val origin_country: String
-    )
-
-    data class ProductionCountry(
-        val iso_3166_1: String,
-        val name: String
-    )
-
-    data class SpokenLanguage(
-        val iso_639_1: String,
-        val name: String
-    )
-}

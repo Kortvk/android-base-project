@@ -38,6 +38,7 @@ interface MovieScreenView : MviView<MovieScreenViewState> {
     Интент на разворот элемента списка.
    */
   fun showMoreMovieInfoIntent(): Observable<Int>
+  fun itemWishListStateChangeIntent2(): Observable<Int>
 }
 
 @ViewState

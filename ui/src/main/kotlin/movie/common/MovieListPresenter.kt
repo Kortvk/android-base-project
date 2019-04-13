@@ -1,6 +1,7 @@
 package movie.common
 
 import android.os.Bundle
+import android.util.Log
 import io.reactivex.Observable
 import movie.navigation.DETAIL_SCREEN_ID_KEY
 import movie.navigation.EVENT_ID_NAVIGATION_DETAILS
@@ -146,6 +147,7 @@ abstract class MovieListPresenter(
     action: AddToWishList
   ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {
     require(action.position < previousState.state.asContent().size)
+    Log.d("current", "processAddToWishList " + previousState.state.asContent()[action.position])
     return previousState to command(
       movieService.addToWishList(previousState.state.asContent()[action.position]).doAction {
         UpdateSingleItem(action.position) { movie -> movie.isInWishList = true }
@@ -181,4 +183,8 @@ abstract class MovieListPresenter(
       state = LceState.Loading()
     )
   }
+
+
+  fun processAddToFavorite(movie: MovieBriefUM) =
+    movieService.addToWishList(movie)
 }

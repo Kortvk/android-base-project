@@ -1,5 +1,6 @@
 package movie.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,6 +68,8 @@ abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieN
     private fun bindIntents() {
       itemView.in_wish_list.setOnClickListener {
         eventsRelay.accept(EVENT_ID_ADD_TO_WISHLIST_CLICKED to adapterPosition)
+        eventsRelay.accept(EVENT_ADD_TO_WISH to movie)
+        Log.d("current", "in_wish_list click " + movie)
       }
       itemView.poster_image_view.setOnClickListener {
         eventsRelay.accept(EVENT_ID_OPEN_DETAILS to movie.id)

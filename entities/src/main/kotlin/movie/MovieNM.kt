@@ -82,27 +82,25 @@ fun MovieBriefNM.toUiModel(genresMapper: List<GenreNM>): MovieBriefUM {
 
 fun MovieDetailedNM.toUiModel(): MovieDetailedUM {
   return MovieDetailedUM(
-    id = id,
-    title = title,
-    imdbId = imdb_id,
-    genres = genres.map { it.name },
-    status = status,
-    overview = overview,
-    posterPath = poster_path,
-    productionCompanies = production_companies?.map { it.name },
-    releaseDate = release_date,
-    runtime = runtime,
-    tagline = tagline,
-    voteAverage = vote_average,
-    crew = credits?.crew?.map { it.toUiModel() },
-    cast = credits?.cast?.map { it.toUiModel() },
-    backdrop = backdrop_path,
-    images = images?.posters?.map { it.file_path },
-    keywords = keywords?.keywords?.map {
-      it.name
-    },
-    isInWishList = false,
-    votes = vote_count
+    id,
+    title,
+    imdb_id,
+    ArrayList<String>(),
+    status,
+    overview,
+    poster_path,
+    null,
+    release_date,
+    runtime,
+    tagline,
+    vote_average,
+    null,
+    null,
+    backdrop_path,
+    null,
+    null,
+    false,
+    vote_count
   )
 }
 

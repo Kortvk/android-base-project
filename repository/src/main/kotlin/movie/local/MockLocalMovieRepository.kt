@@ -1,9 +1,17 @@
 package movie.local
 
+import android.util.Log
 import io.reactivex.*
+import io.reactivex.functions.BiFunction
+import ru.appkode.base.data.storage.DatabaseHelper
 import ru.appkode.base.entities.core.common.PagedListWrapper
 import ru.appkode.base.entities.core.movie.MovieBriefUM
+import ru.appkode.base.entities.core.movie.MovieDetailedUM
+import ru.appkode.base.entities.core.movie.toBrief
+import ru.appkode.base.entities.core.movie.toStorageModel
+import ru.appkode.base.entities.core.movie.toUIModel
 import ru.appkode.base.repository.util.paginatedObservable
+import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 
 /**
  * In-memory мокап локального репозитория с вишлистом и паджинацией
@@ -65,13 +73,25 @@ object MockLocalMovieRepository : LocalMovieRepository {
 class MovieRepositoryImpl(): LocalMovieRepository {
 
   private val movies = mutableListOf<MovieBriefUM>()
-  private val pageSize = 10
+  val pageSize = 10
 
+  override fun addToWishList(movie: MovieDetailedUM) {
+    addToWishList(movie.toBrief())
+  }
+
+  override fun removeFromWishList(movie: MovieDetailedUM) {
+    removeFromWishList(movie.toBrief())
+  }
 
   override fun addToWishList(movie: MovieBriefUM) {
-    Completable.fromAction{
+    Log.d("current", "MovieRepositoryImpl addToWishList " + movie)
+    //Completable.fromAction{
+    movie.isInWishList = !movie.isInWishList
+    if(!movie.isInWishList)
+      DatabaseHelper.getMoviePersistence().deleteMovie(movie.toStorageModel())
+    else
       DatabaseHelper.getMoviePersistence().addMovie(movie.toStorageModel())
-    }.subscribeOn(DefaultAppSchedulers.io)
+    //}.subscribeOn(DefaultAppSchedulers.io)
   }
 
   override fun removeFromWishList(movie: MovieBriefUM) {
@@ -81,11 +101,37 @@ class MovieRepositoryImpl(): LocalMovieRepository {
   }
 
   override fun getWishListPaged(nextPageIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
-    return DatabaseHelper.getMoviePersistence().getMovies().map{ list -> list.map{it.toUIModel()} }.subscribeOn(DefaultAppSchedulers.io)
+    return paginatedObservable(nextPageIntent) { page ->
+      getWishListPagedDb(page)
+    }
   }
 
+
+  fun getWishListPaged2(page: Int): Single<PagedListWrapper<MovieBriefUM>>  {
+    val res = Observable.zip(
+      movies(page).toObservable(),
+      Observable.fromCallable {
+        DatabaseHelper.getMoviePersistence().count()
+      }.subscribeOn(DefaultAppSchedulers.io),
+      BiFunction<List<MovieBriefUM>, Int, PagedListWrapper<MovieBriefUM>>{t1, t2 -> PagedListWrapper(page, t2, t2/pageSize, t1)}
+    )
+    return res.singleOrError()
+  }
+
+
+
+  fun getWishListPagedDb(page: Int): Single<PagedListWrapper<MovieBriefUM>>  {
+    Log.d("current", "getWishListPagedDb page = " + page)
+    return DatabaseHelper.getMoviePersistence()
+      .getMovies(page)
+      .map{ list -> PagedListWrapper<MovieBriefUM>(page, 10, 10, list.map{it.toUIModel()}) }
+      //.map{ list -> list.map{it.toUIModel()}.map { list -> PagedListWrapper(page, 20, 1, list) } }
+      .subscribeOn(DefaultAppSchedulers.io)
+  }
+
+
   override fun getStatusUpdates(moviesToUpdate: List<MovieBriefUM>): Observable<List<MovieBriefUM>> {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    return movies().toObservable()
   }
 
   fun addMovie(movie: MovieBriefUM): Completable {
@@ -110,7 +156,7 @@ class MovieRepositoryImpl(): LocalMovieRepository {
     return DatabaseHelper.getMoviePersistence().getMovie(movieId).map{ it.toUIModel() }.subscribeOn(DefaultAppSchedulers.io)
   }
 
-  fun movies(): Observable<List<MovieBriefUM>> {
-    return DatabaseHelper.getMoviePersistence().getMovies().map{ list -> list.map{it.toUIModel()} }.subscribeOn(DefaultAppSchedulers.io)
+  fun movies(page: Int = 1): Single<List<MovieBriefUM>> {
+    return DatabaseHelper.getMoviePersistence().getMovies(page).map{ list -> list.map{it.toUIModel()} }.subscribeOn(DefaultAppSchedulers.io)
   }
 }

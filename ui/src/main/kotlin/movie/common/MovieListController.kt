@@ -15,6 +15,7 @@ import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchAct
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager
 import movie.adapter.BasicMovieAdapter
 import ru.appkode.base.ui.core.core.util.filterEvents
+import ru.appkode.base.ui.movie.adapter.EVENT_ADD_TO_WISH
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_ADD_TO_WISHLIST_CLICKED
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_MORE_INFORMATION_CLICKED
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_OPEN_DETAILS
@@ -130,5 +131,8 @@ abstract class MovieListController(args: Bundle) :
         viewState.state.asContent()[viewState.singleStateChange.first!!].apply { isExpanded = !isExpanded }
       }
     }
+  }
+  override fun itemWishListStateChangeIntent2(): Observable<Int> {
+    return adapter.eventsRelay.filterEvents(EVENT_ADD_TO_WISH)
   }
 }
