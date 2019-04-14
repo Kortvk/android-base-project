@@ -7,10 +7,12 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.Update
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.appkode.base.entities.core.movie.MovieBriefSM
+import storage.db.Converters
 
 
 private const val DATABASE_VERSION = 1
@@ -20,6 +22,7 @@ const val DATABASE_NAME = "task.db"
   entities = [MovieBriefSM::class],
   version = DATABASE_VERSION
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
   abstract fun moviePersistence(): MoviePersistence
 }
