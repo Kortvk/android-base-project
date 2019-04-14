@@ -1,6 +1,7 @@
 package movie.common
 
 import android.os.Bundle
+import android.util.Log
 import io.reactivex.Observable
 import movie.navigation.DETAIL_SCREEN_ID_KEY
 import movie.navigation.EVENT_ID_NAVIGATION_DETAILS
@@ -210,4 +211,8 @@ abstract class MovieListPresenter(
   override fun createInitialState(): MovieScreenVS {
     return MovieScreenVS.Loading()
   }
+
+
+  fun processAddToFavorite(movie: MovieBriefUM) =
+    movieService.addToWishList(movie)
 }

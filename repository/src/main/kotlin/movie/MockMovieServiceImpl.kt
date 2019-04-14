@@ -1,5 +1,6 @@
 package ru.appkode.base.repository.movie
 
+import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -47,6 +48,7 @@ class MockMovieServiceImpl(
   }
 
   override fun addToWishList(movie: MovieDetailedUM): Completable {
+    Log.d("current", "addToWishList " + movie)
     return Completable.fromCallable { localRepository.addToWishList(movie) }.subscribeOn(Schedulers.io())
   }
 
@@ -74,5 +76,6 @@ class MockMovieServiceImpl(
   ): Observable<List<MovieBriefUM>> =
     remoteMovieRepository.getPopularMoviesPaged(nextPageIntent, reloadIntent)
       .map { list -> list.map { it.toUiModel(genres) } }
-      .switchMap { localRepository.getStatusUpdates(it) }.subscribeOn(Schedulers.io())
+      //.switchMap { localRepository.getStatusUpdates(it) }
+      .subscribeOn(Schedulers.io())
 }

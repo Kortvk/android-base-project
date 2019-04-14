@@ -17,6 +17,7 @@ import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import movie.adapter.BasicMovieAdapter
 import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.util.filterEvents
+import ru.appkode.base.ui.movie.adapter.EVENT_ADD_TO_WISH
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_ADD_TO_HISTORY_CLICKED
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_ADD_TO_WISHLIST_CLICKED
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_MORE_INFORMATION_CLICKED
@@ -132,5 +133,8 @@ abstract class MovieListController(args: Bundle) :
         }
       }
     }
+  }
+  override fun itemWishListStateChangeIntent2(): Observable<Int> {
+    return adapter.eventsRelay.filterEvents(EVENT_ADD_TO_WISH)
   }
 }
