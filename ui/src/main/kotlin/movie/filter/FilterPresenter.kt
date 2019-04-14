@@ -12,16 +12,16 @@ class FilterPresenter(
 ) : MovieListPresenter(schedulers, movieService) {
 
   override fun processRemoveFromWishList(
-    previousState: MovieScreenViewState,
+    previousState: MovieScreenVS,
     action: RemoveFromWishList
-  ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {
+  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
     return previousState to null
   }
 
   override fun processRemoveFromHistory(
-    previousState: MovieScreenViewState,
+    previousState: MovieScreenVS,
     action: RemoveFromHistory
-  ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
+  ): Pair<MovieScreenVS, Command<Observable<ScreenAction>>?> {
     return previousState to null
   }
 

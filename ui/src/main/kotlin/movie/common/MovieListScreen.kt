@@ -9,7 +9,7 @@ import ru.appkode.base.ui.core.core.ViewState
 /**
  * Экран отображения фильмов
  */
-interface MovieScreenView : MviView<MovieScreenViewState> {
+interface MovieScreenView : MviView<MovieScreenVS> {
   /**
    *  Интент на обновление списка.
    *  @return [Observable], в котором каждый onNext() - интент на swipRefresh
@@ -58,9 +58,15 @@ interface MovieScreenView : MviView<MovieScreenViewState> {
 }
 
 @ViewState
-data class MovieScreenViewState(
-  /** Поле для изменения единственного элемента в листе - пара (Индекс, Измененный объект) */
+data class MovieScreenVS(
   val singleStateChange: Pair<Int?, MovieBriefUM?> = null to null,
   val isHintVisible: Boolean = true,
-  val state: LceState<List<MovieBriefUM>>
-)
+  var content: List<MovieBriefUM> = emptyList(),
+  val state: LceState<Unit>
+) {
+  companion object {
+    fun Content(content: List<MovieBriefUM>) = MovieScreenVS(content = content, state = LceState.Content(Unit))
+    fun Loading() = MovieScreenVS(state = LceState.Loading(Unit))
+    fun Error(error: String) = MovieScreenVS(state = LceState.Error(error))
+  }
+}

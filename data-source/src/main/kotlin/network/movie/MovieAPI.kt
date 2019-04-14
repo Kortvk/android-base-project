@@ -21,23 +21,31 @@ interface MovieAPI {
     : Single<PagedListWrapper<MovieBriefNM>>
 
   @GET("/3/discover/movie")
-  fun filterMoviesPaged(@QueryMap options: Map<String, String>,
-                        @Query("page") page: Int)
+  fun filterMoviesPaged(
+    @QueryMap options: Map<String, String>,
+    @Query("page") page: Int
+  )
     : Single<PagedListWrapper<MovieBriefNM>>
 
   @GET("/3/search/movie")
-  fun searchMoviesPaged(@Query("query") title: String,
-                        @Query("page") page: Int)
+  fun searchMoviesPaged(
+    @Query("query") title: String,
+    @Query("page") page: Int
+  )
     : Single<PagedListWrapper<MovieBriefNM>>
 
   @GET("/3/search/keyword")
-  fun searchKeywordsPaged(@Query("query") name: String,
-                          @Query("page") page: Int)
+  fun searchKeywordsPaged(
+    @Query("query") name: String,
+    @Query("page") page: Int
+  )
     : Single<PagedListWrapper<KeywordNM>>
 
   @GET("/3/search/person")
-  fun searchCastPaged(@Query("query") name: String,
-                      @Query("page") page: Int)
+  fun searchCastPaged(
+    @Query("query") name: String,
+    @Query("page") page: Int
+  )
     : Single<PagedListWrapper<CastNM>>
 
   @GET("/3/genre/movie/list")

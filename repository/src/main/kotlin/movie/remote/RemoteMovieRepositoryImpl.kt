@@ -5,6 +5,7 @@ import ru.appkode.base.data.network.movie.MovieAPI
 import ru.appkode.base.entities.core.movie.MovieFilter
 import ru.appkode.base.entities.core.movie.buildFilterParameters
 import ru.appkode.base.repository.util.paginatedObservable
+import java.util.concurrent.TimeUnit
 
 class RemoteMovieRepositoryImpl(private val movieApi: MovieAPI) : RemoteMovieRepository {
 

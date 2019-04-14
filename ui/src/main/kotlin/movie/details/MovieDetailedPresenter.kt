@@ -51,7 +51,7 @@ class MovieDetailedPresenter(
   }
 
   private fun processAddToWishList(previousState: MovieDetailedViewState)
-      : Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
+    : Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
     return previousState to command(movieService.addToWishList(previousState.state.asContent())
       .doAction {
         LoadMovieDetails(previousState.state.asContent().apply { this.isInWishList = false })
@@ -60,7 +60,7 @@ class MovieDetailedPresenter(
   }
 
   private fun processRemoveFromWishList(previousState: MovieDetailedViewState)
-      : Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
+    : Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
     return previousState to command(movieService.removeFromWishList(previousState.state.asContent())
       .doAction {
         LoadMovieDetails(previousState.state.asContent().apply { this.isInWishList = false })
@@ -69,12 +69,12 @@ class MovieDetailedPresenter(
   }
 
   private fun processLoadMovie(action: LoadMovieDetails)
-      : Pair<MovieDetailedViewState, Command<Observable<ScreenAction>>?> {
+    : Pair<MovieDetailedViewState, Command<Observable<ScreenAction>>?> {
     return MovieDetailedViewState(state = LceState.Content(action.movie)) to null
   }
 
   private fun processRefreshMovie(previousState: MovieDetailedViewState)
-      : Pair<MovieDetailedViewState, Command<Observable<ScreenAction>>?> {
+    : Pair<MovieDetailedViewState, Command<Observable<ScreenAction>>?> {
     return previousState to command(
       movieService.getMovieDetailed(movieId).doAction { LoadMovieDetails(it) }
     )

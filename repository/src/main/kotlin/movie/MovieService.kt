@@ -19,5 +19,8 @@ interface MovieService {
   fun getMovieDetailed(id: Long): Observable<MovieDetailedUM>
 
   /**  ТОЛЬКО ДЛЯ ТЕСТОВ */
-  fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
+  fun getPopularMoviesPaged(
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<MovieBriefUM>>
 }

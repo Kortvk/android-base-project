@@ -16,7 +16,7 @@ internal class ListWrapperConverterFactory : Converter.Factory() {
     retrofit: Retrofit
   ): Converter<ResponseBody, *> =
     if (type is ParameterizedType) {
-      when ( type.actualTypeArguments[0]) {
+      when (type.actualTypeArguments[0]) {
         GenreNM::class.java -> getConverter<GenresWrapper, GenreNM>(retrofit, annotations)
         else -> retrofit.nextResponseBodyConverter<Any>(this, type, annotations)
       }

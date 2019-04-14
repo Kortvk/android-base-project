@@ -15,7 +15,8 @@ class MockMovieServiceImpl(
 ) : MovieService {
 
   private val genres by lazy {
-    remoteMovieRepository.getGenres().blockingGet() }
+    remoteMovieRepository.getGenres().blockingGet()
+  }
 
   override fun removeFromHistory(movie: MovieBriefUM): Completable {
     return Completable.fromCallable { localRepository.removeFromHistory(movie) }.subscribeOn(Schedulers.io())
@@ -36,6 +37,7 @@ class MockMovieServiceImpl(
   override fun removeFromWishList(movie: MovieBriefUM): Completable {
     return Completable.fromCallable { localRepository.removeFromWishList(movie) }.subscribeOn(Schedulers.io())
   }
+
   override fun removeFromWishList(movie: MovieDetailedUM): Completable {
     return Completable.fromCallable { localRepository.removeFromWishList(movie) }.subscribeOn(Schedulers.io())
   }
@@ -48,11 +50,17 @@ class MockMovieServiceImpl(
     return Completable.fromCallable { localRepository.addToWishList(movie) }.subscribeOn(Schedulers.io())
   }
 
-  override fun getWishListPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
+  override fun getWishListPaged(
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<MovieBriefUM>> {
     return localRepository.getWishListPaged(nextPageIntent, reloadIntent).subscribeOn(Schedulers.io())
   }
 
-  override fun getHistoryPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
+  override fun getHistoryPaged(
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<MovieBriefUM>> {
     return localRepository.getHistoryPaged(nextPageIntent, reloadIntent).subscribeOn(Schedulers.io())
   }
 
@@ -60,7 +68,10 @@ class MockMovieServiceImpl(
     return remoteMovieRepository.getMovieById(id).toObservable().map { it.toUiModel() }.subscribeOn(Schedulers.io())
   }
 
-  override fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>> =
+  override fun getPopularMoviesPaged(
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<MovieBriefUM>> =
     remoteMovieRepository.getPopularMoviesPaged(nextPageIntent, reloadIntent)
       .map { list -> list.map { it.toUiModel(genres) } }
       .switchMap { localRepository.getStatusUpdates(it) }.subscribeOn(Schedulers.io())

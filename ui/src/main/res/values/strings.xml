@@ -15,10 +15,10 @@
   <string name="create_task_title">@string/title</string>
   <string name="create_task_description">@string/description</string>
   <string name="create_task_create">Создать</string>
-    <string name="err_wishlist_empty">Wishlist is empty</string>
-    <string name="cd_photo">Cast photo</string>
+  <string name="err_wishlist_empty">Wishlist is empty</string>
+  <string name="cd_photo">Cast photo</string>
 
-<!-- Movie details -->
+  <!-- Movie details -->
   <string name="runtime">%d min</string>
   <string name="votes">%d votes</string>
   <string name="directed">Directed by %s</string>

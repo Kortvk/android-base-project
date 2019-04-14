@@ -13,27 +13,29 @@ class WishListPresenter(
 ) : MovieListPresenter(schedulers, movieService) {
 
   override fun processRemoveFromHistory(
-    previousState: MovieScreenViewState,
+    previousState: MovieScreenVS,
     action: RemoveFromHistory
-  ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {
-    require(action.position < previousState.state.asContent().size)
+  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
+    require(action.position < previousState.content.size)
     return previousState to command(
       movieService
-        .removeFromHistory(previousState.state.asContent()[action.position]).doAction {
-          UpdateSingleItem(action.position) { movie -> movie.apply { isInHistory = false } }
+        .removeFromHistory(previousState.content[action.position]).doAction {
+          UpdateMovieList(previousState.content.apply { this[action.position].isInHistory = false })
         }
     )
   }
 
   override fun processRemoveFromWishList(
-    previousState: MovieScreenViewState,
+    previousState: MovieScreenVS,
     action: RemoveFromWishList
-  ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {
-    require(action.position < previousState.state.asContent().size)
+  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
+    require(action.position < previousState.content.size)
     return previousState to command(
       movieService
-        .removeFromWishList(previousState.state.asContent()[action.position]).doAction {
-          UpdateSingleItem(action.position) { null }
+        .removeFromWishList(previousState.content[action.position]).doAction {
+          UpdateMovieList(previousState.content.toMutableList().apply {
+            removeAt(action.position)
+          })
         }
     )
   }
@@ -47,6 +49,6 @@ class WishListPresenter(
     return intent(MovieScreenView::elementSwipedRight).map { RemoveFromWishList(it) }
   }
 
-  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>) =
-    movieService.getWishListPaged(nextPageIntent, reloadIntent)
+  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>, refreshIntent: Observable<Unit>) =
+    movieService.getWishListPaged(nextPageIntent, refreshIntent)
 }

@@ -20,8 +20,11 @@ object MockLocalMovieRepository : LocalMovieRepository {
   private const val pageSize = 10
 
   override fun addToHistory(movie: MovieBriefUM) {
-    val local = movies.find{ it.id == movie.id }
-    if (local != null) local.isInHistory = true else movies.add(movie).also { movie.isInHistory = true }
+    val local = movies.find { it.id == movie.id }
+    if (local != null) local.isInHistory = true else {
+      val copy = movie.copy()
+      movies.add(copy).also { copy.isInHistory = true }
+    }
   }
 
   override fun addToHistory(movie: MovieDetailedUM) {
@@ -29,7 +32,7 @@ object MockLocalMovieRepository : LocalMovieRepository {
   }
 
   override fun removeFromHistory(movie: MovieBriefUM) {
-    movies.find{ it.id == movie.id }?.isInHistory = false
+    movies.find { it.id == movie.id }?.isInHistory = false
   }
 
   override fun removeFromHistory(movie: MovieDetailedUM) {
@@ -37,8 +40,11 @@ object MockLocalMovieRepository : LocalMovieRepository {
   }
 
   override fun addToWishList(movie: MovieBriefUM) {
-    val local = movies.find{ it.id == movie.id }
-    if (local != null) local.isInWishList = true else movies.add(movie).also { movie.isInWishList = true }
+    val local = movies.find { it.id == movie.id }
+    if (local != null) local.isInWishList = true else {
+      val copy = movie.copy()
+      movies.add(copy).also { copy.isInWishList = true }
+    }
   }
 
   override fun addToWishList(movie: MovieDetailedUM) {
@@ -46,7 +52,7 @@ object MockLocalMovieRepository : LocalMovieRepository {
   }
 
   override fun removeFromWishList(movie: MovieBriefUM) {
-    movies.find{ it.id == movie.id }?.isInWishList = false
+    movies.find { it.id == movie.id }?.isInWishList = false
   }
 
   override fun removeFromWishList(movie: MovieDetailedUM) {
@@ -57,7 +63,7 @@ object MockLocalMovieRepository : LocalMovieRepository {
     return Observable.fromCallable {
       moviesToUpdate.apply {
         this.forEach { updatedMovie ->
-          movies.find { m -> m.id == updatedMovie.id }?.let{
+          movies.find { m -> m.id == updatedMovie.id }?.let {
             updatedMovie.isInWishList = it.isInWishList
             updatedMovie.isInHistory = it.isInHistory
           }
@@ -66,11 +72,17 @@ object MockLocalMovieRepository : LocalMovieRepository {
     }
   }
 
-  override fun getWishListPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
+  override fun getWishListPaged(
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<MovieBriefUM>> {
     return paginatedObservable(nextPageIntent, reloadIntent) { page -> getMoviesAtPage(page, getWishList()) }
   }
 
-  override fun getHistoryPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>> {
+  override fun getHistoryPaged(
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<MovieBriefUM>> {
     return paginatedObservable(nextPageIntent, reloadIntent) { page -> getMoviesAtPage(page, getHistory()) }
   }
 
@@ -84,8 +96,8 @@ object MockLocalMovieRepository : LocalMovieRepository {
         page = page,
         total_results = list.size,
         total_pages = list.size / pageSize + 1,
-        results = if (pageSize * page < list.size) list.subList(pageSize * (page - 1), pageSize * page).toMutableList()
-        else list.subList(pageSize * (page - 1), list.size).toMutableList()
+        results = if (pageSize * page < list.size) list.subList(pageSize * (page - 1), pageSize * page).toList()
+        else list.subList(pageSize * (page - 1), list.size).toList()
 
       )
     )

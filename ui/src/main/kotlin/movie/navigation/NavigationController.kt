@@ -68,9 +68,13 @@ class NavigationController : Controller() {
    */
   private fun processNavigationIntents() =
     Observable.merge(navigationIntents()).subscribe {
+      setNavigationItemsSelectable(it.first != R.id.fab)
       val controller = when (it.first) {
         R.id.menu_favorite -> WishListController(it.second)
-        R.id.fab -> FilterController(it.second)
+        R.id.fab -> {
+          requireView.bottom_navigation.menu.setGroupCheckable(0, false, true)
+          FilterController(it.second)
+        }
         R.id.menu_history -> HistoryController(it.second)
         EVENT_ID_NAVIGATION_DETAILS -> MovieDetailedController(it.second)
         else -> null
@@ -86,17 +90,19 @@ class NavigationController : Controller() {
     currentControllerId = controllerId
     //childRouter.getControllerWithInstanceId()
     childRouter.setRoot(RouterTransaction.with(controller))
-    requireView.bottom_navigation.selectedItemId = -1
   }
 
+  private fun setNavigationItemsSelectable(selector: Boolean) =
+    requireView.bottom_navigation.menu.setGroupCheckable(0, selector, true)
+
   /**
-   * Try to restore the state (which was saved via [saveCurrentControllerState]) from the [routerStates].
-   * @return either a valid [Bundle] state or null if no state is available
+   * Try to restore the content (which was saved via [saveCurrentControllerState]) from the [routerStates].
+   * @return either a valid [Bundle] content or null if no content is available
    */
   private fun getSavedStateForId(id: Int): Bundle? = routerStates?.get(id)
 
   /**
-   * This will clear the state (hierarchy/backstack etc.) from the [childRouter] and goes back to root.
+   * This will clear the content (hierarchy/backstack etc.) from the [childRouter] and goes back to root.
    */
   private fun clearStateFromChildRouter() {
     childRouter.setPopsLastView(true)
@@ -106,7 +112,7 @@ class NavigationController : Controller() {
   }
 
   /**
-   * This will save the current state of the tab (hierarchy/backstack etc.) from the [childRouter] in a [Bundle]
+   * This will save the current content of the tab (hierarchy/backstack etc.) from the [childRouter] in a [Bundle]
    * and put it into the [routerStates] with the tab id as key
    */
   private fun saveCurrentControllerState(itemId: Int) {

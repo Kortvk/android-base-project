@@ -12,9 +12,32 @@ import ru.appkode.base.entities.core.movie.MovieDetailedNM
 interface RemoteMovieRepository {
   fun getMovieById(id: Long): Single<MovieDetailedNM>
   fun getGenres(): Single<List<GenreNM>>
-  fun getPopularMoviesPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefNM>>
-  fun filterMoviesPaged(filter: MovieFilter, nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefNM>>
-  fun searchMoviesPaged(query: String, nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefNM>>
-  fun searchKeywordsPaged(keyword: String, nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<KeywordNM>>
-  fun searchCastPaged(name: String, nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<CastNM>>
+  fun getPopularMoviesPaged(
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<MovieBriefNM>>
+
+  fun filterMoviesPaged(
+    filter: MovieFilter,
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<MovieBriefNM>>
+
+  fun searchMoviesPaged(
+    query: String,
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<MovieBriefNM>>
+
+  fun searchKeywordsPaged(
+    keyword: String,
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<KeywordNM>>
+
+  fun searchCastPaged(
+    name: String,
+    nextPageIntent: Observable<Unit>,
+    reloadIntent: Observable<Unit>
+  ): Observable<List<CastNM>>
 }

@@ -1,15 +1,14 @@
 package movie.history
 
 import io.reactivex.Observable
-import io.reactivex.ObservableSource
 import movie.common.AddToWishList
 import movie.common.MovieListPresenter
 import movie.common.MovieScreenView
-import movie.common.MovieScreenViewState
+import movie.common.MovieScreenVS
 import movie.common.RemoveFromHistory
 import movie.common.RemoveFromWishList
 import movie.common.ScreenAction
-import movie.common.UpdateSingleItem
+import movie.common.UpdateMovieList
 import ru.appkode.base.repository.movie.MovieService
 import ru.appkode.base.ui.core.core.Command
 import ru.appkode.base.ui.core.core.command
@@ -21,26 +20,26 @@ class HistoryPresenter(
 ) : MovieListPresenter(schedulers, movieService) {
 
   override fun processRemoveFromHistory(
-    previousState: MovieScreenViewState,
+    previousState: MovieScreenVS,
     action: RemoveFromHistory
-  ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {
+  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
     return previousState to command(
       movieService
-        .removeFromHistory(previousState.state.asContent()[action.position]).doAction {
-          UpdateSingleItem(action.position) { null }
+        .removeFromHistory(previousState.content[action.position]).doAction {
+          UpdateMovieList(previousState.content.toMutableList().apply { removeAt(action.position) })
         }
     )
   }
 
   override fun processRemoveFromWishList(
-    previousState: MovieScreenViewState,
+    previousState: MovieScreenVS,
     action: RemoveFromWishList
-  ): Pair<MovieScreenViewState, Command<Observable<out ScreenAction>>?> {
-    require(action.position < previousState.state.asContent().size)
+  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
+    require(action.position < previousState.content.size)
     return previousState to command(
       movieService
-        .removeFromWishList(previousState.state.asContent()[action.position]).doAction {
-          UpdateSingleItem(action.position) { movie -> movie.apply { isInWishList = false } }
+        .removeFromWishList(previousState.content[action.position]).doAction {
+          UpdateMovieList(previousState.content.apply { this[action.position].isInWishList = false })
         }
     )
   }
@@ -54,6 +53,6 @@ class HistoryPresenter(
       .concatMap { Observable.just(AddToWishList(it), RemoveFromHistory(it)) }
   }
 
-  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>) =
-    movieService.getHistoryPaged(nextPageIntent, reloadIntent)
+  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>, refreshIntent: Observable<Unit>) =
+    movieService.getHistoryPaged(nextPageIntent, refreshIntent)
 }
