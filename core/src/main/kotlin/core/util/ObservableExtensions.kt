@@ -17,15 +17,15 @@ import ru.appkode.base.ui.core.core.LceState
  * ```
  */
 fun <T> Observable<T>.hotSwapWithSuccess(
-    result: T,
-    delayMillis: Long = MOCK_NOTIFICATION_DEFAULT_DELAY_MS
+  result: T,
+  delayMillis: Long = MOCK_NOTIFICATION_DEFAULT_DELAY_MS
 ): Observable<T> {
-    return Observable
-        .fromCallable {
-            SystemClock.sleep(delayMillis)
-            result
-        }
-        .subscribeOn(Schedulers.io())
+  return Observable
+    .fromCallable {
+      SystemClock.sleep(delayMillis)
+      result
+    }
+    .subscribeOn(Schedulers.io())
 }
 
 /**
@@ -39,19 +39,19 @@ fun <T> Observable<T>.hotSwapWithSuccess(
  * ```
  */
 fun <T> Observable<T>.hotSwapWithError(
-    error: Throwable,
-    delayMillis: Long = MOCK_NOTIFICATION_DEFAULT_DELAY_MS
+  error: Throwable,
+  delayMillis: Long = MOCK_NOTIFICATION_DEFAULT_DELAY_MS
 ): Observable<T> {
-    return Observable
-        .fromCallable<T> {
-            SystemClock.sleep(delayMillis)
-            throw error
-        }
-        .subscribeOn(Schedulers.io())
+  return Observable
+    .fromCallable<T> {
+      SystemClock.sleep(delayMillis)
+      throw error
+    }
+    .subscribeOn(Schedulers.io())
 }
 
 fun <T> Observable<T>.skipFirstIf(value: Boolean): Observable<T> {
-    return if (value) this.skip(1) else this
+  return if (value) this.skip(1) else this
 }
 
 /**
@@ -59,13 +59,13 @@ fun <T> Observable<T>.skipFirstIf(value: Boolean): Observable<T> {
  * http://rxmarbles.com/#pairwise
  */
 fun <T> Observable<T>.pairwise(): Observable<Pair<T, T>> {
-    return publish {
-        Observable.zip(
-            it,
-            it.skip(1),
-            BiFunction { v1: T, v2: T -> v1 to v2 }
-        )
-    }
+  return publish {
+    Observable.zip(
+      it,
+      it.skip(1),
+      BiFunction { v1: T, v2: T -> v1 to v2 }
+    )
+  }
 }
 
 fun <T, Event> Observable<T>.toLceEventObservable(stateCreator: (LceState<T>) -> Event): Observable<Event> {

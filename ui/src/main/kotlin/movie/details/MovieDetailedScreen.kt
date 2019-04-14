@@ -6,6 +6,7 @@ import ru.appkode.base.entities.core.movie.MovieDetailedUM
 import ru.appkode.base.ui.core.core.LceState
 import ru.appkode.base.ui.core.core.MviView
 import ru.appkode.base.ui.core.core.ViewState
+
 /**
  * Экран отображения фильмов
  */
@@ -15,11 +16,13 @@ interface MovieDetailedView : MviView<MovieDetailedViewState> {
    *  @return [Observable], в котором каждый onNext() - position элемента, который нужно удалить
    */
   fun inWishListStateChangeIntent(): Observable<Unit>
+
   /**
    *  Интент на добавление элемента в Историю.
    *  @return [Observable], в котором каждый onNext() - position элемента, который нужно удалить
    */
   fun inHistoryStateChangeIntent(): Observable<Unit>
+
   /**
    *  Интент на обновление экрана.
    *  @return [Observable], в котором каждый onNext() - событие обновления через SwipeRefresh

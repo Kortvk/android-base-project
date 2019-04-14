@@ -35,7 +35,7 @@ class CastAdapter : RecyclerView.Adapter<CastAdapter.CastViewHolder>() {
       itemView.tv_cast_name.text = cast.name
       if (cast.profilePath != null) {
         Glide.with(itemView).load(cast.getProfilePath())
-        .into(itemView.iv_cast).onLoadFailed(itemView.context.getDrawable(R.drawable.no_photo))
+          .into(itemView.iv_cast).onLoadFailed(itemView.context.getDrawable(R.drawable.no_photo))
       }
       itemView.tv_cast_role.text = cast.character
     }

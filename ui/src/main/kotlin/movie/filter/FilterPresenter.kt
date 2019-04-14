@@ -1,46 +1,38 @@
 package movie.filter
 
-import android.os.Bundle
 import io.reactivex.Observable
 import movie.common.*
-import ru.appkode.base.entities.core.movie.MovieBriefUM
-import ru.appkode.base.repository.RepositoryHelper
 import ru.appkode.base.repository.movie.MovieService
 import ru.appkode.base.ui.core.core.Command
 import ru.appkode.base.ui.core.core.util.AppSchedulers
-import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 
+class FilterPresenter(
+  schedulers: AppSchedulers,
+  movieService: MovieService
+) : MovieListPresenter(schedulers, movieService) {
 
-class FilterPresenter(schedulers: AppSchedulers,
-                      movieService: MovieService
-): MovieListPresenter(schedulers, movieService) {
-
-  override fun processAddToHistory(
-    previousState: MovieScreenViewState,
-    action: AddToHistory
-  ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
-    //TODO: здесь написать логику добавления в историю (см. по аналогии с вишлистом в MovieListPresenter)
+  override fun processRemoveFromWishList(
+    previousState: MovieScreenVS,
+    action: RemoveFromWishList
+  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
     return previousState to null
   }
 
   override fun processRemoveFromHistory(
-    previousState: MovieScreenViewState,
+    previousState: MovieScreenVS,
     action: RemoveFromHistory
-  ): Pair<MovieScreenViewState, Command<Observable<ScreenAction>>?> {
-    //TODO: здесь написать логику удаления из истории (см. по аналогии с вишлистом в MovieListPresenter)
+  ): Pair<MovieScreenVS, Command<Observable<ScreenAction>>?> {
     return previousState to null
   }
 
   override fun bindSwipeLeftIntent(): Observable<out ScreenAction> {
-    return intent(MovieScreenView::elementSwipedLeft).filter { it != 999 }.map { AddToWishList(it) }
+    return intent(MovieScreenView::elementSwipedLeft).map { AddToHistory(it) }
   }
 
   override fun bindSwipeRightIntent(): Observable<out ScreenAction?> {
-    return intent(MovieScreenView::elementSwipedLeft).filter { it != 999 }.map { null }
+    return intent(MovieScreenView::elementSwipedRight).map { AddToWishList(it) }
   }
 
-  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>) =
-    movieService.getPopularMoviesPaged(nextPageIntent)
-
-
+  override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>) =
+    movieService.getPopularMoviesPaged(nextPageIntent, reloadIntent)
 }

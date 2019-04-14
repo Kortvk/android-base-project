@@ -63,12 +63,10 @@ data class CastNM(
   val profile_path: String
 )
 
-
 fun MovieBriefNM.toUiModel(genresMapper: List<GenreNM>): MovieBriefUM {
   return MovieBriefUM(
     id = id.requireField("id"),
     title = title,
-    isInWishList = false,
     overview = overview,
     backdrop = backdrop_path,
     poster = poster_path,
@@ -79,28 +77,26 @@ fun MovieBriefNM.toUiModel(genresMapper: List<GenreNM>): MovieBriefUM {
   )
 }
 
-
 fun MovieDetailedNM.toUiModel(): MovieDetailedUM {
   return MovieDetailedUM(
-    id,
-    title,
-    imdb_id,
-    ArrayList<String>(),
-    status,
-    overview,
-    poster_path,
-    null,
-    release_date,
-    runtime,
-    tagline,
-    vote_average,
-    null,
-    null,
-    backdrop_path,
-    null,
-    null,
-    false,
-    vote_count
+    id = id,
+    title = title,
+    imdbId = imdb_id,
+    genres = genres.map { it.name },
+    status = status,
+    overview = overview,
+    posterPath = poster_path,
+    productionCompanies = production_companies?.map { it.name },
+    releaseDate = release_date,
+    runtime = runtime,
+    tagline = tagline,
+    voteAverage = vote_average,
+    crew = credits?.crew?.map { it.toUiModel() },
+    cast = credits?.cast?.map { it.toUiModel() },
+    backdrop = backdrop_path,
+    images = images?.posters?.map { it.file_path },
+    keywords = keywords?.keywords?.map { it.name },
+    votes = vote_count
   )
 }
 
@@ -120,4 +116,3 @@ fun CrewNM.toUiModel(): CrewUM {
     name = name
   )
 }
-

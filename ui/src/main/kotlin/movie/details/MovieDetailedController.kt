@@ -49,7 +49,7 @@ class MovieDetailedController(args: Bundle) :
 
   override fun renderViewState(viewState: MovieDetailedViewState) {
     fieldChanged(viewState, { it.state }) {
-      if (!viewState.state.isLoading) refresher.isRefreshing = false
+      refresher.post { refresher.isRefreshing = viewState.state.isLoading }
       if (viewState.state.isError) showSnackbar(viewState.state.asError())
       if (viewState.state.isContent) bindItems(viewState.state.asContent())
     }

@@ -40,15 +40,15 @@ import com.bluelinelabs.conductor.Controller
  * ```
  */
 abstract class ScreenKey : Parcelable {
-    protected abstract fun createController(): Controller
-    /**
-     * Creates a new [Controller] by passing `this` Parcelable to it as an arguments to use.
-     */
-    fun newController(): Controller {
-        return createController().apply {
-            args.putParcelable(SCREEN_KEY_ARG_NAME, this@ScreenKey)
-        }
+  protected abstract fun createController(): Controller
+  /**
+   * Creates a new [Controller] by passing `this` Parcelable to it as an arguments to use.
+   */
+  fun newController(): Controller {
+    return createController().apply {
+      args.putParcelable(SCREEN_KEY_ARG_NAME, this@ScreenKey)
     }
+  }
 }
 
 internal const val SCREEN_KEY_ARG_NAME = "key"

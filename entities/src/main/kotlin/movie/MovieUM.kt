@@ -20,13 +20,13 @@ data class MovieDetailedUM(
   val backdrop: String,
   val images: List<String>?,
   val keywords: List<String>?,
-  var isInWishList: Boolean,
-  val votes: Int
+  val votes: Int,
+  var isInWishList: Boolean = false,
+  var isInHistory: Boolean = false
 )
 
 data class MovieBriefUM(
   val id: Long,
-  var isInWishList: Boolean,
   val genres: List<String?>,
   val overview: String,
   val poster: String?,
@@ -35,7 +35,9 @@ data class MovieBriefUM(
   val title: String,
   val rating: Float,
   val votes: Int,
-  var isExpanded: Boolean = false
+  var isExpanded: Boolean = false,
+  var isInWishList: Boolean = false,
+  var isInHistory: Boolean = false
 )
 
 data class CastUM(
