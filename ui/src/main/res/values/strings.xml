@@ -20,8 +20,9 @@
 
   <!-- Movie details -->
   <string name="runtime">%d min</string>
-  <string name="votes">%d votes</string>
+  <string name="votes">%d\nvotes</string>
   <string name="directed">Directed by %s</string>
   <string name="screenplay">Screenplay by %s</string>
+  <string name="title_year">%s (%s)</string>
 
 </resources>

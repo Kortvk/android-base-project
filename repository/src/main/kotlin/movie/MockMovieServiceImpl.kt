@@ -76,6 +76,6 @@ class MockMovieServiceImpl(
   ): Observable<List<MovieBriefUM>> =
     remoteMovieRepository.getPopularMoviesPaged(nextPageIntent, reloadIntent)
       .map { list -> list.map { it.toUiModel(genres) } }
-      //.switchMap { localRepository.getStatusUpdates(it) }
+      .switchMap { localRepository.getStatusUpdates(it) }
       .subscribeOn(Schedulers.io())
 }

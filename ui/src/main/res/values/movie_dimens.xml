@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <dimen name="item_layout_list_margin">4dp</dimen>
-  <dimen name="item_layout_height">240dp</dimen>
+  <dimen name="item_layout_height">24dp</dimen>
   <dimen name="check_box_size">24dp</dimen>
   <dimen name="margin_view">8dp</dimen>
   <dimen name="width_item_movie_text_view_percent">0.5</dimen>

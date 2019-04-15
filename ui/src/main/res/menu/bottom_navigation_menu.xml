@@ -3,7 +3,7 @@
   xmlns:tools="http://schemas.android.com/tools">
   <item
     android:id="@+id/menu_history"
-    android:icon="@drawable/ic_list"
+    android:icon="@drawable/ic_history_checked"
     tools:ignore="MenuTitle" />
   <item
     android:id="@+id/menu_favorite"

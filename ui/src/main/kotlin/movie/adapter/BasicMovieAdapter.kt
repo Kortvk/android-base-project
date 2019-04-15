@@ -1,6 +1,7 @@
 package movie.adapter
 
-import android.util.Log
+import android.graphics.drawable.RippleDrawable
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableSwipeableItemViewHolder
 import com.jakewharton.rxrelay2.PublishRelay
 import com.squareup.picasso.Picasso
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.item_movie_list.view.*
 import kotlinx.android.synthetic.main.layout_movie_rating.view.*
 import ru.appkode.base.entities.core.movie.BASE_IMAGE_URL
@@ -50,24 +50,25 @@ abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieV
       this.movie = movie
       itemView.in_history.isChecked = movie.isInHistory
       itemView.in_wish_list.isChecked = movie.isInWishList
-      itemView.movie_title_text_view.text = movie.title
+      itemView.tv_title.text =
+        itemView.context.getString(R.string.title_year, movie.title, movie.releaseDate.substringBefore("-"))
       itemView.in_wish_list.isChecked = movie.isInWishList
       val url = BASE_IMAGE_URL + IMAGE_PROFILE_SIZE + movie.poster
       Picasso.get().load(url).into(itemView.poster_image_view)
-      itemView.release_date_text_view.text = movie.releaseDate
-      itemView.movie_genre_text_view.text = movie.genres.joinToString(separator = ", ")
+      itemView.tv_release_date.text = movie.releaseDate
+      itemView.tv_genres.text = movie.genres.joinToString(separator = ", ")
       itemView.tv_movie_rating.text = movie.rating.toString()
-      itemView.description_text_view.text = movie.overview
+      itemView.tv_overview.text = movie.overview
       itemView.votes_text_view.text = itemView.context.getString(R.string.votes, movie.votes)
       if (movie.isExpanded) expandView() else collapseView()
       bindIntents()
+      rippleOnChecked()
     }
 
     private fun bindIntents() {
       itemView.in_wish_list.setOnClickListener {
         eventsRelay.accept(EVENT_ID_ADD_TO_WISHLIST_CLICKED to adapterPosition)
         eventsRelay.accept(EVENT_ADD_TO_WISH to movie)
-        Log.d("current", "in_wish_list click " + movie)
       }
       itemView.layout_item_root.setOnClickListener {
         eventsRelay.accept(EVENT_ID_OPEN_DETAILS to movie.id)
@@ -80,12 +81,25 @@ abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieV
       }
     }
 
+    fun rippleOnChecked() {
+      if (itemView.in_history.isChecked && itemView.in_history.background is RippleDrawable) {
+        val rippleDrawable = itemView.in_history.background as RippleDrawable
+        rippleDrawable.state = intArrayOf(android.R.attr.state_pressed, android.R.attr.state_enabled)
+        Handler().postDelayed({ rippleDrawable.state = intArrayOf() }, 200)
+      }
+      if (itemView.in_wish_list.isChecked && itemView.in_wish_list.background is RippleDrawable) {
+        val rippleDrawable = itemView.in_wish_list.background as RippleDrawable
+        rippleDrawable.state = intArrayOf(android.R.attr.state_pressed, android.R.attr.state_enabled)
+        Handler().postDelayed({ rippleDrawable.state = intArrayOf() }, 200)
+      }
+    }
+
     private fun expandView() = setDetailsVisibililty(View.VISIBLE)
 
     private fun collapseView() = setDetailsVisibililty(View.GONE)
 
     private fun setDetailsVisibililty(visibility: Int) {
-      itemView.description_text_view.visibility = visibility
+      itemView.tv_overview.visibility = visibility
       itemView.votes_text_view.visibility = visibility
     }
   }

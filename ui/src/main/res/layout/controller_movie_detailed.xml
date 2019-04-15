@@ -108,7 +108,7 @@
               android:scaleType="centerInside"
               android:layout_height="wrap_content"
               android:layout_margin="8dp"
-              tools:ignore="ContentDescription"></ImageView>
+              tools:ignore="ContentDescription" />
 
             <com.codesgood.views.JustifiedTextView
               android:id="@+id/tv_movie_description"
@@ -124,13 +124,13 @@
 
             <com.google.android.flexbox.FlexboxLayout
               android:id="@+id/keywords_group"
-              android:layout_width="match_parent"
+              android:layout_width="0dp"
               android:layout_height="wrap_content"
               android:layout_margin="4dp"
               app:flexWrap="wrap"
-              app:alignContent="center"
+              app:alignItems="flex_start"
+              app:alignContent="flex_start"
               app:justifyContent="center"
-              android:orientation="horizontal"
               app:layout_constraintTop_toBottomOf="@id/tv_movie_description"
               app:layout_constraintStart_toStartOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
