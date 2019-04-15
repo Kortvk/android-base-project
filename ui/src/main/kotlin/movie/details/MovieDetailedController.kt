@@ -51,13 +51,16 @@ class MovieDetailedController(args: Bundle) :
     fieldChanged(viewState, { it.state }) {
       refresher.post { refresher.isRefreshing = viewState.state.isLoading }
       if (viewState.state.isError) showSnackbar(viewState.state.asError())
-      if (viewState.state.isContent) bindItems(viewState.state.asContent())
+      if (viewState.state.isContent) bindItem(viewState.state.asContent())
     }
   }
 
-  private fun bindItems(movie: MovieDetailedUM) {
+  private fun bindItem(movie: MovieDetailedUM) {
+    keywords_group.removeAllViews()
     tv_movie_title.text = movie.title
     tv_movie_year.text = movie.releaseDate.substringBefore("-")
+    checkbox_movie_fav.isChecked = movie.isInWishList
+    checkbox_movie_history.isChecked = movie.isInHistory
     tv_movie_runtime.text = requireView.context.getString(R.string.runtime, movie.runtime)
     tv_movie_status.text = movie.status
     tv_movie_rating.text = movie.voteAverage.toString()
@@ -86,8 +89,8 @@ class MovieDetailedController(args: Bundle) :
       ViewGroup.LayoutParams.WRAP_CONTENT
     )
     layoutParams.bottomMargin = GENERATED_MARGINS
+    layoutParams.marginEnd = GENERATED_MARGINS
     it.layoutParams = layoutParams
-    it.setTextAppearanceResource(R.style.ChipTextStyle)
   }
 
   override fun createPresenter(): MovieDetailedPresenter =

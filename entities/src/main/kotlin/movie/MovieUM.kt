@@ -57,7 +57,7 @@ fun MovieDetailedUM.toBrief(): MovieBriefUM {
   return MovieBriefUM(
     id = id.requireField("id"),
     title = title,
-    isInWishList = false,
+    isInWishList = isInWishList,
     overview = overview,
     backdrop = backdrop,
     poster = posterPath,

@@ -140,7 +140,7 @@ abstract class MovieListPresenter(
     action: MoveToWishList
   ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
     return previousState to command(movieService
-      .moveToWishlist(previousState.content[action.position])
+      .moveToWishList(previousState.content[action.position])
       .doAction {
         UpdateMovieList(previousState.content.toMutableList().apply {
           removeAt(action.position)

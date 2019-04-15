@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import ru.appkode.base.entities.core.common.PagedListWrapper
 import ru.appkode.base.entities.core.movie.MovieBriefSM
 import ru.appkode.base.entities.core.movie.MovieBriefUM
+import ru.appkode.base.entities.core.movie.MovieDetailedUM
 import ru.appkode.base.entities.core.movie.toUIModel
 import ru.appkode.base.repository.util.paginatedObservable
 
@@ -32,6 +33,15 @@ object MockLocalMovieRepository : LocalMovieRepository {
           updatedMovie.copy(isInWishList = localCopy.isInWishList, isInHistory = localCopy.isInHistory)
         else updatedMovie
       }
+    }
+  }
+
+  override fun getStatusUpdates(movieToUpdate: MovieDetailedUM): Observable<MovieDetailedUM> {
+    return Observable.fromCallable {
+      val localCopy = movies.values.find { m -> m.id == movieToUpdate.id }
+      if (localCopy != null)
+        movieToUpdate.copy(isInWishList = localCopy.isInWishList, isInHistory = localCopy.isInHistory)
+      else movieToUpdate
     }
   }
 

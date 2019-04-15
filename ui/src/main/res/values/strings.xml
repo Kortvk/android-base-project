@@ -24,5 +24,6 @@
   <string name="directed">Directed by %s</string>
   <string name="screenplay">Screenplay by %s</string>
   <string name="title_year">%s (%s)</string>
+  <string name="cast_hint">Cast</string>
 
 </resources>

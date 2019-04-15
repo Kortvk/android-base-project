@@ -16,7 +16,7 @@ class MockMovieServiceImpl(
   private val localRepository: LocalMovieRepository,
   private val remoteMovieRepository: RemoteMovieRepository
 ) : MovieService {
-  override fun moveToWishlist(movie: MovieBriefUM): Completable {
+  override fun moveToWishList(movie: MovieBriefUM): Completable {
     lastOperation = MoveToHistory(movie.toStorageModel())
     return Completable.fromCallable {
       localRepository.persistMovie(movie.toStorageModel().apply {
@@ -113,7 +113,9 @@ class MockMovieServiceImpl(
   }
 
   override fun getMovieDetailed(id: Long): Observable<MovieDetailedUM> {
-    return remoteMovieRepository.getMovieById(id).toObservable().map { it.toUiModel() }.subscribeOn(Schedulers.io())
+    return remoteMovieRepository.getMovieById(id).toObservable().map { it.toUiModel() }
+      .switchMap { localRepository.getStatusUpdates(it) }
+      .subscribeOn(Schedulers.io())
   }
 
   override fun undoLastOperation(): Completable {

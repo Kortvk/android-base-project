@@ -11,4 +11,5 @@ interface LocalMovieRepository {
   fun getWishListPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
   fun getHistoryPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
   fun getStatusUpdates(moviesToUpdate: List<MovieBriefUM>): Observable<List<MovieBriefUM>>
+  fun getStatusUpdates(movieToUpdate: MovieDetailedUM): Observable<MovieDetailedUM>
 }

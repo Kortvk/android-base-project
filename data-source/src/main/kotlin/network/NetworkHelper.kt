@@ -24,15 +24,8 @@ object NetworkHelper {
 
   private val okHttpClient = OkHttpClient.Builder()
     .addInterceptor(HttpLoggingInterceptor().setLevel(if (BuildConfig.DEBUG) BODY else NONE))
-    .addInterceptor(object : Interceptor {
-      override fun intercept(chain: Interceptor.Chain): Response {
-        val original = chain.request()
-        val url = original.url().newBuilder()
-          .addQueryParameter("api_key", API_KEY)
-          .build()
-        return chain.proceed(original.newBuilder().url(url).build())
-      }
-    }).build()
+    .addInterceptor(ApiKeyInterceptor)
+    .build()
 
   private val movieApi = Retrofit.Builder()
     .baseUrl(API_MOVIES)
@@ -44,4 +37,14 @@ object NetworkHelper {
     .create(MovieAPI::class.java)
 
   fun getMovieApi(): MovieAPI = movieApi
+}
+
+object ApiKeyInterceptor : Interceptor {
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val original = chain.request()
+    val url = original.url().newBuilder()
+      .addQueryParameter("api_key", NetworkHelper.API_KEY)
+      .build()
+    return chain.proceed(original.newBuilder().url(url).build())
+  }
 }

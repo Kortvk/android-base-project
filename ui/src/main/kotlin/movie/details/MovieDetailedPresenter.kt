@@ -9,7 +9,10 @@ import ru.appkode.base.ui.core.core.util.AppSchedulers
 sealed class ScreenAction
 object AddToWishList : ScreenAction()
 object RemoveFromWishList : ScreenAction()
+object AddToHistory : ScreenAction()
+object RemoveFromHistory : ScreenAction()
 object ItemWishListStateChanged : ScreenAction()
+object ItemHistoryStateChanged : ScreenAction()
 object RefreshMovie : ScreenAction()
 class LoadMovieDetails(val movie: MovieDetailedUM) : ScreenAction()
 
@@ -22,6 +25,7 @@ class MovieDetailedPresenter(
   override fun createIntents(): List<Observable<out ScreenAction>> {
     return listOf<Observable<out ScreenAction>>(
       intent(MovieDetailedView::inWishListStateChangeIntent).map { ItemWishListStateChanged },
+      intent(MovieDetailedView::inHistoryStateChangeIntent).map { ItemHistoryStateChanged },
       intent(MovieDetailedView::refreshIntent).startWith(Unit).map { RefreshMovie }
     )
   }
@@ -37,16 +41,30 @@ class MovieDetailedPresenter(
     return when (action) {
       is AddToWishList -> processAddToWishList(previousState)
       is RemoveFromWishList -> processRemoveFromWishList(previousState)
+      is AddToHistory -> processAddToHistory(previousState)
+      is RemoveFromHistory -> processRemoveFromHistory(previousState)
       is ItemWishListStateChanged -> processWishListStateChanged(previousState)
-      is LoadMovieDetails -> processLoadMovie(action)
+      is ItemHistoryStateChanged -> processHistoryStateChanged(previousState)
+      is LoadMovieDetails -> processLoadMovieDetails(action)
       is RefreshMovie -> processRefreshMovie(previousState)
     }
   }
 
-  private fun processWishListStateChanged(previousState: MovieDetailedViewState): Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
-    return when (previousState.state.asContent().isInWishList) {
-      true -> previousState to doAction(RemoveFromWishList)
-      false -> previousState to doAction(AddToWishList)
+  private fun processWishListStateChanged(previousState: MovieDetailedViewState)
+    : Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
+    return if (previousState.state.asContent().isInWishList) {
+      previousState to doAction(RemoveFromWishList)
+    } else {
+      previousState to doAction(AddToWishList)
+    }
+  }
+
+  private fun processHistoryStateChanged(previousState: MovieDetailedViewState)
+    : Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
+    return if (previousState.state.asContent().isInHistory) {
+      previousState to doAction(RemoveFromHistory)
+    } else {
+      previousState to doAction(AddToHistory)
     }
   }
 
@@ -68,7 +86,25 @@ class MovieDetailedPresenter(
     )
   }
 
-  private fun processLoadMovie(action: LoadMovieDetails)
+  private fun processAddToHistory(previousState: MovieDetailedViewState)
+    : Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
+    return previousState to command(movieService.addToHistory(previousState.state.asContent())
+      .doAction {
+        LoadMovieDetails(previousState.state.asContent().copy(isInHistory = true))
+      }
+    )
+  }
+
+  private fun processRemoveFromHistory(previousState: MovieDetailedViewState)
+    : Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
+    return previousState to command(movieService.removeFromHistory(previousState.state.asContent())
+      .doAction {
+        LoadMovieDetails(previousState.state.asContent().copy(isInHistory = false))
+      }
+    )
+  }
+
+  private fun processLoadMovieDetails(action: LoadMovieDetails)
     : Pair<MovieDetailedViewState, Command<Observable<ScreenAction>>?> {
     return MovieDetailedViewState(state = LceState.Content(action.movie)) to null
   }

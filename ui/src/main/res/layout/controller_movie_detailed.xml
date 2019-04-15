@@ -39,7 +39,7 @@
         <TextView
           android:id="@+id/tv_movie_year"
           style="@style/TextAppearance.MaterialComponents.Body1"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_margin="8dp"
           android:textAlignment="center"
@@ -65,13 +65,13 @@
         <TextView
           android:id="@+id/tv_movie_status"
           style="@style/TextAppearance.MaterialComponents.Body1"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_margin="8dp"
           android:textAlignment="center"
           app:layout_constraintBottom_toTopOf="@id/view_movie_info_divider"
           app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toEndOf="@string/runtime"
+          app:layout_constraintStart_toEndOf="@id/tv_movie_runtime"
           app:layout_constraintTop_toBottomOf="@id/tv_movie_title"
           tools:text="Released" />
 
@@ -88,7 +88,7 @@
 
         <ImageView
           android:id="@+id/iv_movie_poster"
-          android:layout_width="240dp"
+          android:layout_width="150dp"
           android:layout_height="wrap_content"
           android:layout_margin="8dp"
           android:scaleType="centerInside"
@@ -111,51 +111,70 @@
           app:layout_constraintTop_toBottomOf="@id/view_movie_info_divider"
           tools:text="The story follows Carol Danvers as she becomes one of the universe’s most powerful heroes when Earth is caught in the middle of a galactic war between two alien races. Set in the 1990s, Captain Marvel is an all-new adventure from a previously unseen period in the history of the Marvel Cinematic Universe." />
 
+        <androidx.constraintlayout.widget.Barrier
+          android:id="@+id/barrier_description"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_margin="4dp"
+          android:orientation="horizontal"
+          app:barrierDirection="bottom"
+          app:constraint_referenced_ids="iv_movie_poster,tv_movie_description" />
+
         <com.google.android.flexbox.FlexboxLayout
           android:id="@+id/keywords_group"
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_margin="4dp"
-          app:alignContent="flex_start"
-          app:alignItems="flex_start"
           app:flexWrap="wrap"
+          app:alignItems="flex_start"
+          app:alignContent="flex_start"
           app:justifyContent="center"
+          android:orientation="horizontal"
           app:layout_constraintBottom_toTopOf="@id/inc_movie_rating"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/tv_movie_description" />
+          app:layout_constraintTop_toBottomOf="@id/barrier_description" />
 
         <include
           android:id="@+id/inc_movie_rating"
           layout="@layout/layout_movie_rating"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+          android:layout_width="64dp"
+          android:layout_height="64dp"
+          android:layout_margin="8dp"
           app:layout_constraintBottom_toTopOf="@id/view_cast_divider"
           app:layout_constraintEnd_toStartOf="@id/checkbox_movie_fav"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/tv_movie_description" />
+          app:layout_constraintTop_toBottomOf="@id/keywords_group" />
 
         <CheckBox
           android:id="@+id/checkbox_movie_fav"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:scaleX="2"
+          android:scaleY="2"
           android:layout_margin="8dp"
+          android:scaleType="fitXY"
+          android:gravity="center"
           android:button="@drawable/item_fav_selector"
           app:layout_constraintBottom_toTopOf="@id/view_cast_divider"
           app:layout_constraintEnd_toStartOf="@id/checkbox_movie_history"
           app:layout_constraintStart_toEndOf="@id/inc_movie_rating"
-          app:layout_constraintTop_toBottomOf="@id/tv_movie_description" />
+          app:layout_constraintTop_toBottomOf="@id/keywords_group" />
 
         <CheckBox
           android:id="@+id/checkbox_movie_history"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:scaleX="2"
+          android:scaleY="2"
           android:layout_margin="8dp"
+          android:scaleType="fitXY"
+          android:gravity="center"
           android:button="@drawable/item_history_selector"
           app:layout_constraintBottom_toTopOf="@id/view_cast_divider"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toEndOf="@id/checkbox_movie_fav"
-          app:layout_constraintTop_toBottomOf="@id/tv_movie_description" />
+          app:layout_constraintTop_toBottomOf="@id/keywords_group" />
 
         <View
           android:id="@+id/view_cast_divider"
@@ -163,18 +182,19 @@
           android:layout_height="1dp"
           android:layout_margin="8dp"
           android:background="@color/colorBackground"
-          app:layout_constraintBottom_toTopOf="@id/iv_movie_poster"
+          app:layout_constraintBottom_toTopOf="@id/tv_cast_headline"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/tv_movie_year" />
+          app:layout_constraintTop_toBottomOf="@id/inc_movie_rating" />
 
         <TextView
           android:id="@+id/tv_cast_headline"
-          android:layout_width="0dp"
+          android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_margin="8dp"
           android:textAlignment="center"
           android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+          android:text="@string/cast_hint"
           app:layout_constraintBottom_toTopOf="@id/recycler_cast"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"

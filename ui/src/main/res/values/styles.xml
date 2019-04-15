@@ -17,8 +17,6 @@
   <style name="ChipStyle" parent="@style/Widget.MaterialComponents.Chip.Choice">
     <item name="android:textAppearance">@style/ChipTextStyle</item>
     <item name="chipCornerRadius">4dp</item>
-    <item name="layout_flexShrink">0</item>
-    <item name="android:layout_margin">4dp</item>
     <item name="chipBackgroundColor">@color/colorStar</item>
   </style>
 </resources>

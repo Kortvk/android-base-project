@@ -19,6 +19,10 @@ import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 
 
 class LocalMovieRepositoryImpl : LocalMovieRepository {
+  override fun getStatusUpdates(movieToUpdate: MovieDetailedUM): Observable<MovieDetailedUM> {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+  }
+
   override fun persistMovie(movie: MovieBriefSM) {
     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
   }
