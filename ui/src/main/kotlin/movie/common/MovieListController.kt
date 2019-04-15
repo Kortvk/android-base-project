@@ -8,6 +8,7 @@ import kotlinx.android.synthetic.main.controller_movie_list.*
 import ru.appkode.base.ui.core.core.BaseMviController
 import android.nfc.tech.MifareUltralight.PAGE_SIZE
 import android.os.Bundle
+import com.google.android.material.snackbar.Snackbar
 import com.h6ah4i.android.widget.advrecyclerview.animator.DraggableItemAnimator
 import com.jakewharton.rxbinding3.recyclerview.scrollEvents
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager
@@ -17,13 +18,14 @@ import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import movie.adapter.BasicMovieAdapter
 import ru.appkode.base.ui.R
 import ru.appkode.base.ui.core.core.util.filterEvents
-import ru.appkode.base.ui.movie.adapter.EVENT_ADD_TO_WISH
+import ru.appkode.base.ui.core.core.util.requireView
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_ADD_TO_HISTORY_CLICKED
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_ADD_TO_WISHLIST_CLICKED
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_MORE_INFORMATION_CLICKED
 import ru.appkode.base.ui.movie.adapter.EVENT_ID_OPEN_DETAILS
-import ru.appkode.base.ui.movie.adapter.EVENT_ITEM_SWIPED_LEFT
-import ru.appkode.base.ui.movie.adapter.EVENT_ITEM_SWIPED_RIGHT
+import ru.appkode.base.ui.movie.adapter.EVENT_ID_ITEM_SWIPED_LEFT
+import ru.appkode.base.ui.movie.adapter.EVENT_ID_ITEM_SWIPED_RIGHT
+import ru.appkode.base.ui.movie.adapter.EVENT_ID_UNDO
 import java.util.concurrent.TimeUnit
 
 abstract class MovieListController(args: Bundle) :
@@ -76,11 +78,11 @@ abstract class MovieListController(args: Bundle) :
   }
 
   override fun elementSwipedLeft(): Observable<Int> {
-    return adapter.eventsRelay.filterEvents(EVENT_ITEM_SWIPED_LEFT)
+    return adapter.eventsRelay.filterEvents(EVENT_ID_ITEM_SWIPED_LEFT)
   }
 
   override fun elementSwipedRight(): Observable<Int> {
-    return adapter.eventsRelay.filterEvents(EVENT_ITEM_SWIPED_RIGHT)
+    return adapter.eventsRelay.filterEvents(EVENT_ID_ITEM_SWIPED_RIGHT)
   }
 
   override fun elementClicked(): Observable<Long> {
@@ -100,6 +102,10 @@ abstract class MovieListController(args: Bundle) :
 
   override fun showMoreMovieInfoIntent(): Observable<Int> {
     return adapter.eventsRelay.filterEvents(EVENT_ID_MORE_INFORMATION_CLICKED)
+  }
+
+  override fun undoIntent(): Observable<Unit> {
+    return eventsRelay.filterEvents(EVENT_ID_UNDO)
   }
 
   override fun loadNextPageIntent(): Observable<Unit> {
@@ -122,19 +128,19 @@ abstract class MovieListController(args: Bundle) :
     }
     fieldChanged(viewState, { it.content }) {
       if (viewState.state.isContent) {
-        adapter.items = viewState.content.toMutableList()
+        adapter.items = viewState.content
       }
     }
-    fieldChanged(viewState, { it.singleStateChange }) {
-      viewState.singleStateChange.first?.let { position ->
-        if (viewState.singleStateChange.second != null) {
-          adapter.items[position] = viewState.singleStateChange.second!!
-          adapter.notifyItemChanged(position)
-        }
+    fieldChanged(viewState, { it.contentSnapshot }) {
+      if (viewState.isUndoable) {
+        showUndoSnackBar(viewState.lastOperationDescription)
       }
     }
   }
-  override fun itemWishListStateChangeIntent2(): Observable<Int> {
-    return adapter.eventsRelay.filterEvents(EVENT_ADD_TO_WISH)
+
+  private fun showUndoSnackBar(message: String) {
+    Snackbar.make(requireView, message, Snackbar.LENGTH_LONG).setAction("Undo") {
+      eventsRelay.accept(EVENT_ID_UNDO to Unit)
+    }.show()
   }
 }

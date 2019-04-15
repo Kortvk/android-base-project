@@ -9,7 +9,6 @@ import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 import ru.appkode.base.ui.movie.adapter.DragAndDropControls
 import ru.appkode.base.ui.movie.adapter.SwipeControls
 import movie.history.HistoryPresenter
-import ru.appkode.base.ui.core.core.BaseMviController
 import ru.appkode.base.ui.movie.adapter.SwipeActions
 
 class HistoryController(args: Bundle) : MovieListController(args) {

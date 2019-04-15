@@ -1,7 +1,6 @@
 package movie.common
 
 import android.os.Bundle
-import android.util.Log
 import io.reactivex.Observable
 import movie.navigation.DETAIL_SCREEN_ID_KEY
 import movie.navigation.EVENT_ID_NAVIGATION_DETAILS
@@ -16,24 +15,37 @@ import ru.appkode.base.ui.core.core.command
 import ru.appkode.base.ui.core.core.util.AppSchedulers
 
 sealed class ScreenAction
+object ShowLoading : ScreenAction()
+object Undo : ScreenAction()
 data class LoadNextPage(val content: List<MovieBriefUM>) : ScreenAction()
-class ShowLoading : ScreenAction()
 data class ShowError(val error: String) : ScreenAction()
 data class ItemWishListStateChanged(val position: Int) : ScreenAction()
 data class ItemHistoryStateChanged(val position: Int) : ScreenAction()
 data class AddToWishList(val position: Int) : ScreenAction()
-data class RemoveFromWishList(val position: Int) : ScreenAction()
-data class UpdateMovieList(val list: List<MovieBriefUM>) : ScreenAction()
 data class AddToHistory(val position: Int) : ScreenAction()
+data class RemoveFromWishList(val position: Int) : ScreenAction()
 data class RemoveFromHistory(val position: Int) : ScreenAction()
+data class MoveToWishList(val position: Int) : ScreenAction()
+data class MoveToHistory(val position: Int) : ScreenAction()
 data class OpenDetails(val id: Long) : ScreenAction()
 data class ExpandCollapseMovieItem(val position: Int) : ScreenAction()
-data class UpdateSingleItem(val position: Int, val mutator: (MovieBriefUM) -> MovieBriefUM?) : ScreenAction()
+data class UpdateSingleItem(
+  val position: Int,
+  val movie: MovieBriefUM,
+  val isUndoable: Boolean = false,
+  val description: String = ""
+) : ScreenAction()
+
+data class UpdateMovieList(
+  val list: List<MovieBriefUM>,
+  val isUndoable: Boolean = false,
+  val description: String = ""
+) : ScreenAction()
 
 /**
  * Наследники этого презентера (презентеры поиска, вишлиста и истории) реализуют абстрактные методы,
  * чтобы забиндить свайп на нужную команду (придать свайпам влево-вправо разные значения на разных экранах)
- * Также для этого необходимо реализовать кастомную логику обработки удаления элементов на разных экранах:
+ * Также необходимо реализовать кастомную логику обработки удаления элементов на разных экранах:
  * Например, Фильтр дает запрос сервису на удаление фильма из вишлиста, но из списка элемент не удаляет.
  * Вишлист в свою очередь и делает запрос и удаляет элемент из списка
  */
@@ -48,13 +60,14 @@ abstract class MovieListPresenter(
       intent(MovieScreenView::itemHistoryStateChangeIntent).map { ItemHistoryStateChanged(it) },
       intent(MovieScreenView::elementClicked).map { OpenDetails(it) },
       intent(MovieScreenView::showMoreMovieInfoIntent).map { ExpandCollapseMovieItem(it) },
+      intent(MovieScreenView::undoIntent).map { Undo },
       bindSwipeLeftIntent(), bindSwipeRightIntent(),
       getPagedMovieListSource(
         intent(MovieScreenView::loadNextPageIntent),
         intent(MovieScreenView::refreshIntent).startWith(Unit)
       )
         .switchMap {
-          Observable.just<ScreenAction>(LoadNextPage(it)).startWith(ShowLoading())
+          Observable.just<ScreenAction>(LoadNextPage(it)).startWith(ShowLoading)
         }
         .onErrorReturn { ShowError(it.message ?: "unknown error") }
     )
@@ -93,7 +106,7 @@ abstract class MovieListPresenter(
       is RemoveFromWishList -> processRemoveFromWishList(previousState, action)
       is AddToWishList -> processAddToWishList(previousState, action)
       is LoadNextPage -> processNextPage(previousState, action)
-      is UpdateMovieList -> processUpdateMovieList(action)
+      is UpdateMovieList -> processUpdateMovieList(previousState, action)
       is ItemWishListStateChanged -> processWishListStateChanged(previousState, action)
       is AddToHistory -> processAddToHistory(previousState, action)
       is RemoveFromHistory -> processRemoveFromHistory(previousState, action)
@@ -103,7 +116,36 @@ abstract class MovieListPresenter(
       is ShowError -> processShowError(previousState, action)
       is ShowLoading -> processShowLoading(previousState)
       is UpdateSingleItem -> processSingleItemUpdate(previousState, action)
+      is Undo -> processUndo(previousState)
+      is MoveToHistory -> processMoveToHistory(previousState, action)
+      is MoveToWishList -> processMoveToWishList(previousState, action)
     }
+  }
+
+  private fun processMoveToHistory(
+    previousState: MovieScreenVS,
+    action: MoveToHistory
+  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
+    return previousState to command(movieService
+      .moveToHistory(previousState.content[action.position])
+      .doAction {
+        UpdateMovieList(previousState.content.toMutableList().apply {
+          removeAt(action.position)
+        }, true, "${previousState.content[action.position].title} Moved to History")
+      })
+  }
+
+  private fun processMoveToWishList(
+    previousState: MovieScreenVS,
+    action: MoveToWishList
+  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
+    return previousState to command(movieService
+      .moveToWishlist(previousState.content[action.position])
+      .doAction {
+        UpdateMovieList(previousState.content.toMutableList().apply {
+          removeAt(action.position)
+        }, true, "${previousState.content[action.position].title} Moved to Wishlist")
+      })
   }
 
   private fun processShowError(
@@ -124,7 +166,12 @@ abstract class MovieListPresenter(
   ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
     return previousState to command(
       movieService.addToWishList(previousState.content[action.position]).doAction {
-        UpdateSingleItem(action.position) { movie -> movie.apply { isInWishList = true } }
+        UpdateSingleItem(
+          position = action.position,
+          movie = previousState.content[action.position].copy(isInWishList = true),
+          isUndoable = true,
+          description = "${previousState.content[action.position].title} added to Wishlist"
+        )
       }
     )
   }
@@ -135,7 +182,12 @@ abstract class MovieListPresenter(
   ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
     return previousState to command(
       movieService.addToHistory(previousState.content[action.position]).doAction {
-        UpdateSingleItem(action.position) { movie -> movie.apply { isInHistory = true } }
+        UpdateSingleItem(
+          position = action.position,
+          movie = previousState.content[action.position].copy(isInHistory = true),
+          isUndoable = true,
+          description = "${previousState.content[action.position].title} added to history"
+        )
       }
     )
   }
@@ -162,9 +214,27 @@ abstract class MovieListPresenter(
     } else MovieScreenVS.Content(action.content) to null
   }
 
-  private fun processUpdateMovieList(action: UpdateMovieList)
-    : Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
-    return MovieScreenVS.Content(action.list) to null
+  private fun processUpdateMovieList(
+    previousState: MovieScreenVS,
+    action: UpdateMovieList
+  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
+    return if (action.isUndoable) {
+      previousState.produceUndoableState(action.list, action.description) to null
+    } else {
+      MovieScreenVS.Content(action.list) to null
+    }
+  }
+
+  private fun processSingleItemUpdate(
+    previousState: MovieScreenVS,
+    action: UpdateSingleItem
+  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
+    return if (action.isUndoable)
+      previousState.produceUndoableState(action.position, action.movie, action.description) to null
+    else {
+      val updatedContent = previousState.content.toMutableList().apply { this[action.position] = action.movie }
+      MovieScreenVS.Content(updatedContent) to null
+    }
   }
 
   private fun processWishListStateChanged(
@@ -190,29 +260,22 @@ abstract class MovieListPresenter(
     action: ExpandCollapseMovieItem
   ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
     return previousState to doAction(
-      UpdateSingleItem(action.position) { movie -> movie.apply { isExpanded = !isExpanded } }
+      UpdateSingleItem(
+        position = action.position,
+        movie = previousState.content[action.position]
+          .copy(isExpanded = !previousState.content[action.position].isExpanded)
+      )
     )
   }
 
-  /**
-   * копируем дата класс, выполняем над ним действие с мутабельными полями и сохраняем в состояние
-   * для передачи в контроллер. Нужно, чтобы не копировать весь лист
-   */
-  private fun processSingleItemUpdate(
-    previousState: MovieScreenVS,
-    action: UpdateSingleItem
-  ): Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
-    val movie = previousState.content[action.position].copy()
-    val singleItemChanges = action.position to action.mutator.invoke(movie)
-    action.mutator.invoke(previousState.content[action.position])
-    return previousState.copy(singleStateChange = singleItemChanges) to null
+  private fun processUndo(previousState: MovieScreenVS)
+    : Pair<MovieScreenVS, Command<Observable<out ScreenAction>>?> {
+    return previousState to command(
+      movieService.undoLastOperation().doAction { UpdateMovieList(previousState.contentSnapshot) }
+    )
   }
 
   override fun createInitialState(): MovieScreenVS {
     return MovieScreenVS.Loading()
   }
-
-
-  fun processAddToFavorite(movie: MovieBriefUM) =
-    movieService.addToWishList(movie)
 }

@@ -31,7 +31,7 @@ interface DragAndDropControls : DraggableItemAdapter<BasicMovieAdapter.MovieVH> 
   }
 
   override fun onItemDragFinished(start: Int, end: Int, result: Boolean) =
-    if (result) delegateControlsAdapter().eventsRelay.accept(EVENT_ITEM_DRAGGED_N_DROPPED to (start to end)) else Unit
+    if (result) delegateControlsAdapter().eventsRelay.accept(EVENT_ID_ITEM_DRAGGED_N_DROPPED to (start to end)) else Unit
 
   override fun onCheckCanStartDrag(
     holder: BasicMovieAdapter.MovieVH,
@@ -60,9 +60,9 @@ interface SwipeControls : SwipeableItemAdapter<BasicMovieAdapter.MovieVH> {
   ): SwipeResultAction? =
     when (result) {
       SwipeableItemConstants.RESULT_SWIPED_RIGHT ->
-        getSwipeAction { delegateControlsAdapter().eventsRelay.accept(EVENT_ITEM_SWIPED_RIGHT to position) }
+        getSwipeAction { delegateControlsAdapter().eventsRelay.accept(EVENT_ID_ITEM_SWIPED_RIGHT to position) }
       SwipeableItemConstants.RESULT_SWIPED_LEFT ->
-        getSwipeAction { delegateControlsAdapter().eventsRelay.accept(EVENT_ITEM_SWIPED_LEFT to position) }
+        getSwipeAction { delegateControlsAdapter().eventsRelay.accept(EVENT_ID_ITEM_SWIPED_LEFT to position) }
       else -> null
     }
 
@@ -71,16 +71,10 @@ interface SwipeControls : SwipeableItemAdapter<BasicMovieAdapter.MovieVH> {
   override fun onGetSwipeReactionType(holder: BasicMovieAdapter.MovieVH, position: Int, x: Int, y: Int): Int =
     SwipeableItemConstants.REACTION_CAN_SWIPE_BOTH_H
 
-  @SuppressLint("SwitchIntDef") //TODO: поменять ресурсы ресурсы (или решить ,что менять не надо)
+  @SuppressLint("SwitchIntDef") //TODO: поменять фон у элементво во время свайпа (или решить ,что менять не надо)
   override fun onSetSwipeBackground(holder: BasicMovieAdapter.MovieVH, position: Int, type: Int) {
-//    val resId = when (type) {
-//      SwipeableItemConstants.DRAWABLE_SWIPE_NEUTRAL_BACKGROUND -> R.drawable.item_swiped_bg
-//      SwipeableItemConstants.DRAWABLE_SWIPE_LEFT_BACKGROUND -> R.drawable.item_swiped_bg
-//      SwipeableItemConstants.DRAWABLE_SWIPE_RIGHT_BACKGROUND -> R.drawable.gradient_bg
-//      else -> R.drawable.item_swiped_bg
-//    }
-//    holder.itemView.setBackgroundResource(resId)
   }
+
 }
 
 object SwipeActions {

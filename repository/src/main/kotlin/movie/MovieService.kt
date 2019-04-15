@@ -14,6 +14,9 @@ interface MovieService {
   fun addToWishList(movie: MovieDetailedUM): Completable
   fun addToHistory(movie: MovieBriefUM): Completable
   fun addToHistory(movie: MovieDetailedUM): Completable
+  fun moveToHistory(movie: MovieBriefUM): Completable
+  fun moveToWishlist(movie: MovieBriefUM): Completable
+  fun undoLastOperation(): Completable
   fun getWishListPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
   fun getHistoryPaged(nextPageIntent: Observable<Unit>, reloadIntent: Observable<Unit>): Observable<List<MovieBriefUM>>
   fun getMovieDetailed(id: Long): Observable<MovieDetailedUM>

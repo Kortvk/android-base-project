@@ -8,6 +8,7 @@ import io.reactivex.functions.BiFunction
 import movie.local.LocalMovieRepository
 import ru.appkode.base.data.storage.DatabaseHelper
 import ru.appkode.base.entities.core.common.PagedListWrapper
+import ru.appkode.base.entities.core.movie.MovieBriefSM
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.entities.core.movie.MovieDetailedUM
 import ru.appkode.base.entities.core.movie.toBrief
@@ -18,20 +19,8 @@ import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 
 
 class LocalMovieRepositoryImpl : LocalMovieRepository {
-  override fun addToHistory(movie: MovieBriefUM) {
+  override fun persistMovie(movie: MovieBriefSM) {
     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-  }
-
-  override fun addToHistory(movie: MovieDetailedUM) {
-    addToHistory(movie.toBrief())
-  }
-
-  override fun removeFromHistory(movie: MovieBriefUM) {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-  }
-
-  override fun removeFromHistory(movie: MovieDetailedUM) {
-    removeFromHistory(movie.toBrief())
   }
 
   override fun getHistoryPaged(
@@ -44,30 +33,6 @@ class LocalMovieRepositoryImpl : LocalMovieRepository {
   private val movies = mutableListOf<MovieBriefUM>()
   val pageSize = 10
 
-  override fun addToWishList(movie: MovieDetailedUM) {
-    addToWishList(movie.toBrief())
-  }
-
-  override fun removeFromWishList(movie: MovieDetailedUM) {
-    removeFromWishList(movie.toBrief())
-  }
-
-  override fun addToWishList(movie: MovieBriefUM) {
-    Log.d("current", "LocalMovieRepositoryImpl addToWishList " + movie)
-    //Completable.fromAction{
-    movie.isInWishList = !movie.isInWishList
-    if (!movie.isInWishList)
-      DatabaseHelper.getMoviePersistence().deleteMovie(movie.toStorageModel())
-    else
-      DatabaseHelper.getMoviePersistence().addMovie(movie.toStorageModel())
-    //}.subscribeOn(DefaultAppSchedulers.io)
-  }
-
-  override fun removeFromWishList(movie: MovieBriefUM) {
-    Completable.fromAction {
-      DatabaseHelper.getMoviePersistence().updateMovie(movie.toStorageModel())
-    }.subscribeOn(DefaultAppSchedulers.io)
-  }
 
   override fun getWishListPaged(
     nextPageIntent: Observable<Unit>,

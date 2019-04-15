@@ -20,7 +20,12 @@ class WishListPresenter(
     return previousState to command(
       movieService
         .removeFromHistory(previousState.content[action.position]).doAction {
-          UpdateMovieList(previousState.content.apply { this[action.position].isInHistory = false })
+          UpdateSingleItem(
+            position = action.position,
+            movie = previousState.content[action.position].copy(isInHistory = false),
+            isUndoable = true,
+            description = "${previousState.content[action.position].title} Removed from history"
+          )
         }
     )
   }
@@ -35,14 +40,13 @@ class WishListPresenter(
         .removeFromWishList(previousState.content[action.position]).doAction {
           UpdateMovieList(previousState.content.toMutableList().apply {
             removeAt(action.position)
-          })
+          }, true, "${previousState.content[action.position].title} Removed from Wishlist")
         }
     )
   }
 
   override fun bindSwipeLeftIntent(): Observable<out ScreenAction> {
-    return intent(MovieScreenView::elementSwipedLeft)
-      .concatMap { Observable.just(AddToHistory(it), RemoveFromWishList(it)) }
+    return intent(MovieScreenView::elementSwipedLeft).map { MoveToHistory(it) }
   }
 
   override fun bindSwipeRightIntent(): Observable<out ScreenAction> {

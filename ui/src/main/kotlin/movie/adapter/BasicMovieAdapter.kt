@@ -15,6 +15,7 @@ import ru.appkode.base.entities.core.movie.BASE_IMAGE_URL
 import ru.appkode.base.entities.core.movie.IMAGE_PROFILE_SIZE
 import ru.appkode.base.entities.core.movie.MovieBriefUM
 import ru.appkode.base.ui.R
+import ru.appkode.base.ui.movie.NOTIFICATION_LENGTH_MS
 import ru.appkode.base.ui.movie.adapter.*
 import kotlin.properties.Delegates
 
@@ -22,7 +23,7 @@ abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieV
 
   fun asRvAdapter() = this
 
-  var items: MutableList<MovieBriefUM> by Delegates.observable(mutableListOf()) { _, _, _ ->
+  var items: List<MovieBriefUM> by Delegates.observable(mutableListOf()) { _, _, _ ->
     notifyDataSetChanged()
   }
 
@@ -68,7 +69,6 @@ abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieV
     private fun bindIntents() {
       itemView.in_wish_list.setOnClickListener {
         eventsRelay.accept(EVENT_ID_ADD_TO_WISHLIST_CLICKED to adapterPosition)
-        eventsRelay.accept(EVENT_ADD_TO_WISH to movie)
       }
       itemView.layout_item_root.setOnClickListener {
         eventsRelay.accept(EVENT_ID_OPEN_DETAILS to movie.id)
@@ -81,17 +81,18 @@ abstract class BasicMovieAdapter : RecyclerView.Adapter<BasicMovieAdapter.MovieV
       }
     }
 
-    fun rippleOnChecked() {
+    private fun rippleOnChecked() {
       if (itemView.in_history.isChecked && itemView.in_history.background is RippleDrawable) {
-        val rippleDrawable = itemView.in_history.background as RippleDrawable
-        rippleDrawable.state = intArrayOf(android.R.attr.state_pressed, android.R.attr.state_enabled)
-        Handler().postDelayed({ rippleDrawable.state = intArrayOf() }, 200)
+        executeRippleAnimation(itemView.in_history.background as RippleDrawable)
       }
       if (itemView.in_wish_list.isChecked && itemView.in_wish_list.background is RippleDrawable) {
-        val rippleDrawable = itemView.in_wish_list.background as RippleDrawable
-        rippleDrawable.state = intArrayOf(android.R.attr.state_pressed, android.R.attr.state_enabled)
-        Handler().postDelayed({ rippleDrawable.state = intArrayOf() }, 200)
+        executeRippleAnimation(itemView.in_wish_list.background as RippleDrawable)
       }
+    }
+
+    private fun executeRippleAnimation(view: RippleDrawable) {
+      view.state = intArrayOf(android.R.attr.state_pressed, android.R.attr.state_enabled)
+      Handler().postDelayed({ view.state = intArrayOf() }, NOTIFICATION_LENGTH_MS)
     }
 
     private fun expandView() = setDetailsVisibililty(View.VISIBLE)

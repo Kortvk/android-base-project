@@ -54,7 +54,7 @@ class MovieDetailedPresenter(
     : Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
     return previousState to command(movieService.addToWishList(previousState.state.asContent())
       .doAction {
-        LoadMovieDetails(previousState.state.asContent().apply { this.isInWishList = false })
+        LoadMovieDetails(previousState.state.asContent().copy(isInWishList = true))
       }
     )
   }
@@ -63,7 +63,7 @@ class MovieDetailedPresenter(
     : Pair<MovieDetailedViewState, Command<Observable<out ScreenAction>>?> {
     return previousState to command(movieService.removeFromWishList(previousState.state.asContent())
       .doAction {
-        LoadMovieDetails(previousState.state.asContent().apply { this.isInWishList = false })
+        LoadMovieDetails(previousState.state.asContent().copy(isInWishList = false))
       }
     )
   }

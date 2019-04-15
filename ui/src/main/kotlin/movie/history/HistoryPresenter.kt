@@ -1,7 +1,7 @@
 package movie.history
 
 import io.reactivex.Observable
-import movie.common.AddToWishList
+import movie.common.MoveToWishList
 import movie.common.MovieListPresenter
 import movie.common.MovieScreenView
 import movie.common.MovieScreenVS
@@ -9,6 +9,7 @@ import movie.common.RemoveFromHistory
 import movie.common.RemoveFromWishList
 import movie.common.ScreenAction
 import movie.common.UpdateMovieList
+import movie.common.UpdateSingleItem
 import ru.appkode.base.repository.movie.MovieService
 import ru.appkode.base.ui.core.core.Command
 import ru.appkode.base.ui.core.core.command
@@ -26,7 +27,11 @@ class HistoryPresenter(
     return previousState to command(
       movieService
         .removeFromHistory(previousState.content[action.position]).doAction {
-          UpdateMovieList(previousState.content.toMutableList().apply { removeAt(action.position) })
+          UpdateMovieList(
+            previousState.content.toMutableList().apply { removeAt(action.position) },
+            true,
+            "${previousState.content[action.position].title} Removed from history"
+          )
         }
     )
   }
@@ -39,7 +44,12 @@ class HistoryPresenter(
     return previousState to command(
       movieService
         .removeFromWishList(previousState.content[action.position]).doAction {
-          UpdateMovieList(previousState.content.apply { this[action.position].isInWishList = false })
+          UpdateSingleItem(
+            position = action.position,
+            movie = previousState.content[action.position].copy(isInWishList = false),
+            isUndoable = true,
+            description = "${previousState.content[action.position].title} Removed from Wishlist"
+          )
         }
     )
   }
@@ -49,8 +59,7 @@ class HistoryPresenter(
   }
 
   override fun bindSwipeRightIntent(): Observable<out ScreenAction> {
-    return intent(MovieScreenView::elementSwipedRight)
-      .concatMap { Observable.just(AddToWishList(it), RemoveFromHistory(it)) }
+    return intent(MovieScreenView::elementSwipedRight).map { MoveToWishList(it) }
   }
 
   override fun getPagedMovieListSource(nextPageIntent: Observable<Unit>, refreshIntent: Observable<Unit>) =

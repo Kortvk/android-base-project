@@ -59,7 +59,7 @@ class MovieDetailedController(args: Bundle) :
     tv_movie_title.text = movie.title
     tv_movie_year.text = movie.releaseDate.substringBefore("-")
     tv_movie_runtime.text = requireView.context.getString(R.string.runtime, movie.runtime)
-    movie_status.text = movie.status
+    tv_movie_status.text = movie.status
     tv_movie_rating.text = movie.voteAverage.toString()
     Glide.with(refresher)
       .load(BASE_IMAGE_URL + IMAGE_PROFILE_SIZE + movie.posterPath).into(iv_movie_poster)

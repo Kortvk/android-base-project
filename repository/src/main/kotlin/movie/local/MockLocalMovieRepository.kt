@@ -1,79 +1,36 @@
 package movie.local
 
-import android.util.Log
 import io.reactivex.*
-import io.reactivex.functions.BiFunction
-import ru.appkode.base.data.storage.DatabaseHelper
+import io.reactivex.Observable
 import ru.appkode.base.entities.core.common.PagedListWrapper
+import ru.appkode.base.entities.core.movie.MovieBriefSM
 import ru.appkode.base.entities.core.movie.MovieBriefUM
-import ru.appkode.base.entities.core.movie.MovieDetailedUM
-import ru.appkode.base.entities.core.movie.toBrief
-import ru.appkode.base.entities.core.movie.toStorageModel
 import ru.appkode.base.entities.core.movie.toUIModel
 import ru.appkode.base.repository.util.paginatedObservable
-import ru.appkode.base.ui.core.core.util.DefaultAppSchedulers
 
 /**
  * In-memory мокап локального репозитория с вишлистом и паджинацией
  */
 object MockLocalMovieRepository : LocalMovieRepository {
 
-  private val movies = mutableListOf<MovieBriefUM>()
+  private val movies = mutableMapOf<Long, MovieBriefSM>()
 
-  private fun getWishList() = movies.filter { it.isInWishList }
-  private fun getHistory() = movies.filter { it.isInHistory }
+  private fun getWishList() = movies.values.filter { it.isInWishList }
+  private fun getHistory() = movies.values.filter { it.isInHistory }
 
   private const val pageSize = 10
 
-  override fun addToHistory(movie: MovieBriefUM) {
-    val local = movies.find { it.id == movie.id }
-    if (local != null) local.isInHistory = true else {
-      val copy = movie.copy()
-      movies.add(copy).also { copy.isInHistory = true }
-    }
-  }
-
-  override fun addToHistory(movie: MovieDetailedUM) {
-    addToHistory(movie.toBrief())
-  }
-
-  override fun removeFromHistory(movie: MovieBriefUM) {
-    movies.find { it.id == movie.id }?.isInHistory = false
-  }
-
-  override fun removeFromHistory(movie: MovieDetailedUM) {
-    removeFromHistory(movie.toBrief())
-  }
-
-  override fun addToWishList(movie: MovieBriefUM) {
-    val local = movies.find { it.id == movie.id }
-    if (local != null) local.isInWishList = true else {
-      val copy = movie.copy()
-      movies.add(copy).also { copy.isInWishList = true }
-    }
-  }
-
-  override fun addToWishList(movie: MovieDetailedUM) {
-    addToWishList(movie.toBrief())
-  }
-
-  override fun removeFromWishList(movie: MovieBriefUM) {
-    movies.find { it.id == movie.id }?.isInWishList = false
-  }
-
-  override fun removeFromWishList(movie: MovieDetailedUM) {
-    removeFromWishList(movie.toBrief())
+  override fun persistMovie(movie: MovieBriefSM) {
+    movies[movie.id] = movie
   }
 
   override fun getStatusUpdates(moviesToUpdate: List<MovieBriefUM>): Observable<List<MovieBriefUM>> {
     return Observable.fromCallable {
-      moviesToUpdate.apply {
-        this.forEach { updatedMovie ->
-          movies.find { m -> m.id == updatedMovie.id }?.let {
-            updatedMovie.isInWishList = it.isInWishList
-            updatedMovie.isInHistory = it.isInHistory
-          }
-        }
+      moviesToUpdate.toMutableList().map { updatedMovie ->
+        val localCopy = movies.values.find { m -> m.id == updatedMovie.id }
+        if (localCopy != null)
+          updatedMovie.copy(isInWishList = localCopy.isInWishList, isInHistory = localCopy.isInHistory)
+        else updatedMovie
       }
     }
   }
@@ -96,19 +53,17 @@ object MockLocalMovieRepository : LocalMovieRepository {
    * Заменить на реализацию с БД через PagedList. См. util.Pagination, класс PaginatedOnSubscribe
    * надо будет допилить для работы с PagedList по аналогии с PagedListWrapper
    */
-  private fun getMoviesAtPage(page: Int, list: List<MovieBriefUM>): Single<PagedListWrapper<MovieBriefUM>> =
-    Single.just(
+  private fun getMoviesAtPage(page: Int, db: List<MovieBriefSM>): Single<PagedListWrapper<MovieBriefUM>> {
+    val list = db.toList().map { it.toUIModel() }
+    return Single.just(
       PagedListWrapper(
         page = page,
         total_results = list.size,
         total_pages = list.size / pageSize + 1,
         results = if (pageSize * page < list.size) list.subList(pageSize * (page - 1), pageSize * page).toList()
         else list.subList(pageSize * (page - 1), list.size).toList()
-
       )
     )
-
+  }
 }
-
-
 

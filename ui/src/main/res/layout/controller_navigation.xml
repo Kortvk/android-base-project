@@ -6,19 +6,13 @@
   android:layout_height="match_parent"
   android:fitsSystemWindows="true">
 
-  <androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_above="@id/bottom_bar"
-    app:layout_anchor="@id/bottom_bar"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
     <FrameLayout
       android:id="@+id/child_container"
       android:layout_width="match_parent"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+      android:layout_above="@id/bottom_bar"
       android:layout_height="wrap_content" />
 
-  </androidx.core.widget.NestedScrollView>
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/fab"

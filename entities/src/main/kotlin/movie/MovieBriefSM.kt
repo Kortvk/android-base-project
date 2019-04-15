@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "movie")
 class MovieBriefSM(
-  @PrimaryKey val id: Int,
+  @PrimaryKey val id: Long,
   var isInWishList: Boolean,
   var isInHistory: Boolean,
   val overview: String,
@@ -21,9 +21,9 @@ class MovieBriefSM(
 
 fun MovieBriefSM.toUIModel(): MovieBriefUM {
   return MovieBriefUM(
-    id = id.toLong(),
+    id = id,
     title = title,
-    genres = emptyList(),
+    genres = genres ?: emptyList(),
     overview = overview,
     poster = poster,
     backdrop = backdrop,
@@ -37,7 +37,7 @@ fun MovieBriefSM.toUIModel(): MovieBriefUM {
 
 fun MovieBriefUM.toStorageModel(): MovieBriefSM {
   return MovieBriefSM(
-    id = id.toInt(),
+    id = id,
     title = title,
     genres = genres,
     overview = overview,
